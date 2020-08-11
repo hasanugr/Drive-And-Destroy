@@ -2587,6 +2587,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   planeModelObject: {fileID: 482832723}
+  maxSpeed: 100
+  acceleration: 25
+  dragDeceleration: 15
+  reboundForce: 5
 --- !u!4 &1320787404
 Transform:
   m_ObjectHideFlags: 0
@@ -2595,7 +2599,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1320787402}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -6, y: 0.8, z: -5}
+  m_LocalPosition: {x: -6.25, y: 0.8, z: -5}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 963194228}

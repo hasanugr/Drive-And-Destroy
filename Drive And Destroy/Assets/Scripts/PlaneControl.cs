@@ -6,11 +6,17 @@ public class PlaneControl : MonoBehaviour {
     private Rigidbody rb;
     public GameObject planeModelObject;
     private Rigidbody planeModelRB;
-    private float thrust = 15f;
-    private float maxSpeed = 100f;
-    private float rotateLimit = 30;
+    // private float thrust = 15.0f;
+    public float maxSpeed = 100.0f;
+    private float rotateLimit = 30.0f;
+    private float rotateSpeed = 50.0f;
+    private float animateRotateSpeed = 50.0f;
     // private float posChangeSpeed = 25f;
     // private float minSpeed = 20f;
+    public float acceleration = 25.0f;
+    public float dragDeceleration = 15.0f;
+    private float curSpeed = 0.0f;
+    public float reboundForce = 5.0f;
 
 
     // Start is called before the first frame update
@@ -21,24 +27,40 @@ public class PlaneControl : MonoBehaviour {
 
     // Update is called once per frame
     void Update() {
-        float _xMov = Input.GetAxisRaw("Horizontal"); // Sağ sol
+        float _yMov = Input.GetAxisRaw("Horizontal"); // Sağ sol
         float _zMov = Input.GetAxisRaw("Vertical"); // İleri geri
 
-        this.SpeedControl(_zMov);
-        this.RotationControl(_xMov);
+        // Debug.Log("Time --> " + Time.time);
 
-        if (_xMov == 0 && rb.velocity.x != 0) {
-            rb.velocity = new Vector3(0f, rb.velocity.y, rb.velocity.z);
-        }
+        this.SpeedControl(_zMov);
+        this.RotationControl(_yMov);
+        // Debug.Log("Speed: " + curSpeed);
+        rb.transform.Translate(Vector3.forward * curSpeed * Time.deltaTime);
+
+        // if (_yMov == 0 && rb.velocity.x != 0) {
+        //     rb.velocity = new Vector3(0f, rb.velocity.y, rb.velocity.z);
+        // }
     }
 
     private void SpeedControl (float zMov) {
         // Debug.Log(rb.velocity.z);
         // Debug.Log(rb.transform.forward);
         if (zMov > 0 && rb.velocity.z < maxSpeed) {
-            float speedVal = zMov * thrust;
-            Debug.Log(rb.transform.forward * speedVal);
-            rb.AddForce(transform.forward * speedVal);}
+            // float speedVal = zMov * thrust;
+            // Debug.Log(rb.transform.forward * speedVal);
+            // rb.AddForce(transform.forward * speedVal);
+            
+            curSpeed += acceleration * Time.deltaTime;
+            if (curSpeed > maxSpeed) {
+                curSpeed = maxSpeed;
+            }
+        }else if (zMov <= 0) {
+            if (curSpeed > 0) {
+                curSpeed -= dragDeceleration * Time.deltaTime;
+            }else if (curSpeed < 0) {
+                curSpeed = 0;
+            }
+        }
         // }else if (rb.velocity.z > 1 && (zMov == 0 || rb.velocity.z > maxSpeed)) {
         //     rb.AddForce(transform.forward * thrust);
         // }else if (rb.velocity.z < 1) {
@@ -46,25 +68,16 @@ public class PlaneControl : MonoBehaviour {
         // }
     }
 
-    private void RotationControl (float xMov) {
-        if (xMov != 0) {
-            float rotater = xMov * 50;
+    private void RotationControl (float yMov) {
+        if (yMov != 0) {
+            float rotater = yMov * rotateSpeed;
             rb.transform.Rotate(Vector3.up * rotater * Time.deltaTime, Space.Self);
-            // rb.transform.rotation = Quaternion.RotateTowards(rb.transform.rotation, Quaternion.Euler(0, rb.transform.rotation.y + rotater, 0), rotateSpeed * Time.deltaTime);
         }
 
-        float vectorZ = xMov * -rotateLimit;
-
-        // Transform planeTrans = planeModelObject.transform;
-        // Debug.Log("Plane Trans. Rot. --> " + planeTrans.rotation);
-        // Debug.Log("Queternion Euler --> " + Quaternion.Euler(0, 0, vectorZ));
-        // targetRotation = Quaternion.FromToRotation(Vector3.up, rcHit.normal);
-        // planeModelObject.transform.rotation = Quaternion.RotateTowards(planeTrans.rotation, Quaternion.Euler(0, 0, vectorZ), rotateSpeed * Time.deltaTime);
-
-        // Quaternion target = Quaternion.Euler(0, 0, vectorZ);
-        // var step = rotateSpeed * Time.deltaTime;
-        // planeModelObject.transform.rotation = Quaternion.RotateTowards(planeModelObject.transform.rotation, target, step);
-        // Debug.Log("Final TR --> " + planeModelObject.transform.rotation);
+        float vectorZ = yMov * -rotateLimit;
+        Quaternion target = Quaternion.Euler(0, 0, vectorZ);
+        float step = animateRotateSpeed * Time.deltaTime;
+        planeModelObject.transform.localRotation = Quaternion.RotateTowards(planeModelObject.transform.localRotation, target, step);
 	}
 
     private void ApplyReboundForce (Collision col) {
@@ -78,9 +91,23 @@ public class PlaneControl : MonoBehaviour {
         // Debug.Log(force);
         // force.x negatif değer ise sağ duvar pozitif değer ise sol duvar ile çarpışma olmuştur.
         if (force.x < 0) {
-            rb.AddForce(new Vector3(-1, 0, -0.5f) * 8f, ForceMode.Impulse);
+            // rb.AddForce(new Vector3(-1, 0, 0) * reboundForce, ForceMode.Impulse);
+            int reboundCounter = 0;
+            while(reboundCounter < 5) {
+                rb.transform.Translate(Vector3.left * 25 * Time.deltaTime);
+                reboundCounter++;
+                // Debug.Log("Rebound Count: " + reboundCounter);
+            } 
+            curSpeed = curSpeed / 4;
         }else if(force.x > 0) {
-            rb.AddForce(new Vector3(1, 0, -0.5f) * 8f, ForceMode.Impulse);
+            // rb.AddForce(new Vector3(1, 0, 0) * reboundForce, ForceMode.Impulse);
+            int reboundCounter = 0;
+            while(reboundCounter < 5) {
+                rb.transform.Translate(Vector3.right * 25 * Time.deltaTime);
+                reboundCounter++;
+                // Debug.Log("Rebound Count: " + reboundCounter);
+            }
+            curSpeed = curSpeed / 4;
         }
         
         // rb.AddForce (force * 50f, ForceMode.Impulse);
