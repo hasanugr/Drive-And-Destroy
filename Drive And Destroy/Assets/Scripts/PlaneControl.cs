@@ -3,21 +3,22 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class PlaneControl : MonoBehaviour {
+    // Objects and Components
     private Rigidbody rb;
     public GameObject planeModelObject;
     private Rigidbody planeModelRB;
-    // private float thrust = 15.0f;
+    // Speed things
+    private float curSpeed = 0.0f;
     public float maxSpeed = 100.0f;
-    private float rotateLimit = 30.0f;
-    private float rotateSpeed = 50.0f;
-    private float animateRotateSpeed = 50.0f;
-    // private float posChangeSpeed = 25f;
-    // private float minSpeed = 20f;
     public float acceleration = 25.0f;
     public float dragDeceleration = 15.0f;
-    private float curSpeed = 0.0f;
-    public float reboundForce = 5.0f;
-
+    // Rotate Things
+    private float rotateLimit = 30.0f;
+    private float rotateSpeed = 50.0f;
+    private float animateRotateSpeed = 100.0f;
+    // Rebound Things
+    public float reboundForce = 20.0f;
+    private bool reboundAppliying = false;
 
     // Start is called before the first frame update
     void Start() {
@@ -30,8 +31,6 @@ public class PlaneControl : MonoBehaviour {
         float _yMov = Input.GetAxisRaw("Horizontal"); // Sağ sol
         float _zMov = Input.GetAxisRaw("Vertical"); // İleri geri
 
-        // Debug.Log("Time --> " + Time.time);
-
         this.SpeedControl(_zMov);
         this.RotationControl(_yMov);
         // Debug.Log("Speed: " + curSpeed);
@@ -43,13 +42,7 @@ public class PlaneControl : MonoBehaviour {
     }
 
     private void SpeedControl (float zMov) {
-        // Debug.Log(rb.velocity.z);
-        // Debug.Log(rb.transform.forward);
         if (zMov > 0 && rb.velocity.z < maxSpeed) {
-            // float speedVal = zMov * thrust;
-            // Debug.Log(rb.transform.forward * speedVal);
-            // rb.AddForce(transform.forward * speedVal);
-            
             curSpeed += acceleration * Time.deltaTime;
             if (curSpeed > maxSpeed) {
                 curSpeed = maxSpeed;
@@ -61,11 +54,6 @@ public class PlaneControl : MonoBehaviour {
                 curSpeed = 0;
             }
         }
-        // }else if (rb.velocity.z > 1 && (zMov == 0 || rb.velocity.z > maxSpeed)) {
-        //     rb.AddForce(transform.forward * thrust);
-        // }else if (rb.velocity.z < 1) {
-        //     rb.velocity = new Vector3(0,0,0);
-        // }
     }
 
     private void RotationControl (float yMov) {
@@ -80,73 +68,48 @@ public class PlaneControl : MonoBehaviour {
         planeModelObject.transform.localRotation = Quaternion.RotateTowards(planeModelObject.transform.localRotation, target, step);
 	}
 
-    private void ApplyReboundForce (Collision col) {
-        // Debug.Log("ApplyReboundForce");
-        // Debug.Log(rb.transform.position);
-        // Debug.Log(col.transform.position);
-        Vector3 force = rb.transform.position - col.transform.position;
-        // Debug.Log("Force X --> " + force.x);
-        // Debug.Log(force);
-        force.Normalize ();
-        // Debug.Log(force);
-        // force.x negatif değer ise sağ duvar pozitif değer ise sol duvar ile çarpışma olmuştur.
-        if (force.x < 0) {
-            // rb.AddForce(new Vector3(-1, 0, 0) * reboundForce, ForceMode.Impulse);
-            int reboundCounter = 0;
-            while(reboundCounter < 5) {
-                rb.transform.Translate(Vector3.left * 25 * Time.deltaTime);
-                reboundCounter++;
-                // Debug.Log("Rebound Count: " + reboundCounter);
-            } 
-            curSpeed = curSpeed / 4;
-        }else if(force.x > 0) {
-            // rb.AddForce(new Vector3(1, 0, 0) * reboundForce, ForceMode.Impulse);
-            int reboundCounter = 0;
-            while(reboundCounter < 5) {
-                rb.transform.Translate(Vector3.right * 25 * Time.deltaTime);
-                reboundCounter++;
-                // Debug.Log("Rebound Count: " + reboundCounter);
-            }
+    private void ReboundForce (Vector3 contactPos) {
+        if (!reboundAppliying) {
+            // Debug.Log("ReboundForce");
+            Vector3 force = rb.transform.position - contactPos;
+            force.Normalize ();
+            force.y = 0;
+            // Debug.Log(force);
+            reboundAppliying = true;
+            StartCoroutine(ApplyReboundForce(0, force));
             curSpeed = curSpeed / 4;
         }
-        
-        // rb.AddForce (force * 50f, ForceMode.Impulse);
-
      }
+
+     IEnumerator ApplyReboundForce(int counter, Vector3 reboundWay)
+    {
+        rb.transform.Translate(reboundWay * reboundForce * Time.deltaTime, Space.World);
+
+        // wait for 1 second
+        yield return new WaitForSeconds(0.001f);
+        counter++;
+        if (counter < 10) {
+            // Debug.Log("ApplyReboundForce");
+            yield return StartCoroutine(ApplyReboundForce(counter, reboundWay));
+        }else {
+            reboundAppliying = false;
+        }
+    }
 
     void OnCollisionEnter(Collision col)
     {
-        // Debug.Log("Çarpışma oldu.");
         if (col.gameObject.tag == "SideWall") {
-            // Debug.Log("Duvara Çarptı.!!!");
-            //  appliedSpeed = speed * 0.5f;
-            //  elapsedEngineStartWaiting = 0f;
-             ApplyReboundForce (col);
-         }
+            // Debug.Log("Duvara ile temas.");
+            ContactPoint contact = col.contacts[0];
+            Vector3 contactPos = contact.point;
+            ReboundForce(contactPos);
+            // Quaternion rot = Quaternion.FromToRotation(Vector3.up, contact.normal);
+            
+            // Debug.Log(contact);
+            // Debug.Log(rot);
+            // Debug.Log(pos);
+        }
 
     }
-
-    // private void OnCollisionStay(Collision col) {
-    //     // Debug.Log("Touching..");
-    //     if (col.gameObject.tag == "PipeWall") {
-    //         this.posChangeSpeed = 5f;
-    //         // Debug.Log("Duvara Dokunuyor.!!");
-    //         if (rb.velocity.z > minSpeed) {
-    //             rb.AddForce(-transform.forward * thrust);
-    //         }
-           
-    //     }
-    // }
-
-    // private void OnCollisionExit(Collision col) {
-    //     if (col.gameObject.tag == "PipeWall"){
-    //         this.posChangeSpeed = 25f;
-    //     }
-    // }
-
-    // protected void LateUpdate() {
-    //     // rb.transform.localEulerAngles = new Vector3(0, 0, 0);
-    // }
-
     
 }
