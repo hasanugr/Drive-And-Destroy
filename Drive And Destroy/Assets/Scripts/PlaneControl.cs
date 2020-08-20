@@ -20,6 +20,15 @@ public class PlaneControl : MonoBehaviour {
     public float reboundForce = 20.0f;
     private bool reboundAppliying = false;
 
+    //
+    public List<GameObject> springs;
+    public float hoverPower = 250f;
+    private float center;
+    private float frontLeft;
+    private float frontRight;
+    private float backLeft;
+    private float backRight;
+
     // Start is called before the first frame update
     void Start() {
         planeModelRB = planeModelObject.GetComponent<Rigidbody>();
@@ -39,6 +48,40 @@ public class PlaneControl : MonoBehaviour {
         // if (_yMov == 0 && rb.velocity.x != 0) {
         //     rb.velocity = new Vector3(0f, rb.velocity.y, rb.velocity.z);
         // }
+
+        foreach (GameObject spring in springs) {
+            RaycastHit hit;
+            if (Physics.Raycast(spring.transform.position, transform.TransformDirection(Vector3.down), out hit, 3f)) {
+                // rb.AddForceAtPosition(Time.deltaTime * transform.TransformDirection(Vector3.up) * Mathf.Pow(3f - hit.distance, 2) / 3f * hoverPower, spring.transform.position);
+                if (spring.name == "Center") {
+                    center = hit.distance;
+                }else if (spring.name == "FrontLeft") {
+                    frontLeft = hit.distance;
+                }else if (spring.name == "FrontRight") {
+                    frontRight = hit.distance;
+                }else if (spring.name == "BackLeft") {
+                    backLeft = hit.distance;
+                }else if (spring.name == "BackRight") {
+                    backRight = hit.distance;
+                }
+                // Debug.Log("Name: " + spring.name + "  -  Distance: " + hit.distance);
+            }else {
+                if (spring.name == "Center") {
+                    center = 10;
+                }else if (spring.name == "FrontLeft") {
+                    frontLeft = 10;
+                }else if (spring.name == "FrontRight") {
+                    frontRight = 10;
+                }else if (spring.name == "BackLeft") {
+                    backLeft = 10;
+                }else if (spring.name == "BackRight") {
+                    backRight = 10;
+                }
+                Debug.Log("Name: " + spring.name + "  -  Distance: " + hit.distance);
+            }
+            
+        }
+        Debug.Log(center + " - " + frontLeft + " - " + frontRight + " - " + backLeft + " - " + backRight);
     }
 
     private void SpeedControl (float zMov) {
