@@ -34,6 +34,6 @@ public class PlayerInput : MonoBehaviour
 		//Get the values of the thruster, rudder, and brake from the input class
 		thruster = Input.GetAxis(verticalAxisName);
 		rudder = Input.GetAxis(horizontalAxisName);
-		isBraking = Input.GetButton(brakingKey);
+		//isBraking = Input.GetButton(brakingKey);
 	}
 }
