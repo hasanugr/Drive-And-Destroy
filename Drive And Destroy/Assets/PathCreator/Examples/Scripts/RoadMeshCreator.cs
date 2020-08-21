@@ -10,27 +10,61 @@ namespace PathCreation.Examples {
         public float thickness = .15f;
         public bool flattenSurface;
 
+        [Header ("Side Walls settings")]
+        public bool sideWalls;
+        public float sideWallsHeight = 2.0f;
+        [Range (0, .5f)]
+        public float sideWallsWidth = .1f;
+
+        [Header ("Test")]
+        public int testVal = 8;
+
         [Header ("Material settings")]
         public Material roadMaterial;
         public Material undersideMaterial;
         public float textureTiling = 1;
 
+        [Header ("Side Walls Material settings")]
+        public Material sideWallMaterial;
+        public Material sideWallUndersideMaterial;
+        public float sideWallTextureTiling = 1;
+
         [SerializeField, HideInInspector]
         GameObject meshHolder;
+        GameObject meshHolderLeftWall;
+        GameObject meshHolderRightWall;
 
         MeshFilter meshFilter;
+        MeshFilter meshFilterLeftWall;
+        MeshFilter meshFilterRightWall;
+
         MeshRenderer meshRenderer;
+        MeshRenderer meshRendererLeftWall;
+        MeshRenderer meshRendererRightWall;
+
         Mesh mesh;
+        Mesh meshLeftWall;
+        Mesh meshRightWall;
 
         protected override void PathUpdated () {
             if (pathCreator != null) {
-                AssignMeshComponents ();
-                AssignMaterials ();
-                CreateRoadMesh ();
+                AssignMeshComponents ("Road", "Road Mesh Holder");
+                AssignMaterials ("Road", roadMaterial, undersideMaterial, textureTiling);
+                CreateRoadMesh ("Road", roadWidth, thickness, flattenSurface);
+                if (sideWalls) {
+                    // Bu durumlar için duvarların yol genişliği kadar sağa veya sola kaydırılması yapılacak.
+                    AssignMeshComponents ("LeftWall", "Left Wall Mesh Holder");
+                    AssignMaterials ("LeftWall", sideWallMaterial, sideWallUndersideMaterial, sideWallTextureTiling);
+                    CreateRoadMesh ("LeftWall", sideWallsWidth, sideWallsHeight, false);
+
+                    AssignMeshComponents ("RightWall", "Right Wall Mesh Holder");
+                    AssignMaterials ("RightWall", sideWallMaterial, sideWallUndersideMaterial, sideWallTextureTiling);
+                    CreateRoadMesh ("RightWall", sideWallsWidth, sideWallsHeight, false);
+                }
             }
         }
 
-        void CreateRoadMesh () {
+        void CreateRoadMesh (string focusType, float roadWidth, float thickness, bool flattenSurface) {
             Vector3[] verts = new Vector3[path.NumPoints * 8];
             Vector2[] uvs = new Vector2[verts.Length];
             Vector3[] normals = new Vector3[verts.Length];
@@ -106,49 +140,133 @@ namespace PathCreation.Examples {
                 triIndex += 6;
             }
 
-            mesh.Clear ();
-            mesh.vertices = verts;
-            mesh.uv = uvs;
-            mesh.normals = normals;
-            mesh.subMeshCount = 3;
-            mesh.SetTriangles (roadTriangles, 0);
-            mesh.SetTriangles (underRoadTriangles, 1);
-            mesh.SetTriangles (sideOfRoadTriangles, 2);
-            mesh.RecalculateBounds ();
+            
+            if (focusType == "Road") {
+                mesh.Clear ();
+                mesh.vertices = verts;
+                mesh.uv = uvs;
+                mesh.normals = normals;
+                mesh.subMeshCount = 3;
+                mesh.SetTriangles (roadTriangles, 0);
+                mesh.SetTriangles (underRoadTriangles, 1);
+                mesh.SetTriangles (sideOfRoadTriangles, 2);
+                mesh.RecalculateBounds ();
+            }else if (focusType == "LeftWall") {
+                meshLeftWall.Clear ();
+                meshLeftWall.vertices = verts;
+                meshLeftWall.uv = uvs;
+                meshLeftWall.normals = normals;
+                meshLeftWall.subMeshCount = 3;
+                meshLeftWall.SetTriangles (roadTriangles, 0);
+                meshLeftWall.SetTriangles (underRoadTriangles, 1);
+                meshLeftWall.SetTriangles (sideOfRoadTriangles, 2);
+                meshLeftWall.RecalculateBounds ();
+            }else if (focusType == "RightWall") {
+                meshRightWall.Clear ();
+                meshRightWall.vertices = verts;
+                meshRightWall.uv = uvs;
+                meshRightWall.normals = normals;
+                meshRightWall.subMeshCount = 3;
+                meshRightWall.SetTriangles (roadTriangles, 0);
+                meshRightWall.SetTriangles (underRoadTriangles, 1);
+                meshRightWall.SetTriangles (sideOfRoadTriangles, 2);
+                meshRightWall.RecalculateBounds ();
+            }
         }
 
         // Add MeshRenderer and MeshFilter components to this gameobject if not already attached
-        void AssignMeshComponents () {
+        void AssignMeshComponents (string focusType, string meshHolderName) {
+            if (focusType == "Road") {
+                if (meshHolder == null) {
+                    meshHolder = new GameObject (meshHolderName);
+                }
 
-            if (meshHolder == null) {
-                meshHolder = new GameObject ("Road Mesh Holder");
-            }
+                meshHolder.transform.rotation = Quaternion.identity;
+                meshHolder.transform.position = Vector3.zero;
+                meshHolder.transform.localScale = Vector3.one;
 
-            meshHolder.transform.rotation = Quaternion.identity;
-            meshHolder.transform.position = Vector3.zero;
-            meshHolder.transform.localScale = Vector3.one;
+                // Ensure mesh renderer and filter components are assigned
+                if (!meshHolder.gameObject.GetComponent<MeshFilter> ()) {
+                    meshHolder.gameObject.AddComponent<MeshFilter> ();
+                }
+                if (!meshHolder.GetComponent<MeshRenderer> ()) {
+                    meshHolder.gameObject.AddComponent<MeshRenderer> ();
+                }
 
-            // Ensure mesh renderer and filter components are assigned
-            if (!meshHolder.gameObject.GetComponent<MeshFilter> ()) {
-                meshHolder.gameObject.AddComponent<MeshFilter> ();
-            }
-            if (!meshHolder.GetComponent<MeshRenderer> ()) {
-                meshHolder.gameObject.AddComponent<MeshRenderer> ();
-            }
+                meshRenderer = meshHolder.GetComponent<MeshRenderer> ();
+                meshFilter = meshHolder.GetComponent<MeshFilter> ();
+                if (mesh == null) {
+                    mesh = new Mesh ();
+                }
+                meshFilter.sharedMesh = mesh;
+            }else if (focusType == "LeftWall") {
+                if (meshHolderLeftWall == null) {
+                    meshHolderLeftWall = new GameObject (meshHolderName);
+                }
 
-            meshRenderer = meshHolder.GetComponent<MeshRenderer> ();
-            meshFilter = meshHolder.GetComponent<MeshFilter> ();
-            if (mesh == null) {
-                mesh = new Mesh ();
+                meshHolderLeftWall.transform.rotation = Quaternion.identity;
+                meshHolderLeftWall.transform.position = Vector3.zero;
+                meshHolderLeftWall.transform.localScale = Vector3.one;
+
+                // Ensure mesh renderer and filter components are assigned
+                if (!meshHolderLeftWall.gameObject.GetComponent<MeshFilter> ()) {
+                    meshHolderLeftWall.gameObject.AddComponent<MeshFilter> ();
+                }
+                if (!meshHolderLeftWall.GetComponent<MeshRenderer> ()) {
+                    meshHolderLeftWall.gameObject.AddComponent<MeshRenderer> ();
+                }
+
+                meshRendererLeftWall = meshHolderLeftWall.GetComponent<MeshRenderer> ();
+                meshFilterLeftWall = meshHolderLeftWall.GetComponent<MeshFilter> ();
+                if (meshLeftWall == null) {
+                    meshLeftWall = new Mesh ();
+                }
+                meshFilterLeftWall.sharedMesh = meshLeftWall;
+            }else if (focusType == "RightWall") {
+                if (meshHolderRightWall == null) {
+                    meshHolderRightWall = new GameObject (meshHolderName);
+                }
+
+                meshHolderRightWall.transform.rotation = Quaternion.identity;
+                meshHolderRightWall.transform.position = Vector3.zero;
+                meshHolderRightWall.transform.localScale = Vector3.one;
+
+                // Ensure mesh renderer and filter components are assigned
+                if (!meshHolderRightWall.gameObject.GetComponent<MeshFilter> ()) {
+                    meshHolderRightWall.gameObject.AddComponent<MeshFilter> ();
+                }
+                if (!meshHolderRightWall.GetComponent<MeshRenderer> ()) {
+                    meshHolderRightWall.gameObject.AddComponent<MeshRenderer> ();
+                }
+
+                meshRendererRightWall = meshHolderRightWall.GetComponent<MeshRenderer> ();
+                meshFilterRightWall = meshHolderRightWall.GetComponent<MeshFilter> ();
+                if (meshRightWall == null) {
+                    meshRightWall = new Mesh ();
+                }
+                meshFilterRightWall.sharedMesh = meshRightWall;
             }
-            meshFilter.sharedMesh = mesh;
+            
         }
 
-        void AssignMaterials () {
-            if (roadMaterial != null && undersideMaterial != null) {
-                meshRenderer.sharedMaterials = new Material[] { roadMaterial, undersideMaterial, undersideMaterial };
-                meshRenderer.sharedMaterials[0].mainTextureScale = new Vector3 (1, textureTiling);
+        void AssignMaterials (string focusType, Material roadMaterial, Material undersideMaterial, float textureTiling) {
+            if (focusType == "Road") {
+                if (roadMaterial != null && undersideMaterial != null) {
+                    meshRenderer.sharedMaterials = new Material[] { roadMaterial, undersideMaterial, undersideMaterial };
+                    meshRenderer.sharedMaterials[0].mainTextureScale = new Vector3 (1, textureTiling);
+                }
+            }else if (focusType == "LeftWall") {
+                if (roadMaterial != null && undersideMaterial != null) {
+                    meshRendererLeftWall.sharedMaterials = new Material[] { roadMaterial, undersideMaterial, undersideMaterial };
+                    meshRendererLeftWall.sharedMaterials[0].mainTextureScale = new Vector3 (1, textureTiling);
+                }
+            }else if (focusType == "RightWall") {
+                if (roadMaterial != null && undersideMaterial != null) {
+                    meshRendererRightWall.sharedMaterials = new Material[] { roadMaterial, undersideMaterial, undersideMaterial };
+                    meshRendererRightWall.sharedMaterials[0].mainTextureScale = new Vector3 (1, textureTiling);
+                }
             }
+            
         }
 
     }
