@@ -12,8 +12,9 @@ namespace PathCreation.Examples {
 
         [Header ("Side Walls settings")]
         public bool sideWalls;
+        [Range (0, 5.0f)]
         public float sideWallsHeight = 2.0f;
-        [Range (0, .5f)]
+        [Range (0, 2.0f)]
         public float sideWallsWidth = .1f;
 
         [Header ("Test")]
@@ -30,8 +31,12 @@ namespace PathCreation.Examples {
         public float sideWallTextureTiling = 1;
 
         [SerializeField, HideInInspector]
+        GameObject mainRoadTrack;
+        [SerializeField, HideInInspector]
         GameObject meshHolder;
+        [SerializeField, HideInInspector]
         GameObject meshHolderLeftWall;
+        [SerializeField, HideInInspector]
         GameObject meshHolderRightWall;
 
         MeshFilter meshFilter;
@@ -48,23 +53,31 @@ namespace PathCreation.Examples {
 
         protected override void PathUpdated () {
             if (pathCreator != null) {
+                if (mainRoadTrack == null) {
+                    mainRoadTrack = new GameObject ("Road Track");
+                    this.transform.parent = mainRoadTrack.transform;
+                }
+
                 AssignMeshComponents ("Road", "Road Mesh Holder");
                 AssignMaterials ("Road", roadMaterial, undersideMaterial, textureTiling);
-                CreateRoadMesh ("Road", roadWidth, thickness, flattenSurface);
+                CreateRoadMesh ("Road", roadWidth, thickness, flattenSurface, sideWallsWidth, sideWallsHeight);
                 if (sideWalls) {
                     // Bu durumlar için duvarların yol genişliği kadar sağa veya sola kaydırılması yapılacak.
                     AssignMeshComponents ("LeftWall", "Left Wall Mesh Holder");
                     AssignMaterials ("LeftWall", sideWallMaterial, sideWallUndersideMaterial, sideWallTextureTiling);
-                    CreateRoadMesh ("LeftWall", sideWallsWidth, sideWallsHeight, false);
+                    CreateRoadMesh ("LeftWall", roadWidth, thickness, flattenSurface, sideWallsWidth, sideWallsHeight);
 
                     AssignMeshComponents ("RightWall", "Right Wall Mesh Holder");
                     AssignMaterials ("RightWall", sideWallMaterial, sideWallUndersideMaterial, sideWallTextureTiling);
-                    CreateRoadMesh ("RightWall", sideWallsWidth, sideWallsHeight, false);
+                    CreateRoadMesh ("RightWall", roadWidth, thickness, flattenSurface, sideWallsWidth, sideWallsHeight);
+                }else {
+                    DestroyImmediate(meshHolderLeftWall);
+                    DestroyImmediate(meshHolderRightWall);
                 }
             }
         }
 
-        void CreateRoadMesh (string focusType, float roadWidth, float thickness, bool flattenSurface) {
+        void CreateRoadMesh (string focusType, float roadWidth, float thickness, bool flattenSurface, float sideWidth, float sideThickness) {
             Vector3[] verts = new Vector3[path.NumPoints * 8];
             Vector2[] uvs = new Vector2[verts.Length];
             Vector3[] normals = new Vector3[verts.Length];
@@ -90,16 +103,36 @@ namespace PathCreation.Examples {
                 Vector3 localUp = (usePathNormals) ? Vector3.Cross (path.GetTangent (i), path.GetNormal (i)) : path.up;
                 Vector3 localRight = (usePathNormals) ? path.GetNormal (i) : Vector3.Cross (localUp, path.GetTangent (i));
 
-                // Find position to left and right of current path vertex
-                Vector3 vertSideA = path.GetPoint (i) - localRight * Mathf.Abs (roadWidth);
-                Vector3 vertSideB = path.GetPoint (i) + localRight * Mathf.Abs (roadWidth);
+                Vector3 vertSideA;
+                Vector3 vertSideB;
+                if (focusType == "LeftWall") {
+                    // Find position to left and right of current path vertex of left side wall
+                    vertSideA = (path.GetPoint (i) - localRight * Mathf.Abs (roadWidth + sideWidth)) + (localUp * sideThickness);
+                    vertSideB = (path.GetPoint (i) - localRight * Mathf.Abs (roadWidth)) + (localUp * sideThickness);
+                }else if (focusType == "RightWall") {
+                    // Find position to left and right of current path vertex of right side wall
+                    vertSideA = (path.GetPoint (i) + localRight * Mathf.Abs (roadWidth)) + (localUp * sideThickness);
+                    vertSideB = (path.GetPoint (i) + localRight * Mathf.Abs (roadWidth + sideWidth)) + (localUp * sideThickness);
+                }else {
+                    // Find position to left and right of current path vertex of road
+                    vertSideA = path.GetPoint (i) - localRight * Mathf.Abs (roadWidth);
+                    vertSideB = path.GetPoint (i) + localRight * Mathf.Abs (roadWidth);
+                }
 
                 // Add top of road vertices
                 verts[vertIndex + 0] = vertSideA;
                 verts[vertIndex + 1] = vertSideB;
-                // Add bottom of road vertices
-                verts[vertIndex + 2] = vertSideA - localUp * thickness;
-                verts[vertIndex + 3] = vertSideB - localUp * thickness;
+
+                if (focusType == "Road") {
+                    // Add bottom of road vertices
+                    verts[vertIndex + 2] = vertSideA - localUp * thickness;
+                    verts[vertIndex + 3] = vertSideB - localUp * thickness;
+                }else {
+                    // Add bottom of side walls vertices
+                    verts[vertIndex + 2] = vertSideA - localUp * (sideThickness + thickness);
+                    verts[vertIndex + 3] = vertSideB - localUp * (sideThickness + thickness);
+                }
+                
 
                 // Duplicate vertices to get flat shading for sides of road
                 verts[vertIndex + 4] = verts[vertIndex + 0];
@@ -179,6 +212,7 @@ namespace PathCreation.Examples {
             if (focusType == "Road") {
                 if (meshHolder == null) {
                     meshHolder = new GameObject (meshHolderName);
+                    meshHolder.transform.parent = mainRoadTrack.transform;
                 }
 
                 meshHolder.transform.rotation = Quaternion.identity;
@@ -202,6 +236,7 @@ namespace PathCreation.Examples {
             }else if (focusType == "LeftWall") {
                 if (meshHolderLeftWall == null) {
                     meshHolderLeftWall = new GameObject (meshHolderName);
+                    meshHolderLeftWall.transform.parent = mainRoadTrack.transform;
                 }
 
                 meshHolderLeftWall.transform.rotation = Quaternion.identity;
@@ -225,6 +260,7 @@ namespace PathCreation.Examples {
             }else if (focusType == "RightWall") {
                 if (meshHolderRightWall == null) {
                     meshHolderRightWall = new GameObject (meshHolderName);
+                    meshHolderRightWall.transform.parent = mainRoadTrack.transform;
                 }
 
                 meshHolderRightWall.transform.rotation = Quaternion.identity;
