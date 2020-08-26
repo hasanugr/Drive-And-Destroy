@@ -162,6 +162,7 @@ public class VehicleMovement : MonoBehaviour
 
 	void OnCollisionStay(Collision collision)
 	{
+		Debug.Log(collision.gameObject.layer + " - " + LayerMask.NameToLayer("Wall"));
 		//If the ship has collided with an object on the Wall layer...
 		if (collision.gameObject.layer == LayerMask.NameToLayer("Wall"))
 		{
