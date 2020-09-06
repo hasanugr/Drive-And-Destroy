@@ -8,7 +8,8 @@ public class VehicleMovement : MonoBehaviour
 	public float speed;						//The current forward speed of the ship
 
 	[Header("Drive Settings")]
-	public float driveForce = 17f;			//The force that the engine generates
+	public float driveForce = 17f;          //The force that the engine generates
+	public float rotationForce = 1.3f;        //The force that the rotation
 	public float slowingVelFactor = .99f;   //The percentage of velocity the ship maintains when not thrusting (e.g., a value of .99 means the ship loses 1% velocity when not thrusting)
 	public float brakingVelFactor = .95f;   //The percentage of velocty the ship maintains when braking
 	public float angleOfRoll = 30f;			//The angle that the ship "banks" into a turn
@@ -125,7 +126,8 @@ public class VehicleMovement : MonoBehaviour
 	void CalculatePropulsion()
 	{
 		//Calculate the yaw torque based on the rudder and current angular velocity
-		float rotationTorque = input.rudder - rigidBody.angularVelocity.y;
+		//float rotationTorque = input.rudder - rigidBody.angularVelocity.y;
+		float rotationTorque = input.rudder * rotationForce;
 		//Apply the torque to the ship's Y axis
 		rigidBody.AddRelativeTorque(0f, rotationTorque, 0f, ForceMode.VelocityChange);
 
