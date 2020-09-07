@@ -129,7 +129,8 @@ public class VehicleMovement : MonoBehaviour
 		//float rotationTorque = input.rudder - rigidBody.angularVelocity.y;
 		float rotationTorque = input.rudder * rotationForce;
 		//Apply the torque to the ship's Y axis
-		rigidBody.AddRelativeTorque(0f, rotationTorque, 0f, ForceMode.VelocityChange);
+		Debug.Log(input.thruster);
+		rigidBody.AddRelativeTorque(0f, speed < 1 && input.thruster < 0 ? -rotationTorque : rotationTorque, 0f, ForceMode.VelocityChange);
 
 		//Calculate the current sideways speed by using the dot product. This tells us
 		//how much of the ship's velocity is in the "right" or "left" direction
