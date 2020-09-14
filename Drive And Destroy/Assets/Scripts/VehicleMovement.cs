@@ -129,7 +129,6 @@ public class VehicleMovement : MonoBehaviour
 		//float rotationTorque = input.rudder - rigidBody.angularVelocity.y;
 		float rotationTorque = input.rudder * rotationForce;
 		//Apply the torque to the ship's Y axis
-		Debug.Log(input.thruster);
 		rigidBody.AddRelativeTorque(0f, speed < 1 && input.thruster < 0 ? -rotationTorque : rotationTorque, 0f, ForceMode.VelocityChange);
 
 		//Calculate the current sideways speed by using the dot product. This tells us
@@ -165,7 +164,6 @@ public class VehicleMovement : MonoBehaviour
 
 	void OnCollisionStay(Collision collision)
 	{
-		Debug.Log(collision.gameObject.layer + " - " + LayerMask.NameToLayer("Wall"));
 		//If the ship has collided with an object on the Wall layer...
 		if (collision.gameObject.layer == LayerMask.NameToLayer("Wall"))
 		{
