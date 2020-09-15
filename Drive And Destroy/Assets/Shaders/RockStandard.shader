@@ -1,7 +1,7 @@
-// Shader created with Shader Forge v1.38 
-// Shader Forge (c) Neat Corporation / Joachim Holmer - http://www.acegikmo.com/shaderforge/
+// Shader created with Shader Forge v1.40 
+// Shader Forge (c) Freya Holmer - http://www.acegikmo.com/shaderforge/
 // Note: Manually altering this data may prevent you from opening it in Shader Forge
-/*SF_DATA;ver:1.38;sub:START;pass:START;ps:flbk:,iptp:0,cusa:False,bamd:0,cgin:,lico:1,lgpr:1,limd:3,spmd:1,trmd:0,grmd:1,uamb:True,mssp:True,bkdf:True,hqlp:True,rprd:True,enco:False,rmgx:True,imps:True,rpth:0,vtps:0,hqsc:True,nrmq:1,nrsp:0,vomd:0,spxs:False,tesm:0,olmd:1,culm:0,bsrc:0,bdst:1,dpts:2,wrdp:True,dith:0,atcv:False,rfrpo:True,rfrpn:Refraction,coma:15,ufog:True,aust:True,igpj:False,qofs:0,qpre:1,rntp:1,fgom:False,fgoc:False,fgod:False,fgor:False,fgmd:0,fgcr:0.4666667,fgcg:0.6509804,fgcb:0.6588235,fgca:1,fgde:0.03,fgrn:0,fgrf:4000,stcl:False,atwp:False,stva:128,stmr:255,stmw:255,stcp:6,stps:0,stfa:0,stfz:0,ofsf:0,ofsu:0,f2p0:False,fnsp:False,fnfb:False,fsmp:False;n:type:ShaderForge.SFN_Final,id:2865,x:33073,y:33154,varname:node_2865,prsc:2|diff-8146-OUT,spec-2167-G,gloss-2167-R,normal-5964-RGB;n:type:ShaderForge.SFN_Tex2d,id:7736,x:31652,y:32352,ptovrint:True,ptlb:Rock Albedo,ptin:_MainTex,varname:_MainTex,prsc:2,glob:False,taghide:False,taghdr:False,tagprd:False,tagnsco:False,tagnrm:False,ntxv:0,isnm:False;n:type:ShaderForge.SFN_Tex2d,id:5964,x:31659,y:33386,ptovrint:True,ptlb:Rock Normal,ptin:_BumpMap,varname:_BumpMap,prsc:2,glob:False,taghide:False,taghdr:False,tagprd:False,tagnsco:False,tagnrm:False,ntxv:3,isnm:True;n:type:ShaderForge.SFN_Tex2d,id:2167,x:31659,y:33133,ptovrint:False,ptlb:Rock RMA,ptin:_RockRMA,varname:_RockRMA,prsc:2,glob:False,taghide:False,taghdr:False,tagprd:False,tagnsco:False,tagnrm:False,ntxv:0,isnm:False;n:type:ShaderForge.SFN_Multiply,id:5848,x:32283,y:32489,varname:node_5848,prsc:2|A-329-OUT,B-2167-B;n:type:ShaderForge.SFN_Lerp,id:8146,x:32569,y:32383,varname:node_8146,prsc:2|A-329-OUT,B-5848-OUT,T-9928-OUT;n:type:ShaderForge.SFN_Slider,id:9928,x:32194,y:32640,ptovrint:False,ptlb:AO Amount,ptin:_AOAmount,varname:_AOAmount,prsc:2,glob:False,taghide:False,taghdr:False,tagprd:False,tagnsco:False,tagnrm:False,min:0,cur:1,max:5;n:type:ShaderForge.SFN_Multiply,id:329,x:31917,y:32352,varname:node_329,prsc:2|A-7736-RGB,B-7046-RGB;n:type:ShaderForge.SFN_Color,id:7046,x:31652,y:32612,ptovrint:False,ptlb:Rock Color Shift,ptin:_RockColorShift,varname:_RockColorShift,prsc:2,glob:False,taghide:False,taghdr:False,tagprd:False,tagnsco:False,tagnrm:False,c1:1,c2:1,c3:1,c4:1;proporder:7736-7046-2167-5964-9928;pass:END;sub:END;*/
+/*SF_DATA;ver:1.40;sub:START;pass:START;ps:flbk:,iptp:0,cusa:False,bamd:0,cgin:,cpap:True,lico:1,lgpr:1,limd:3,spmd:1,trmd:0,grmd:1,uamb:True,mssp:True,bkdf:True,hqlp:True,rprd:True,enco:False,rmgx:True,imps:True,rpth:0,vtps:0,hqsc:True,nrmq:1,nrsp:0,vomd:0,spxs:False,tesm:0,olmd:1,culm:0,bsrc:0,bdst:1,dpts:2,wrdp:True,dith:0,atcv:False,rfrpo:True,rfrpn:Refraction,coma:15,ufog:True,aust:True,igpj:False,qofs:0,qpre:1,rntp:1,fgom:False,fgoc:False,fgod:False,fgor:False,fgmd:0,fgcr:0.4666667,fgcg:0.6509804,fgcb:0.6588235,fgca:1,fgde:0.03,fgrn:0,fgrf:4000,stcl:False,atwp:False,stva:128,stmr:255,stmw:255,stcp:6,stps:0,stfa:0,stfz:0,ofsf:0,ofsu:0,f2p0:False,fnsp:False,fnfb:False,fsmp:False;n:type:ShaderForge.SFN_Final,id:2865,x:33073,y:33154,varname:node_2865,prsc:2|diff-8146-OUT,spec-2167-G,gloss-2167-R,normal-5964-RGB;n:type:ShaderForge.SFN_Tex2d,id:7736,x:31652,y:32352,ptovrint:True,ptlb:Rock Albedo,ptin:_MainTex,varname:_MainTex,prsc:2,glob:False,taghide:False,taghdr:False,tagprd:False,tagnsco:False,tagnrm:False,ntxv:0,isnm:False;n:type:ShaderForge.SFN_Tex2d,id:5964,x:31659,y:33386,ptovrint:True,ptlb:Rock Normal,ptin:_BumpMap,varname:_BumpMap,prsc:2,glob:False,taghide:False,taghdr:False,tagprd:False,tagnsco:False,tagnrm:False,ntxv:3,isnm:True;n:type:ShaderForge.SFN_Tex2d,id:2167,x:31659,y:33133,ptovrint:False,ptlb:Rock RMA,ptin:_RockRMA,varname:_RockRMA,prsc:2,glob:False,taghide:False,taghdr:False,tagprd:False,tagnsco:False,tagnrm:False,ntxv:0,isnm:False;n:type:ShaderForge.SFN_Multiply,id:5848,x:32283,y:32489,varname:node_5848,prsc:2|A-329-OUT,B-2167-B;n:type:ShaderForge.SFN_Lerp,id:8146,x:32569,y:32383,varname:node_8146,prsc:2|A-329-OUT,B-5848-OUT,T-9928-OUT;n:type:ShaderForge.SFN_Slider,id:9928,x:32194,y:32640,ptovrint:False,ptlb:AO Amount,ptin:_AOAmount,varname:_AOAmount,prsc:2,glob:False,taghide:False,taghdr:False,tagprd:False,tagnsco:False,tagnrm:False,min:0,cur:1,max:5;n:type:ShaderForge.SFN_Multiply,id:329,x:31917,y:32352,varname:node_329,prsc:2|A-7736-RGB,B-7046-RGB;n:type:ShaderForge.SFN_Color,id:7046,x:31652,y:32612,ptovrint:False,ptlb:Rock Color Shift,ptin:_RockColorShift,varname:_RockColorShift,prsc:2,glob:False,taghide:False,taghdr:False,tagprd:False,tagnsco:False,tagnrm:False,c1:1,c2:1,c3:1,c4:1;proporder:7736-7046-2167-5964-9928;pass:END;sub:END;*/
 
 Shader "Shader Forge/RockStandard" {
     Properties {
@@ -25,9 +25,9 @@ Shader "Shader Forge/RockStandard" {
             CGPROGRAM
             #pragma vertex vert
             #pragma fragment frag
-            #define UNITY_PASS_FORWARDBASE
             #define SHOULD_SAMPLE_SH ( defined (LIGHTMAP_OFF) && defined(DYNAMICLIGHTMAP_OFF) )
             #define _GLOSSYENV 1
+            #pragma multi_compile_instancing
             #include "UnityCG.cginc"
             #include "AutoLight.cginc"
             #include "Lighting.cginc"
@@ -38,14 +38,16 @@ Shader "Shader Forge/RockStandard" {
             #pragma multi_compile DIRLIGHTMAP_OFF DIRLIGHTMAP_COMBINED DIRLIGHTMAP_SEPARATE
             #pragma multi_compile DYNAMICLIGHTMAP_OFF DYNAMICLIGHTMAP_ON
             #pragma multi_compile_fog
-            #pragma only_renderers d3d9 d3d11 glcore gles xboxone ps4 
             #pragma target 3.0
             uniform sampler2D _MainTex; uniform float4 _MainTex_ST;
             uniform sampler2D _BumpMap; uniform float4 _BumpMap_ST;
             uniform sampler2D _RockRMA; uniform float4 _RockRMA_ST;
-            uniform float _AOAmount;
-            uniform float4 _RockColorShift;
+            UNITY_INSTANCING_BUFFER_START( Props )
+                UNITY_DEFINE_INSTANCED_PROP( float, _AOAmount)
+                UNITY_DEFINE_INSTANCED_PROP( float4, _RockColorShift)
+            UNITY_INSTANCING_BUFFER_END( Props )
             struct VertexInput {
+                UNITY_VERTEX_INPUT_INSTANCE_ID
                 float4 vertex : POSITION;
                 float3 normal : NORMAL;
                 float4 tangent : TANGENT;
@@ -55,6 +57,7 @@ Shader "Shader Forge/RockStandard" {
             };
             struct VertexOutput {
                 float4 pos : SV_POSITION;
+                UNITY_VERTEX_INPUT_INSTANCE_ID
                 float2 uv0 : TEXCOORD0;
                 float2 uv1 : TEXCOORD1;
                 float2 uv2 : TEXCOORD2;
@@ -70,6 +73,8 @@ Shader "Shader Forge/RockStandard" {
             };
             VertexOutput vert (VertexInput v) {
                 VertexOutput o = (VertexOutput)0;
+                UNITY_SETUP_INSTANCE_ID( v );
+                UNITY_TRANSFER_INSTANCE_ID( v, o );
                 o.uv0 = v.texcoord0;
                 o.uv1 = v.texcoord1;
                 o.uv2 = v.texcoord2;
@@ -91,6 +96,7 @@ Shader "Shader Forge/RockStandard" {
                 return o;
             }
             float4 frag(VertexOutput i) : COLOR {
+                UNITY_SETUP_INSTANCE_ID( i );
                 i.normalDir = normalize(i.normalDir);
                 float3x3 tangentTransform = float3x3( i.tangentDir, i.bitangentDir, i.normalDir);
                 float3 viewDirection = normalize(_WorldSpaceCameraPos.xyz - i.posWorld.xyz);
@@ -158,8 +164,10 @@ Shader "Shader Forge/RockStandard" {
                 float3 specularColor = _RockRMA_var.g;
                 float specularMonochrome;
                 float4 _MainTex_var = tex2D(_MainTex,TRANSFORM_TEX(i.uv0, _MainTex));
-                float3 node_329 = (_MainTex_var.rgb*_RockColorShift.rgb);
-                float3 diffuseColor = lerp(node_329,(node_329*_RockRMA_var.b),_AOAmount); // Need this for specular when using metallic
+                float4 _RockColorShift_var = UNITY_ACCESS_INSTANCED_PROP( Props, _RockColorShift );
+                float3 node_329 = (_MainTex_var.rgb*_RockColorShift_var.rgb);
+                float _AOAmount_var = UNITY_ACCESS_INSTANCED_PROP( Props, _AOAmount );
+                float3 diffuseColor = lerp(node_329,(node_329*_RockRMA_var.b),_AOAmount_var); // Need this for specular when using metallic
                 diffuseColor = DiffuseAndSpecularFromMetallic( diffuseColor, specularColor, specularColor, specularMonochrome );
                 specularMonochrome = 1.0-specularMonochrome;
                 float NdotV = abs(dot( normalDirection, viewDirection ));
@@ -216,9 +224,9 @@ Shader "Shader Forge/RockStandard" {
             CGPROGRAM
             #pragma vertex vert
             #pragma fragment frag
-            #define UNITY_PASS_FORWARDADD
             #define SHOULD_SAMPLE_SH ( defined (LIGHTMAP_OFF) && defined(DYNAMICLIGHTMAP_OFF) )
             #define _GLOSSYENV 1
+            #pragma multi_compile_instancing
             #include "UnityCG.cginc"
             #include "AutoLight.cginc"
             #include "Lighting.cginc"
@@ -229,14 +237,16 @@ Shader "Shader Forge/RockStandard" {
             #pragma multi_compile DIRLIGHTMAP_OFF DIRLIGHTMAP_COMBINED DIRLIGHTMAP_SEPARATE
             #pragma multi_compile DYNAMICLIGHTMAP_OFF DYNAMICLIGHTMAP_ON
             #pragma multi_compile_fog
-            #pragma only_renderers d3d9 d3d11 glcore gles xboxone ps4 
             #pragma target 3.0
             uniform sampler2D _MainTex; uniform float4 _MainTex_ST;
             uniform sampler2D _BumpMap; uniform float4 _BumpMap_ST;
             uniform sampler2D _RockRMA; uniform float4 _RockRMA_ST;
-            uniform float _AOAmount;
-            uniform float4 _RockColorShift;
+            UNITY_INSTANCING_BUFFER_START( Props )
+                UNITY_DEFINE_INSTANCED_PROP( float, _AOAmount)
+                UNITY_DEFINE_INSTANCED_PROP( float4, _RockColorShift)
+            UNITY_INSTANCING_BUFFER_END( Props )
             struct VertexInput {
+                UNITY_VERTEX_INPUT_INSTANCE_ID
                 float4 vertex : POSITION;
                 float3 normal : NORMAL;
                 float4 tangent : TANGENT;
@@ -246,6 +256,7 @@ Shader "Shader Forge/RockStandard" {
             };
             struct VertexOutput {
                 float4 pos : SV_POSITION;
+                UNITY_VERTEX_INPUT_INSTANCE_ID
                 float2 uv0 : TEXCOORD0;
                 float2 uv1 : TEXCOORD1;
                 float2 uv2 : TEXCOORD2;
@@ -258,6 +269,8 @@ Shader "Shader Forge/RockStandard" {
             };
             VertexOutput vert (VertexInput v) {
                 VertexOutput o = (VertexOutput)0;
+                UNITY_SETUP_INSTANCE_ID( v );
+                UNITY_TRANSFER_INSTANCE_ID( v, o );
                 o.uv0 = v.texcoord0;
                 o.uv1 = v.texcoord1;
                 o.uv2 = v.texcoord2;
@@ -272,6 +285,7 @@ Shader "Shader Forge/RockStandard" {
                 return o;
             }
             float4 frag(VertexOutput i) : COLOR {
+                UNITY_SETUP_INSTANCE_ID( i );
                 i.normalDir = normalize(i.normalDir);
                 float3x3 tangentTransform = float3x3( i.tangentDir, i.bitangentDir, i.normalDir);
                 float3 viewDirection = normalize(_WorldSpaceCameraPos.xyz - i.posWorld.xyz);
@@ -298,8 +312,10 @@ Shader "Shader Forge/RockStandard" {
                 float3 specularColor = _RockRMA_var.g;
                 float specularMonochrome;
                 float4 _MainTex_var = tex2D(_MainTex,TRANSFORM_TEX(i.uv0, _MainTex));
-                float3 node_329 = (_MainTex_var.rgb*_RockColorShift.rgb);
-                float3 diffuseColor = lerp(node_329,(node_329*_RockRMA_var.b),_AOAmount); // Need this for specular when using metallic
+                float4 _RockColorShift_var = UNITY_ACCESS_INSTANCED_PROP( Props, _RockColorShift );
+                float3 node_329 = (_MainTex_var.rgb*_RockColorShift_var.rgb);
+                float _AOAmount_var = UNITY_ACCESS_INSTANCED_PROP( Props, _AOAmount );
+                float3 diffuseColor = lerp(node_329,(node_329*_RockRMA_var.b),_AOAmount_var); // Need this for specular when using metallic
                 diffuseColor = DiffuseAndSpecularFromMetallic( diffuseColor, specularColor, specularColor, specularMonochrome );
                 specularMonochrome = 1.0-specularMonochrome;
                 float NdotV = abs(dot( normalDirection, viewDirection ));
@@ -346,6 +362,7 @@ Shader "Shader Forge/RockStandard" {
             #define UNITY_PASS_META 1
             #define SHOULD_SAMPLE_SH ( defined (LIGHTMAP_OFF) && defined(DYNAMICLIGHTMAP_OFF) )
             #define _GLOSSYENV 1
+            #pragma multi_compile_instancing
             #include "UnityCG.cginc"
             #include "Lighting.cginc"
             #include "UnityPBSLighting.cginc"
@@ -357,13 +374,15 @@ Shader "Shader Forge/RockStandard" {
             #pragma multi_compile DIRLIGHTMAP_OFF DIRLIGHTMAP_COMBINED DIRLIGHTMAP_SEPARATE
             #pragma multi_compile DYNAMICLIGHTMAP_OFF DYNAMICLIGHTMAP_ON
             #pragma multi_compile_fog
-            #pragma only_renderers d3d9 d3d11 glcore gles xboxone ps4 
             #pragma target 3.0
             uniform sampler2D _MainTex; uniform float4 _MainTex_ST;
             uniform sampler2D _RockRMA; uniform float4 _RockRMA_ST;
-            uniform float _AOAmount;
-            uniform float4 _RockColorShift;
+            UNITY_INSTANCING_BUFFER_START( Props )
+                UNITY_DEFINE_INSTANCED_PROP( float, _AOAmount)
+                UNITY_DEFINE_INSTANCED_PROP( float4, _RockColorShift)
+            UNITY_INSTANCING_BUFFER_END( Props )
             struct VertexInput {
+                UNITY_VERTEX_INPUT_INSTANCE_ID
                 float4 vertex : POSITION;
                 float2 texcoord0 : TEXCOORD0;
                 float2 texcoord1 : TEXCOORD1;
@@ -371,6 +390,7 @@ Shader "Shader Forge/RockStandard" {
             };
             struct VertexOutput {
                 float4 pos : SV_POSITION;
+                UNITY_VERTEX_INPUT_INSTANCE_ID
                 float2 uv0 : TEXCOORD0;
                 float2 uv1 : TEXCOORD1;
                 float2 uv2 : TEXCOORD2;
@@ -378,6 +398,8 @@ Shader "Shader Forge/RockStandard" {
             };
             VertexOutput vert (VertexInput v) {
                 VertexOutput o = (VertexOutput)0;
+                UNITY_SETUP_INSTANCE_ID( v );
+                UNITY_TRANSFER_INSTANCE_ID( v, o );
                 o.uv0 = v.texcoord0;
                 o.uv1 = v.texcoord1;
                 o.uv2 = v.texcoord2;
@@ -386,6 +408,7 @@ Shader "Shader Forge/RockStandard" {
                 return o;
             }
             float4 frag(VertexOutput i) : SV_Target {
+                UNITY_SETUP_INSTANCE_ID( i );
                 float3 viewDirection = normalize(_WorldSpaceCameraPos.xyz - i.posWorld.xyz);
                 UnityMetaInput o;
                 UNITY_INITIALIZE_OUTPUT( UnityMetaInput, o );
@@ -393,9 +416,11 @@ Shader "Shader Forge/RockStandard" {
                 o.Emission = 0;
                 
                 float4 _MainTex_var = tex2D(_MainTex,TRANSFORM_TEX(i.uv0, _MainTex));
-                float3 node_329 = (_MainTex_var.rgb*_RockColorShift.rgb);
+                float4 _RockColorShift_var = UNITY_ACCESS_INSTANCED_PROP( Props, _RockColorShift );
+                float3 node_329 = (_MainTex_var.rgb*_RockColorShift_var.rgb);
                 float4 _RockRMA_var = tex2D(_RockRMA,TRANSFORM_TEX(i.uv0, _RockRMA));
-                float3 diffColor = lerp(node_329,(node_329*_RockRMA_var.b),_AOAmount);
+                float _AOAmount_var = UNITY_ACCESS_INSTANCED_PROP( Props, _AOAmount );
+                float3 diffColor = lerp(node_329,(node_329*_RockRMA_var.b),_AOAmount_var);
                 float specularMonochrome;
                 float3 specColor;
                 diffColor = DiffuseAndSpecularFromMetallic( diffColor, _RockRMA_var.g, specColor, specularMonochrome );
