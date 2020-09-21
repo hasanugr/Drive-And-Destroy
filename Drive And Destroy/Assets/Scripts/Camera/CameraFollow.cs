@@ -4,25 +4,6 @@ using UnityEngine;
 
 public class CameraFollow : MonoBehaviour
 {
-	//public Transform target;
-	//private float sSpeed = 1000.0f;
-	//private Vector3 dist = new Vector3(0, 2, -6);
-	//private Vector3 moveLimit;
-
-	//private void Update()
-	//{
-	//    moveLimit = new Vector3(PercentCalculator(transform.position.x, 20), PercentCalculator(transform.position.y, 20), 0);
-	//    Vector3 dPos = target.position + dist;
-	//    Vector3 sPos = Vector3.Lerp(transform.position, dPos, sSpeed * Time.deltaTime);
-	//    transform.position = sPos;
-	//    transform.LookAt(target.position);
-	//}
-
-	//private float PercentCalculator(float val, int percent)
-	//{
-	//    return val * percent / 100;
-	//}
-
 	public Transform target; // Self explanatory
 	public float distance = 20.0f; // Standard distance to follow object
 	public float height = 5.0f; // The height of the camera
@@ -55,15 +36,21 @@ public class CameraFollow : MonoBehaviour
 	private float yVelocity = 0.0F;
 	private float zVelocity = 0.0F;
 
+	VehicleMovement movement;               //A reference to the ship's VehicleMovement script
+
 	void Start()
 	{
 
-		lookAtVector = new Vector3(0, lookAtHeight, 0);
+		// lookAtVector = new Vector3(0, lookAtHeight, 0);
+		movement = target.GetComponent<VehicleMovement>();
 
 	}
 
 	void FixedUpdate()
 	{
+		//Get the percentage of speed the ship is traveling
+		float speedPercent = movement.GetSpeedPercentage();
+		// Debug.Log(speedPercent);
 
 		wantedHeight = target.position.y + height;
 		currentHeight = transform.position.y;
@@ -83,6 +70,10 @@ public class CameraFollow : MonoBehaviour
 		wantedPosition += Quaternion.Euler(0, currentRotationAngle, 0) * new Vector3(0, 0, -usedDistance);
 
 		transform.position = wantedPosition;
+
+		// Look at height of ship related speed percent.
+		float lookAtHeightRSP = lookAtHeight * speedPercent;
+		lookAtVector = new Vector3(0, lookAtHeightRSP, 0);
 
 		transform.LookAt(target.position + lookAtVector);
 		transform.rotation = Quaternion.Euler(transform.eulerAngles.x, currentRotationAngle, target.eulerAngles.z);

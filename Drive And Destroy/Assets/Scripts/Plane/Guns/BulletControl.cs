@@ -6,6 +6,9 @@ public class BulletControl : MonoBehaviour
 {
     public GameObject bulletHolePrefab;
 
+    private float bulletDamage = 30.0f;
+    
+
     private void OnCollisionEnter(Collision collision)
     {
         // Destroy the bullet when touch any collision
@@ -13,9 +16,18 @@ public class BulletControl : MonoBehaviour
 
         // Get the contact point and create bullet hole at contact point
         ContactPoint contact = collision.contacts[0];
-        Quaternion rot = Quaternion.FromToRotation(Vector3.up, contact.normal);
-        Vector3 pos = contact.point;
+        // Quaternion rot = Quaternion.FromToRotation(Vector3.up, contact.normal);
+        Quaternion rot = Quaternion.LookRotation(-contact.normal);
+        Vector3 pos = contact.point + (contact.normal * 0.01f);
+        Debug.Log(contact.normal);
+        Debug.Log(contact.normal.normalized);
         GameObject bulletHole = Instantiate(bulletHolePrefab, pos, rot);
+
+        if (collision.gameObject.layer == LayerMask.NameToLayer("Barricade"))
+        {
+            BlockBarricade barricade = collision.gameObject.GetComponent<BlockBarricade>();
+            barricade.takeDamage(bulletDamage);
+        }
 
         // Destroy the bullet hole on surface
         Destroy(bulletHole, 2f);

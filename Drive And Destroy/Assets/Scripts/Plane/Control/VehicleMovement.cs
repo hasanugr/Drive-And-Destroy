@@ -5,7 +5,10 @@ using UnityEngine;
 
 public class VehicleMovement : MonoBehaviour
 {
-	public float speed;						//The current forward speed of the ship
+	public float speed;                     //The current forward speed of the ship
+
+	[Header("Ship Status")]
+	public float health = 100.0f;			//The health of ship, if that value be 0 the ship die
 
 	[Header("Drive Settings")]
 	public float driveForce = 17f;          //The force that the engine generates
@@ -162,7 +165,34 @@ public class VehicleMovement : MonoBehaviour
 		rigidBody.AddForce(transform.forward * propulsion, ForceMode.Acceleration);
 	}
 
-	void OnCollisionStay(Collision collision)
+    private void OnCollisionEnter(Collision collision)
+    {
+		//If the ship has collided with an object on the Barricade layer...
+		if (collision.gameObject.layer == LayerMask.NameToLayer("Barricade"))
+		{
+			//...calculate how much upward impulse is generated and then push the vehicle down by that amount 
+			//to keep it stuck on the track (instead up popping up over the barricade)
+			Vector3 upwardForceFromCollision = Vector3.Dot(collision.impulse, transform.up) * transform.up;
+			Debug.Log("upwardForceFromCollision: " + upwardForceFromCollision);
+			rigidBody.AddForce(-upwardForceFromCollision, ForceMode.Impulse);
+
+			BlockBarricade barricade = collision.gameObject.GetComponent<BlockBarricade>();
+			if (speed > 25)
+			{
+				float barricadeHealth = barricade.getHealth();
+				barricade.takeDamage(1000);
+				this.takeDamage(50*(barricadeHealth / 100)); // Ship take less damage if barricade health is low.
+			}
+			else
+			{
+				// Barricade doesn't take damage because the ship is so slow.
+				takeDamage(speed);
+			}
+
+		}
+	}
+
+    void OnCollisionStay(Collision collision)
 	{
 		//If the ship has collided with an object on the Wall layer...
 		if (collision.gameObject.layer == LayerMask.NameToLayer("Wall"))
@@ -179,4 +209,13 @@ public class VehicleMovement : MonoBehaviour
 		//Returns the total percentage of speed the ship is traveling
 		return rigidBody.velocity.magnitude / terminalVelocity;
 	}
+
+	public void takeDamage(float damage)
+    {
+		health -= damage;
+		if (health <= 0)
+        {
+			Debug.LogError("YOU DIE");
+        }
+    }
 }

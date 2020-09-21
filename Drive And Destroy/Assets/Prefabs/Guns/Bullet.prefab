@@ -124,7 +124,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 50c36ec887a5c40cebcad2128aab8ae8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  bulletHolePrefab: {fileID: 8499776092527494623, guid: 4a99d3b9db3ff43eeb679a46ab5b9bdc,
+  bulletHolePrefab: {fileID: 3229217104249385008, guid: 2408df3513a500a42993488c787535f1,
     type: 3}
 --- !u!96 &-8685473242098450884
 TrailRenderer:
@@ -166,7 +166,7 @@ TrailRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
-  m_Time: 0.1
+  m_Time: 0.08
   m_Parameters:
     serializedVersion: 3
     widthMultiplier: 1
