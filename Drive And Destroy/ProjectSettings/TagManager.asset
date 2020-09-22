@@ -6,6 +6,7 @@ TagManager:
   tags:
   - SideWall
   - PlayerSensor
+  - PlayerShip
   layers:
   - Default
   - TransparentFX

@@ -173,7 +173,6 @@ public class VehicleMovement : MonoBehaviour
 			//...calculate how much upward impulse is generated and then push the vehicle down by that amount 
 			//to keep it stuck on the track (instead up popping up over the barricade)
 			Vector3 upwardForceFromCollision = Vector3.Dot(collision.impulse, transform.up) * transform.up;
-			Debug.Log("upwardForceFromCollision: " + upwardForceFromCollision);
 			rigidBody.AddForce(-upwardForceFromCollision, ForceMode.Impulse);
 
 			BlockBarricade barricade = collision.gameObject.GetComponent<BlockBarricade>();

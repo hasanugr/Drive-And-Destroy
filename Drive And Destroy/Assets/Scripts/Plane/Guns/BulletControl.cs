@@ -16,11 +16,8 @@ public class BulletControl : MonoBehaviour
 
         // Get the contact point and create bullet hole at contact point
         ContactPoint contact = collision.contacts[0];
-        // Quaternion rot = Quaternion.FromToRotation(Vector3.up, contact.normal);
         Quaternion rot = Quaternion.LookRotation(-contact.normal);
         Vector3 pos = contact.point + (contact.normal * 0.01f);
-        Debug.Log(contact.normal);
-        Debug.Log(contact.normal.normalized);
         GameObject bulletHole = Instantiate(bulletHolePrefab, pos, rot);
 
         if (collision.gameObject.layer == LayerMask.NameToLayer("Barricade"))
