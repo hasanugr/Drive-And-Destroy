@@ -1,7 +1,9 @@
 ﻿//This script handles all of the physics behaviors for the player's ship. The primary functions
 //are handling the hovering and thrust calculations. 
-
+using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
+using EZCameraShake;
 
 public class VehicleMovement : MonoBehaviour
 {
@@ -33,8 +35,12 @@ public class VehicleMovement : MonoBehaviour
 	Rigidbody rigidBody;					//A reference to the ship's rigidbody
 	PlayerInput input;						//A reference to the player's input					
 	float drag;								//The air resistance the ship recieves in the forward direction
-	bool isOnGround;						//A flag determining if the ship is currently on the ground
+	bool isOnGround;                        //A flag determining if the ship is currently on the ground
 
+
+	//Our saved shake instance.
+	private CameraShakeInstance _shakeInstance;
+	private bool isTurboActive = false;
 
 	void Start()
 	{
@@ -44,6 +50,13 @@ public class VehicleMovement : MonoBehaviour
 
 		//Calculate the ship's drag value
 		drag = driveForce / terminalVelocity;
+
+		//We make a single shake instance that we will fade in and fade out when the player enters and leaves the trigger area.
+		_shakeInstance = CameraShaker.Instance.StartShake(0.1f, 10.0f, 0.1f);
+		//Immediately make the shake inactive.  
+		_shakeInstance.StartFadeOut(0);
+		//We don't want our shake to delete itself once it stops shaking.
+		_shakeInstance.DeleteOnInactive = false;
 	}
 
 	void FixedUpdate()
@@ -161,11 +174,57 @@ public class VehicleMovement : MonoBehaviour
 
 		//Calculate and apply the amount of propulsion force by multiplying the drive force
 		//by the amount of applied thruster and subtracting the drag amount
-		float propulsion = driveForce * input.thruster - drag * Mathf.Clamp(speed, 0f, terminalVelocity);
+		float propulsion = speed > terminalVelocity && !isTurboActive 
+			? driveForce * (input.thruster / 2) - drag * Mathf.Clamp(speed, 0f, terminalVelocity) 
+			: driveForce * input.thruster - drag * Mathf.Clamp(speed, 0f, terminalVelocity);
+		/*Debug.Log("TM: " + terminalVelocity);
+		Debug.Log("MC: " + Mathf.Clamp(speed, 0f, terminalVelocity));
+		Debug.Log("PR: " + propulsion);
+		Debug.Log("TF: " + transform.forward);*/
+		
 		rigidBody.AddForce(transform.forward * propulsion, ForceMode.Acceleration);
 	}
 
-    private void OnCollisionEnter(Collision collision)
+	public void TurboActivate()
+    {
+		Debug.Log("Turbo Activated!!");
+
+		isTurboActive = true;
+		float oldTerminalVelocity = terminalVelocity;
+		float oldDriveForce = driveForce;
+
+		terminalVelocity = terminalVelocity + (terminalVelocity * 0.3f);
+		driveForce = driveForce * 3.0f;
+
+		// Calculate the ship's drag value
+		drag = driveForce / terminalVelocity;
+
+		// Activate the camera shake
+		_shakeInstance.StartFadeIn(1f);
+
+		float timeOut = 5.0f;
+		StartCoroutine(TurboDeactivate(oldTerminalVelocity, oldDriveForce, timeOut));
+	}
+
+	IEnumerator TurboDeactivate(float oldTerminalVelocity, float oldDriveForce, float timeOut)
+	{
+		// Wait for X second
+		yield return new WaitForSeconds(timeOut);
+
+		Debug.Log("Turbo Deactivated!!..");
+
+		isTurboActive = false;
+		terminalVelocity = oldTerminalVelocity;
+		driveForce = oldDriveForce;
+
+		//Calculate the ship's drag value
+		drag = driveForce / terminalVelocity;
+
+		// Deactivate the camera shake
+		_shakeInstance.StartFadeOut(3f);
+	}
+
+	private void OnCollisionEnter(Collision collision)
     {
 		//If the ship has collided with an object on the Barricade layer...
 		if (collision.gameObject.layer == LayerMask.NameToLayer("Barricade"))
@@ -202,13 +261,6 @@ public class VehicleMovement : MonoBehaviour
 			rigidBody.AddForce(-upwardForceFromCollision, ForceMode.Impulse);
 		}
 	}
-
-	public float GetSpeedPercentage()
-	{
-		//Returns the total percentage of speed the ship is traveling
-		return rigidBody.velocity.magnitude / terminalVelocity;
-	}
-
 	public void takeDamage(float damage)
     {
 		health -= damage;
@@ -217,4 +269,16 @@ public class VehicleMovement : MonoBehaviour
 			Debug.LogError("YOU DIE");
         }
     }
+
+	public float GetSpeedPercentage()
+	{
+		//Returns the total percentage of speed the ship is traveling
+		return rigidBody.velocity.magnitude / terminalVelocity;
+	}
+	public bool GetTurboStatus()
+	{
+		//Returns the turbo activate status
+		return isTurboActive;
+	}
+
 }

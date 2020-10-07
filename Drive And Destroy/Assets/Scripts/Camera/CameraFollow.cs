@@ -48,8 +48,8 @@ public class CameraFollow : MonoBehaviour
 
 	void FixedUpdate()
 	{
-		//Get the percentage of speed the ship is traveling
-		float speedPercent = movement.GetSpeedPercentage();
+		//Generate custom percentage of speed of ship with custom speed value to camera verticle rotation value
+		float speedPercent = movement.speed / 80.0f;
 		// Debug.Log(speedPercent);
 
 		wantedHeight = target.position.y + height;
@@ -72,10 +72,13 @@ public class CameraFollow : MonoBehaviour
 		transform.position = wantedPosition;
 
 		// Look at height of ship related speed percent.
-		float lookAtHeightRSP = lookAtHeight * speedPercent;
+		float lookAtHeightRSP = speedPercent >= 1 ? lookAtHeight : lookAtHeight * speedPercent;
 		lookAtVector = new Vector3(0, lookAtHeightRSP, 0);
 
-		transform.LookAt(target.position + lookAtVector);
+        Debug.Log("Speed Percent: " + speedPercent);
+        Debug.Log("LAH: " + lookAtHeightRSP);
+
+        transform.LookAt(target.position + lookAtVector);
 		transform.rotation = Quaternion.Euler(transform.eulerAngles.x, currentRotationAngle, target.eulerAngles.z);
 
 	}

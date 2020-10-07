@@ -82,7 +82,7 @@ Material:
     - _Albedomultiply: 1
     - _BaseAlbedomultiply: 1
     - _BaseMetallic: 0.893
-    - _BaseRoughness: 0
+    - _BaseRoughness: 0.381
     - _BumpScale: 1
     - _Cutoff: 0.5
     - _DetailNormalMapScale: 1

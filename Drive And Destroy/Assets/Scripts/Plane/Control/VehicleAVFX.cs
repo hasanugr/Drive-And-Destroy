@@ -92,7 +92,8 @@ public class VehicleAVFX : MonoBehaviour
 	void UpdateThrusterParticles()
 	{
 		//Calculate the lifetime we want the thruster's particles to have
-		float currentLifeTime = thrusterStartLife * input.thruster;
+		bool isTurboActive = movement.GetTurboStatus();
+		float currentLifeTime = isTurboActive ? thrusterStartLife * input.thruster * 2.0f : thrusterStartLife * input.thruster;
 
 		//If the thrusters are powered on at all...
 		if (currentLifeTime > 0f)
@@ -141,13 +142,17 @@ public class VehicleAVFX : MonoBehaviour
 	//Called then the ship collides with something solid
 	void OnCollisionStay(Collision collision)
 	{
-		//If the ship did not collide with a wall then exit
-		if (collision.gameObject.layer != LayerMask.NameToLayer("Wall"))
-			return;
-
-		//Move the wallgrind particle effect to the point of collision and play it
-		wallGrind.transform.position = collision.contacts[0].point;
-		wallGrind.Play(true);
+		//If the ship did not collide with a wall or vehicle speed is lower than XX then exit
+		if (collision.gameObject.layer == LayerMask.NameToLayer("Wall") && movement.speed > 5)
+        {
+			//Move the wallgrind particle effect to the point of collision and play it
+			wallGrind.transform.position = collision.contacts[0].point;
+			wallGrind.Play(true);
+		}
+		else if (collision.gameObject.layer == LayerMask.NameToLayer("Wall") && movement.speed <= 5)
+        {
+			wallGrind.Stop(true);
+        }
 	}
 
 	//Called when the ship stops colliding with something solid
