@@ -4,10 +4,11 @@
 Material:
   serializedVersion: 6
   m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
   m_Name: Boostpad
-  m_Shader: {fileID: 46, guid: 0000000000000000f000000000000000, type: 0}
+  m_Shader: {fileID: 4800000, guid: 4ee8a0a18f9c90745b059a0df1585a06, type: 3}
   m_ShaderKeywords: 
   m_LightmapFlags: 4
   m_EnableInstancingVariants: 0
@@ -42,6 +43,10 @@ Material:
         m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
+    - _MaskPattern:
+        m_Texture: {fileID: 2800000, guid: cc88df1c940c75347a1ea4d01374db99, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
     - _MetallicGlossMap:
         m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
@@ -57,14 +62,26 @@ Material:
     m_Floats:
     - _BumpScale: 1
     - _Cutoff: 0.5
+    - _DepthFade: 4.9
     - _DetailNormalMapScale: 1
     - _DstBlend: 0
     - _GlossMapScale: 1
     - _Glossiness: 0.5
     - _GlossyReflections: 1
+    - _GradientDirection: 0
+    - _GradientHardness: 1
+    - _GradientSpeed: 1
+    - _GradientStrength: 10
+    - _GradientThiccness: 3
+    - _GradientTiling: 1
+    - _MaskDarkLerp: 0
+    - _MaskHeight: 0.5
+    - _MaskLightLerp: 1
     - _Metallic: 0
     - _Mode: 0
     - _OcclusionStrength: 1
+    - _OpacityHeight: 2
+    - _OpacityStrength: 1
     - _Parallax: 0.02
     - _SmoothnessTextureChannel: 0
     - _SpecularHighlights: 1
@@ -74,3 +91,5 @@ Material:
     m_Colors:
     - _Color: {r: 0.058823533, g: 0.16470589, b: 0.9686275, a: 1}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
+    - _GradientColor: {r: 0, g: 0.8344827, b: 1, a: 1}
+    - _PatternColor: {r: 2, g: 1.6941177, b: 0, a: 1}

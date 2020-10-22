@@ -13,9 +13,15 @@ public class GameManager : MonoBehaviour
 	//This should be used carefully and is generally reserved for "manager" type objects
 	public static GameManager instance;		
 
+	[Header("Game Data")]
+	public PlayerData pd;                   //The game data of player.
+	public GameObject[] vehicles;
+	public GameObject selectedVehicle;
+
 	[Header("Race Settings")]
-	public int numberOfLaps = 3;			//The number of laps to complete
-	public VehicleMovement vehicleMovement;	//A reference to the ship's VehicleMovement script
+	public int heal = 100;                  //The heal of vehicle
+	public int numberOfLaps = 1;			//The number of laps to complete
+	public VehicleMovement vehicleMovement; //A reference to the ship's VehicleMovement script
 
 	[Header("UI References")]
 	public ShipUI shipUI;					//A reference to the ship's ShipUI script
@@ -25,20 +31,34 @@ public class GameManager : MonoBehaviour
 	float[] lapTimes;						//An array containing the player's lap times
 	int currentLap = 0;						//The current lap the player is on
 	bool isGameOver;						//A flag to determine if the game is over
-	bool raceHasBegun;						//A flag to determine if the race has begun
+	bool raceHasBegun;                      //A flag to determine if the race has begun
 
 
 	void Awake()
 	{
-		//If the variable instance has not be initialized, set it equal to this
-		//GameManager script...
-		if (instance == null)
-			instance = this;
-		//...Otherwise, if there already is a GameManager and it isn't this, destroy this
-		//(there can only be one GameManager)
-		else if (instance != this)
-			Destroy(gameObject);
+		MakeSingleton();
+		LoadPlayerData();
 	}
+
+	private void MakeSingleton()
+    {
+		if (instance != null)
+        {
+			Destroy(gameObject);
+        }else
+        {
+			instance = this;
+			DontDestroyOnLoad(gameObject);
+        }
+    }
+
+	private void LoadPlayerData()
+    {
+		pd = SaveLoadManager.Load();
+		selectedVehicle = vehicles[pd.selectedVehicleIndex];
+    }
+
+
 
 	void OnEnable()
 	{
@@ -64,8 +84,18 @@ public class GameManager : MonoBehaviour
 
 	void Update()
 	{
+		if (Input.GetKeyDown(KeyCode.N))
+		{
+			pd.selectedVehicleIndex = pd.selectedVehicleIndex + 1;
+		}
+
+		if (Input.GetKeyDown(KeyCode.B))
+		{
+			pd.selectedVehicleIndex = pd.selectedVehicleIndex - 1;
+		}
+
 		//Update the speed on the ship UI
-		UpdateUI_Speed ();
+		UpdateUI_Speed();
 
 		//If we have an active game...
 		if (IsActiveGame())
@@ -75,6 +105,11 @@ public class GameManager : MonoBehaviour
 			UpdateUI_LapTime();
 		}
 	}
+
+	
+
+
+
 
 	//Called by the FinishLine script
 	public void PlayerCompletedLap()
@@ -144,9 +179,4 @@ public class GameManager : MonoBehaviour
 		return raceHasBegun && !isGameOver;
 	}
 
-	public void Restart()
-	{
-		//Restart the scene by loading the scene that is currently loaded
-		SceneManager.LoadScene(SceneManager.GetActiveScene().name);
-	}
 }
