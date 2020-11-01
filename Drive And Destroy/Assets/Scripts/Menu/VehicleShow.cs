@@ -5,17 +5,21 @@ using UnityEngine;
 public class VehicleShow : MonoBehaviour
 {
     public GameObject[] showVehicles;
-    public PlayerData pd;
-    public int showingVehicleIndex;
+    //public PlayerData pd;
+    public int showingVehicleId;
+
+    GameManager gm;
+    private void Start()
+    {
+        gm = GameObject.Find(VariableController.GAME_MANAGER).GetComponent<GameManager>();
+    }
 
     // Update is called once per frame
     void Update()
     {
-        Debug.Log("sv --> " + showingVehicleIndex);
-        Debug.Log("pd.sv --> " + pd.selectedVehicleIndex);
-        if (showingVehicleIndex != pd.selectedVehicleIndex)
+        if (showingVehicleId != gm.pd.selectedVehicleId)
         {
-            showingVehicleIndex = pd.selectedVehicleIndex;
+            showingVehicleId = gm.pd.selectedVehicleId;
             ChangeShowingVehicle();
         }
     }
@@ -24,7 +28,13 @@ public class VehicleShow : MonoBehaviour
     {
         for (int i = 0; i < showVehicles.Length; i++)
         {
-            showVehicles[i].SetActive(i == showingVehicleIndex);
+            if (showVehicles[i].name == showingVehicleId.ToString())
+            {
+                showVehicles[i].SetActive(true);
+            }else
+            {
+                showVehicles[i].SetActive(false);
+            }
         }
     }
 }

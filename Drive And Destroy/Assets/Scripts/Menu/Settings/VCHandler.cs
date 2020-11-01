@@ -5,7 +5,7 @@ using UnityEngine.UI;
 
 public class VCHandler : MonoBehaviour
 {
-    public int SelectedShemeIndex = 2;
+    public int SelectedShemeIndex;
     private int SelectingShemeIndex;
     public GameObject[] ControlShemes;
     public Color onColor;
@@ -14,12 +14,7 @@ public class VCHandler : MonoBehaviour
     public float moveSpeed = 2.0f;
     private bool switching = false;
     private float t = 0.0f;
-
-    private void Awake()
-    {
-        // Get SelectedSheme from saved data.. if it exist
-    }
-
+    
     // Start is called before the first frame update
     void Start()
     {

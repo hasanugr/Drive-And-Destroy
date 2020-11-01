@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using UnityEditor;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.SceneManagement;
@@ -11,32 +12,91 @@ public class LevelController : MonoBehaviour
     public GameObject[] LevelGroups;
     public GameObject SlideLeftButton;
     public GameObject SlideRightButton;
+    public Texture2D starTexFull;
+    public Texture2D starTexEmpty;
 
     private int SizeOfLevelGroups;
     private int ActiveLevelGroup;
 
     private string selectedLevel;
 
+    GameManager gm;
     void OnEnable()
     {
-        int levelReached = PlayerPrefs.GetInt("levelReached", 1);
+        gm = GameObject.Find(VariableController.GAME_MANAGER).GetComponent<GameManager>();
+
+        int[] levels = gm.pd.levels;
+        int levelReached = levels.Length;
+        selectedLevel = levelReached.ToString();
         SizeOfLevelGroups = LevelGroups.Length - 1;
         ActiveLevelGroup = Mathf.FloorToInt(levelReached / 15);
         LevelGroups[ActiveLevelGroup].SetActive(true);
         SliderButtonsActiveControl();
+        selectSelectedButton();
 
-        PrepareLevelBoxes(levelReached);
+        PrepareLevelBoxes(levelReached, levels);
+
+        /*for (int i = 1; i <= 45; i++)
+        {
+            GameObject asd = GameObject.Find("Level-" + i.ToString());
+            Debug.Log(asd.transform.name);
+        }*/
     }
 
-    void PrepareLevelBoxes(int levelReached)
+    private void Update()
     {
-        EventSystem.current.SetSelectedGameObject(LevelButtons[levelReached - 1]);
+        GameObject selectedGameObject = EventSystem.current.currentSelectedGameObject;
+        if (selectedGameObject == null)
+        {
+            selectSelectedButton();
+        }
+    }
 
+    
+
+    void PrepareLevelBoxes(int levelReached, int[] levels)
+    {
         for (int i = 0; i < LevelButtons.Length; i++)
         {
+            Button thisLevelButton = LevelButtons[i].GetComponent<Button>();
+            Transform thisButtonTransform = LevelButtons[i].transform;
+            Transform tbUnlockedTransform = thisButtonTransform.GetChild(0);
+            Transform tbLockedTransform = thisButtonTransform.GetChild(1);
+            GameObject tbUnlocked = tbUnlockedTransform.gameObject;
+            GameObject tbLocked = tbLockedTransform.gameObject;
+
+            // If this level is reached level do these. 
+            if (i + 1 <= levelReached)
+            {
+                thisLevelButton.interactable = true;
+                tbUnlocked.SetActive(true);
+                tbLocked.SetActive(false);
+
+                GameObject stars = tbUnlockedTransform.GetChild(1).gameObject;
+                if (levels[i] == 0)
+                {
+                    // If this level active but not played yet or no gained star hide stars object.
+                    stars.SetActive(false);
+                }else
+                {
+                    // Show gained stars top of level object;
+                    for (int j = 0; j < 3; j++)
+                    {
+                        GameObject thisStar = stars.transform.GetChild(j).gameObject;
+                        thisStar.GetComponent<RawImage>().texture = (j + 1 <= levels[i]) ? starTexFull : starTexEmpty;
+                    }
+                }
+            }else // If this level is not reached level do these.
+            {
+                thisLevelButton.interactable = false;
+                tbUnlocked.SetActive(false);
+                tbLocked.SetActive(true);
+            }
+
+
             if (i + 1 > levelReached)
             {
-                Button thisLevelButton = LevelButtons[i].GetComponent<Button>();
+                //Button thisLevelButton = LevelButtons[i].GetComponent<Button>();
                 thisLevelButton.interactable = false;
             }
         }
@@ -61,6 +121,15 @@ public class LevelController : MonoBehaviour
         }
     }
 
+    void selectSelectedButton()
+    {
+        GameObject selectedButton = GameObject.Find("Level-" + selectedLevel);
+        if (selectedButton != null)
+        {
+            EventSystem.current.SetSelectedGameObject(GameObject.Find("Level-" + selectedLevel));
+        }
+    }
+
     public void SlideLeft()
     {
         LevelGroups[ActiveLevelGroup].SetActive(false);
@@ -68,6 +137,7 @@ public class LevelController : MonoBehaviour
         LevelGroups[ActiveLevelGroup].SetActive(true);
 
         SliderButtonsActiveControl();
+        selectSelectedButton();
     }
     
     public void SlideRight()
@@ -77,6 +147,7 @@ public class LevelController : MonoBehaviour
         LevelGroups[ActiveLevelGroup].SetActive(true);
 
         SliderButtonsActiveControl();
+        selectSelectedButton();
     }
 
     void OnDisable()

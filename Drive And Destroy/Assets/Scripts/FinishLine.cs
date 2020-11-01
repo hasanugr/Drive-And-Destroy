@@ -18,7 +18,7 @@ public class FinishLine : MonoBehaviour
 		if ((isReady || debugMode) && other.gameObject.CompareTag("PlayerSensor"))
 		{
 			//...let the Game Manager know that the player completed a lap...
-			GameManager.instance.PlayerCompletedLap();
+			//GameManager.instance.PlayerCompletedLap();
 			//...and deactivate the finish line until the player completes another lap
 			isReady = false;
 		}

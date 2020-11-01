@@ -10,7 +10,7 @@ public class BoostTrigger : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        ship = GameObject.Find("Ship");
+        ship = GameObject.FindWithTag("Player");
         vehicleMovement = ship.GetComponent<VehicleMovement>();
     }
 
