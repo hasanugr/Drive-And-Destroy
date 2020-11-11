@@ -55,7 +55,7 @@ public static class SaveLoadManager
         return Directory.Exists(Application.persistentDataPath + "/" + directory);
     }
 
-    public static string GetFullPath()
+    private static string GetFullPath()
     {
         return Application.persistentDataPath + "/" + directory + "/" + fileName;
     }
