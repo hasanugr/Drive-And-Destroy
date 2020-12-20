@@ -8,6 +8,20 @@ public class InGameManager : MonoBehaviour
     public static bool GameIsPaused = false;
     public GameObject pauseMenuUI;
     public GameObject inGameUI;
+    public GameObject lateLoadObject;
+    public GameObject cameraHolder;
+
+    public GameObject spawnPoint;
+
+    private GameObject _player;
+
+    GameManager gm;
+    private void Start()
+    {
+        gm = GameObject.Find(VariableController.GAME_MANAGER).GetComponent<GameManager>();
+        SpawnTheVehicle();
+        ProcessAfterLoad();
+    }
 
     public void Resume()
     {
@@ -39,6 +53,21 @@ public class InGameManager : MonoBehaviour
         Time.timeScale = 1f;
         GameIsPaused = false;
         SceneManager.LoadScene("Menu");
+    }
+
+    private void SpawnTheVehicle()
+    {
+        Vector3 spawnPosition = spawnPoint.transform.position;
+        Quaternion spawnRotation = spawnPoint.transform.rotation;
+
+        _player = Instantiate(gm.selectedVehicle, spawnPosition, spawnRotation);
+        _player.transform.parent = transform;
+    }
+
+    private void ProcessAfterLoad()
+    {
+        cameraHolder.GetComponent<CameraFollow>().enabled = true;
+        lateLoadObject.SetActive(true);
     }
 
 

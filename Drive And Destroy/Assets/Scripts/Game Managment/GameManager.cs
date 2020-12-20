@@ -73,7 +73,7 @@ public class GameManager : MonoBehaviour
         }
     }
 
-	private void ChangeActiveVehicle(int vehicleId)
+	public void ChangeActiveVehicle(int vehicleId)
 	{
 		pd.selectedVehicleId = vehicleId;
 		for (int i = 0; i < vehicles.Length; i++)
@@ -85,7 +85,6 @@ public class GameManager : MonoBehaviour
 			}
 		}
 	}
-
 
 	public bool IsActiveGame()
 	{

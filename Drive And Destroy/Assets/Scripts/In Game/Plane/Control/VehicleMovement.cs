@@ -141,9 +141,19 @@ public class VehicleMovement : MonoBehaviour
 
 	void CalculatePropulsion()
 	{
+		// Decrease rotationForce while player speed incresing
+		// Max Rotation Force is base Rotation Force
+		// Min Rotation Force is half of the base Rotation Force
+		// If Turbo is activated then decrase Rotation Force extra %25
+		float _speedPercantage = GetSpeedPercentage();
+		float _decraseValue = _speedPercantage <= 1 && _speedPercantage >= 0 ? _speedPercantage + 1 : 1;
+		float _calculatedRotationForce = rotationForce / _decraseValue;
+		_calculatedRotationForce = isTurboActive ? _calculatedRotationForce * 0.75f : _calculatedRotationForce;
+		//Debug.Log("GSP: " + GetSpeedPercentage() + " --- DV: " + _decraseValue + " --- CRF: " + _calculatedRotationForce);
+
 		//Calculate the yaw torque based on the rudder and current angular velocity
 		//float rotationTorque = input.rudder - rigidBody.angularVelocity.y;
-		float rotationTorque = input.rudder * rotationForce;
+		float rotationTorque = input.rudder * _calculatedRotationForce;
 		//Apply the torque to the ship's Y axis
 		rigidBody.AddRelativeTorque(0f, speed < 1 && input.thruster < 0 ? -rotationTorque : rotationTorque, 0f, ForceMode.VelocityChange);
 

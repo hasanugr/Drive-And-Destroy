@@ -16,7 +16,7 @@ public class BulletControl : MonoBehaviour
         
         // Get the contact point and create bullet hole at contact point
         ContactPoint contact = collision.contacts[0];
-        Quaternion rot = Quaternion.LookRotation(-contact.normal);
+        Quaternion rot = Quaternion.LookRotation(contact.normal);
         Vector3 pos = contact.point + (contact.normal * 0.01f);
         GameObject bulletHole = Instantiate(bulletHolePrefab, pos, rot);
 
@@ -27,6 +27,6 @@ public class BulletControl : MonoBehaviour
         }
 
         // Destroy the bullet hole on surface
-        Destroy(bulletHole, 2f);
+        Destroy(bulletHole, 3f);
     }
 }

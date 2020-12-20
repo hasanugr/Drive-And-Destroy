@@ -1,6 +1,8 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using TMPro;
+
 
 public class VehicleShowVS : MonoBehaviour
 {
@@ -13,8 +15,11 @@ public class VehicleShowVS : MonoBehaviour
     public GameObject BuyButton;
     public GameObject SelectButton;
 
+    public GameObject Lights;
+
     public int showingVehicleId;
     private GameObject showingVehicle;
+    private int[] vehiclePrices = { 0, 1000, 1500, 2000 };
 
     GameManager gm;
     private void OnEnable()
@@ -44,14 +49,23 @@ public class VehicleShowVS : MonoBehaviour
 
     public void SelectVehicle()
     {
-        gm.pd.selectedVehicleId = showingVehicleId;
+        gm.ChangeActiveVehicle(showingVehicleId);
         SelectBuyControlAndShowButtons();
     }
 
     public void BuyVehicle()
     {
-        gm.pd.ActivateVehicle(showingVehicleId);
-        SelectVehicle();
+        if (gm.pd.gold >= vehiclePrices[showingVehicleId - 1])
+        {
+            gm.pd.ActivateVehicle(showingVehicleId);
+            SelectVehicle();
+
+            gm.pd.gold -= vehiclePrices[showingVehicleId - 1];
+        }
+        else
+        {
+            Debug.LogError("Paranız Yetersiz.!!");
+        }
     }
 
     public void ChangeColorVehicle()
@@ -108,25 +122,38 @@ public class VehicleShowVS : MonoBehaviour
 
     private void SelectBuyControlAndShowButtons()
     {
+        int showingVehicleChildCount = showingVehicle.transform.childCount;
+        GameObject showingVehicleVFX = showingVehicle.transform.GetChild(showingVehicleChildCount - 1).gameObject;
+
         if (showingVehicleId == gm.pd.selectedVehicleId)
         {
             BuyButton.SetActive(false);
             SelectButton.SetActive(false);
+            Lights.SetActive(true);
+            showingVehicleVFX.SetActive(true);
         }
         else if (gm.pd.IsVehicleActive(showingVehicleId))
         {
             BuyButton.SetActive(false);
             SelectButton.SetActive(true);
+            Lights.SetActive(true);
+            showingVehicleVFX.SetActive(true);
         }
         else
         {
             BuyButton.SetActive(true);
             SelectButton.SetActive(false);
+            Lights.SetActive(false);
+            showingVehicleVFX.SetActive(false);
+
+            TextMeshProUGUI ButtonPriceText = BuyButton.transform.GetChild(1).gameObject.GetComponent<TextMeshProUGUI>();
+            ButtonPriceText.text = vehiclePrices[showingVehicleId - 1].ToString();
         }
     }
 
     private void OnDisable()
     {
         Destroy(showingVehicle);
+        Lights.SetActive(true);
     }
 }

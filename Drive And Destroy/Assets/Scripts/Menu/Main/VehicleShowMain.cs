@@ -24,15 +24,6 @@ public class VehicleShowMain : MonoBehaviour
             showingVehicleId = gm.pd.selectedVehicleId;
             ChangeShowingVehicle();
         }
-
-        if (Input.GetKeyDown(KeyCode.UpArrow) && showingVehicleId < 2)
-        {
-            gm.pd.selectedVehicleId = showingVehicleId + 1;
-        }
-        if (Input.GetKeyDown(KeyCode.DownArrow) && showingVehicleId > 1)
-        {
-            gm.pd.selectedVehicleId = showingVehicleId - 1;
-        }
     }
 
     private void ChangeShowingVehicle()
