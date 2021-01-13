@@ -3,7 +3,62 @@ guid: f8835280bfbd3de429cc8c03f0383b56
 ModelImporter:
   serializedVersion: 19301
   internalIDToNameTable: []
-  externalObjects: {}
+  externalObjects:
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Body
+    second: {fileID: 2100000, guid: e5a20411143d51041bf129c1078dd70b, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Bumper
+    second: {fileID: 2100000, guid: c7a7dc672e403bd46ab9ba634c8b1177, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: BumperHighlight
+    second: {fileID: 2100000, guid: 48a4065677e9be54088b492e69a7d30e, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: GasTurbine
+    second: {fileID: 2100000, guid: f01e5b807a654bd46a23280e1c0e47e5, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Glass
+    second: {fileID: 2100000, guid: e284b3f9ec92d98438325b4d7aedec10, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Weapon
+    second: {fileID: 2100000, guid: ca1beafd497b80e44a4ffb0d8dc71a5c, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: WeaponFire
+    second: {fileID: 2100000, guid: 9234ef00fd5a1af48b080a77abc8a576, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: "Weapon\u0130nside"
+    second: {fileID: 2100000, guid: 56994ae249df36c4c8e720de4675a621, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: WheelSide
+    second: {fileID: 2100000, guid: 9e46d925b6a66764da7392383da8fd61, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: "\u0130nsideArm"
+    second: {fileID: 2100000, guid: fab8c41b4f5939a4b80006985b2a7f3c, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: "\u0130nsideFloor"
+    second: {fileID: 2100000, guid: f079145c9249c9749b87ab3510ebf30e, type: 2}
   materials:
     materialImportMode: 1
     materialName: 0

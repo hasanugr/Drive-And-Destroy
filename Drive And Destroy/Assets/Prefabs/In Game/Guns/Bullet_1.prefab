@@ -366,7 +366,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 7ee4b1a0a54b5a24084fa436f732db15, type: 2}
+  - {fileID: 2100000, guid: c1d8d882244c5344fa86a8fd23246f81, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -1091,7 +1091,7 @@ GameObject:
   - component: {fileID: -1826080967584078080}
   - component: {fileID: -6229465674105945829}
   m_Layer: 0
-  m_Name: Bullet_2
+  m_Name: Bullet_1
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1124,8 +1124,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 50c36ec887a5c40cebcad2128aab8ae8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  bulletHolePrefab: {fileID: 1995403933065894, guid: 4961a16ba01e09547be3e1c9d16d5ad0,
+  bulletTriggerEffect: {fileID: 1995403933065894, guid: 4961a16ba01e09547be3e1c9d16d5ad0,
     type: 3}
+  bulletDamage: 25
 --- !u!54 &-6229465674105945829
 Rigidbody:
   m_ObjectHideFlags: 0

@@ -3,9 +3,44 @@ guid: 703132784b8bb724983e6ac33d059557
 ModelImporter:
   serializedVersion: 19301
   internalIDToNameTable: []
-  externalObjects: {}
+  externalObjects:
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: BodyBlack
+    second: {fileID: 2100000, guid: 6a69049b7e7748940991435596a9fcd5, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: GasTurbine
+    second: {fileID: 2100000, guid: bcfb16366863e304eb705a6228b94fa2, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Glass
+    second: {fileID: 2100000, guid: 8399c1d9ad2bdb74b82474ea2fc73eeb, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Purple Weapon
+    second: {fileID: 2100000, guid: 2e1d1fa10f70e1041b3b524e1452ed03, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: PurpleWings
+    second: {fileID: 2100000, guid: c808e4d1db9477849a519c2c4ea355bf, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: WeaponBlack
+    second: {fileID: 2100000, guid: 24bc2e643560da14fb6ce98039616b5c, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: WeaponFire
+    second: {fileID: 2100000, guid: 77321edef17ad1d46b7a3a5976696705, type: 2}
   materials:
-    materialImportMode: 1
+    materialImportMode: 2
     materialName: 0
     materialSearch: 1
     materialLocation: 1

@@ -3,12 +3,37 @@ guid: 009bc5c8cc108d9408492f06a1deafbb
 ModelImporter:
   serializedVersion: 19301
   internalIDToNameTable: []
-  externalObjects: {}
+  externalObjects:
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Blue01
+    second: {fileID: 2100000, guid: e75f1ee295f3bfd42a2af1e08507667a, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: BodyMaterial
+    second: {fileID: 2100000, guid: d9195168abdcfac4eab6b63a16345b2a, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: GasTurbine
+    second: {fileID: 2100000, guid: 39bc6bf45ad3e104fb1c322d5d6cc136, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Grey01
+    second: {fileID: 2100000, guid: e062c3846b9d9ff4f901b11262da9d3c, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: WeaponMaterial
+    second: {fileID: 2100000, guid: 2aaab546ac9038e47a70138f8a4f51e5, type: 2}
   materials:
-    materialImportMode: 1
+    materialImportMode: 2
     materialName: 0
     materialSearch: 1
-    materialLocation: 1
+    materialLocation: 0
   animations:
     legacyGenerateAnimations: 4
     bakeSimulation: 0

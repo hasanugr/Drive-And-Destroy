@@ -4,9 +4,8 @@ using UnityEngine;
 
 public class BulletControl : MonoBehaviour
 {
-    public GameObject bulletHolePrefab;
-
-    private float bulletDamage = 30.0f;
+    public GameObject bulletTriggerEffect;
+    public float bulletDamage = 30.0f;
     
 
     private void OnCollisionEnter(Collision collision)
@@ -18,7 +17,7 @@ public class BulletControl : MonoBehaviour
         ContactPoint contact = collision.contacts[0];
         Quaternion rot = Quaternion.LookRotation(contact.normal);
         Vector3 pos = contact.point + (contact.normal * 0.01f);
-        GameObject bulletHole = Instantiate(bulletHolePrefab, pos, rot);
+        GameObject bulletHole = Instantiate(bulletTriggerEffect, pos, rot);
 
         if (collision.gameObject.layer == LayerMask.NameToLayer("Barricade"))
         {

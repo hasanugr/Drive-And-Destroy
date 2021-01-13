@@ -103,7 +103,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: -3471124524059309417, guid: 703132784b8bb724983e6ac33d059557, type: 3}
+  - {fileID: 2100000, guid: c808e4d1db9477849a519c2c4ea355bf, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -400,12 +400,12 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 5916912933003525809, guid: 703132784b8bb724983e6ac33d059557, type: 3}
-  - {fileID: -5669256185862098429, guid: 703132784b8bb724983e6ac33d059557, type: 3}
-  - {fileID: 8556262120643298411, guid: 703132784b8bb724983e6ac33d059557, type: 3}
-  - {fileID: -5386085573470149290, guid: 703132784b8bb724983e6ac33d059557, type: 3}
-  - {fileID: -276384546389811597, guid: 703132784b8bb724983e6ac33d059557, type: 3}
-  - {fileID: 2431342742933894778, guid: 703132784b8bb724983e6ac33d059557, type: 3}
+  - {fileID: 2100000, guid: 6a69049b7e7748940991435596a9fcd5, type: 2}
+  - {fileID: 2100000, guid: bcfb16366863e304eb705a6228b94fa2, type: 2}
+  - {fileID: 2100000, guid: 8399c1d9ad2bdb74b82474ea2fc73eeb, type: 2}
+  - {fileID: 2100000, guid: 2e1d1fa10f70e1041b3b524e1452ed03, type: 2}
+  - {fileID: 2100000, guid: 24bc2e643560da14fb6ce98039616b5c, type: 2}
+  - {fileID: 2100000, guid: 77321edef17ad1d46b7a3a5976696705, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -528,7 +528,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: -3471124524059309417, guid: 703132784b8bb724983e6ac33d059557, type: 3}
+  - {fileID: 2100000, guid: c808e4d1db9477849a519c2c4ea355bf, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -559,6 +559,10 @@ PrefabInstance:
     - target: {fileID: 1872871036064698, guid: 76e34a087eafc604199af48e3b42f6b2, type: 3}
       propertyPath: m_Name
       value: Ship VFX
+      objectReference: {fileID: 0}
+    - target: {fileID: 1872871036064698, guid: 76e34a087eafc604199af48e3b42f6b2, type: 3}
+      propertyPath: m_IsActive
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 4685930197612164, guid: 76e34a087eafc604199af48e3b42f6b2, type: 3}
       propertyPath: m_LocalPosition.x

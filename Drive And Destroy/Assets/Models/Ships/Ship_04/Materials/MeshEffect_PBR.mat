@@ -1,0 +1,35 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!21 &2100000
+Material:
+  serializedVersion: 6
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: MeshEffect_PBR
+  m_Shader: {fileID: -6465566751694194690, guid: 95176a7847046864c99f682faa1e867a,
+    type: 3}
+  m_ShaderKeywords: 
+  m_LightmapFlags: 4
+  m_EnableInstancingVariants: 0
+  m_DoubleSidedGI: 0
+  m_CustomRenderQueue: -1
+  stringTagMap: {}
+  disabledShaderPasses: []
+  m_SavedProperties:
+    serializedVersion: 3
+    m_TexEnvs:
+    - Texture2D_262D3BF4:
+        m_Texture: {fileID: 2800000, guid: f6d5201d6a705d64a90a0eb8569b1270, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    m_Floats:
+    - Vector1_3F63F898: 80
+    - Vector1_57F47D08: 0.5
+    - Vector1_59C9A8C0: 50
+    - Vector1_E7673920: 0
+    m_Colors:
+    - Color_5CFEFC92: {r: 11.313707, g: 0, b: 0.3014396, a: 1}
+    - Color_5F45E957: {r: 0, g: 0, b: 0, a: 1}
+    - Vector2_18133BA: {r: 0, g: 0.2, b: 0, a: 0}

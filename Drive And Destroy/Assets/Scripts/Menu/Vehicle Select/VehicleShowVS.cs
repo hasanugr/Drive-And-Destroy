@@ -123,28 +123,28 @@ public class VehicleShowVS : MonoBehaviour
     private void SelectBuyControlAndShowButtons()
     {
         int showingVehicleChildCount = showingVehicle.transform.childCount;
-        GameObject showingVehicleVFX = showingVehicle.transform.GetChild(showingVehicleChildCount - 1).gameObject;
+        //GameObject showingVehicleVFX = showingVehicle.transform.GetChild(showingVehicleChildCount - 1).gameObject;
 
         if (showingVehicleId == gm.pd.selectedVehicleId)
         {
             BuyButton.SetActive(false);
             SelectButton.SetActive(false);
             Lights.SetActive(true);
-            showingVehicleVFX.SetActive(true);
+            //showingVehicleVFX.SetActive(true);
         }
         else if (gm.pd.IsVehicleActive(showingVehicleId))
         {
             BuyButton.SetActive(false);
             SelectButton.SetActive(true);
             Lights.SetActive(true);
-            showingVehicleVFX.SetActive(true);
+            //showingVehicleVFX.SetActive(true);
         }
         else
         {
             BuyButton.SetActive(true);
             SelectButton.SetActive(false);
             Lights.SetActive(false);
-            showingVehicleVFX.SetActive(false);
+            //showingVehicleVFX.SetActive(false);
 
             TextMeshProUGUI ButtonPriceText = BuyButton.transform.GetChild(1).gameObject.GetComponent<TextMeshProUGUI>();
             ButtonPriceText.text = vehiclePrices[showingVehicleId - 1].ToString();
