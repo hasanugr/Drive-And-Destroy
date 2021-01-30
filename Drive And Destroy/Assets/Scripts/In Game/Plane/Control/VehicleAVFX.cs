@@ -71,7 +71,7 @@ public class VehicleAVFX : MonoBehaviour
 		UpdateExhaustLight();
 
 		//If the ship is going faster than the minimum trail speed then enable them...
-		if (movement.speed > minTrailSpeed)
+		if (movement.GetSpeed() > minTrailSpeed)
 			lightTrails.SetActive(true);
 		//...otherwise disable them
 		else
@@ -79,6 +79,7 @@ public class VehicleAVFX : MonoBehaviour
 
 		//Get the percentage of speed the ship is traveling
 		float speedPercent = movement.GetSpeedPercentage();
+		speedPercent = Mathf.Clamp(speedPercent, 0, 1);
 
 		//If we have an audio source for the engine sounds...
 		if (engineAudio != null)
@@ -143,13 +144,13 @@ public class VehicleAVFX : MonoBehaviour
 	void OnCollisionStay(Collision collision)
 	{
 		//If the ship did not collide with a wall or vehicle speed is lower than XX then exit
-		if (collision.gameObject.layer == LayerMask.NameToLayer("Wall") && movement.speed > 5)
+		if (collision.gameObject.layer == LayerMask.NameToLayer("Wall") && movement.GetSpeed() > 5)
         {
 			//Move the wallgrind particle effect to the point of collision and play it
 			wallGrind.transform.position = collision.contacts[0].point;
 			wallGrind.Play(true);
 		}
-		else if (collision.gameObject.layer == LayerMask.NameToLayer("Wall") && movement.speed <= 5)
+		else if (collision.gameObject.layer == LayerMask.NameToLayer("Wall") && movement.GetSpeed() <= 5)
         {
 			wallGrind.Stop(true);
         }

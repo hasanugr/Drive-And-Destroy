@@ -158,6 +158,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   speed: 0
   health: 100
+  DamageDecreasePercent: 0.8
   driveForce: 20
   rotationForce: 2
   slowingVelFactor: 0.99

@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityStandardAssets.CrossPlatformInput;
 
 public class VehicleGuns : MonoBehaviour
 {
@@ -23,6 +24,9 @@ public class VehicleGuns : MonoBehaviour
 
     private void Start()
     {
+        // Fix Fire button if it's stuck
+        CrossPlatformInputManager.SetButtonUp("Fire");
+
         bulletPosition1 = Guns[0].transform;
         if (Guns.Length > 1)
         {
@@ -34,7 +38,8 @@ public class VehicleGuns : MonoBehaviour
     // Update is called once per frame
     void FixedUpdate()
     {
-        if (Input.GetKey(KeyCode.Mouse0) && allowFire)
+        //if (Input.GetKey(KeyCode.Mouse0) && allowFire)
+        if (CrossPlatformInputManager.GetButton("Fire") && allowFire)
         {
             // Trigger the fire function
             if (isDoubleWeapon)

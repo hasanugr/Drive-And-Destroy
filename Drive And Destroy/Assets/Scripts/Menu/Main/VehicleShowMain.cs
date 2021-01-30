@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class VehicleShowMain : MonoBehaviour
 {
@@ -45,5 +46,10 @@ public class VehicleShowMain : MonoBehaviour
                 }
         }
         showingVehicle.transform.localPosition += new Vector3(0, 0, extraPosition);
+    }
+
+    public void StartGame()
+    {
+        SceneManager.LoadScene("1");
     }
 }

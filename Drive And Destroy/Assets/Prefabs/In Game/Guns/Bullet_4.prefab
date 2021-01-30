@@ -23794,9 +23794,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 50c36ec887a5c40cebcad2128aab8ae8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  bulletTriggerEffect: {fileID: 1280141305896002, guid: ce4645bceac55144eb6057f66d9ebd70,
+  BulletTriggerEffect: {fileID: 1280141305896002, guid: ce4645bceac55144eb6057f66d9ebd70,
     type: 3}
-  bulletDamage: 40
+  BulletDamage: 40
 --- !u!54 &-3956580610963810007
 Rigidbody:
   m_ObjectHideFlags: 0

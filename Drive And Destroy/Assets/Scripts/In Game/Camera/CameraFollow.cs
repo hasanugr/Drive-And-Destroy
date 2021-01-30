@@ -46,7 +46,7 @@ public class CameraFollow : MonoBehaviour
 		transform.position = Vector3.SmoothDamp(currentPosition, wantedPosition, ref xyzVelocity, 0.01f);
 
 		//Generate custom percentage of speed of ship with custom speed value to camera verticle rotation value
-		float speedPercent = movement.speed / 80.0f;
+		float speedPercent = movement.GetSpeed() / 80.0f;
 
 		// Look at height of ship related speed percent.
 		float lookAtHeightRSP = speedPercent >= 1 ? lookAtHeight : lookAtHeight * speedPercent;

@@ -7,7 +7,6 @@ public class BoostTrigger : MonoBehaviour
     private GameObject ship;
     private VehicleMovement vehicleMovement;
 
-    InGameManager igm;
     // Start is called before the first frame update
     void OnEnable()
     {
@@ -18,7 +17,7 @@ public class BoostTrigger : MonoBehaviour
     private void OnTriggerEnter(Collider collider)
     {
         // Trigger the Turbo Boost
-        if (collider.tag == "PlayerShip" && this.name == "BoostPad")
+        if (collider.gameObject.CompareTag("PlayerShip") && this.name == "BoostPad")
         {
             vehicleMovement.TurboActivate();
         }
@@ -27,7 +26,7 @@ public class BoostTrigger : MonoBehaviour
     private void OnTriggerExit(Collider collider)
     {
         // Destroy the trigger game object
-        if (collider.tag == "PlayerShip" && this.name == "BoostPad")
+        if (collider.gameObject.CompareTag("PlayerShip") && this.name == "BoostPad")
         {
             Destroy(this.transform.parent.gameObject);
         }

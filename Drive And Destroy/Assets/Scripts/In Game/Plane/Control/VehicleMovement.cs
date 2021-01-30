@@ -3,21 +3,29 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityStandardAssets.CrossPlatformInput;
 using EZCameraShake;
 
 public class VehicleMovement : MonoBehaviour
 {
-	public float speed;                     //The current forward speed of the ship
-
 	[Header("Ship Status")]
-	public float health = 100.0f;			//The health of ship, if that value be 0 the ship die
+	public float FullHealth = 100.0f;           //The health of ship, if that value be 0 the ship die
+	public float DamageDecreasePercent = 1.0f;  //Decrease the taken damage from obstacles.
+	public GameObject DeathEffect;
+	public bool IsSpecialColor = false;
+	public Color SpecialColor;
+
+	private float _currentSpeed;					//The current forward speed of the ship
+	private float _health;
+	private float _currentTurbo = 100;
 
 	[Header("Drive Settings")]
-	public float driveForce = 17f;          //The force that the engine generates
-	public float rotationForce = 1.3f;        //The force that the rotation
-	public float slowingVelFactor = .99f;   //The percentage of velocity the ship maintains when not thrusting (e.g., a value of .99 means the ship loses 1% velocity when not thrusting)
-	public float brakingVelFactor = .95f;   //The percentage of velocty the ship maintains when braking
-	public float angleOfRoll = 30f;			//The angle that the ship "banks" into a turn
+	public float driveForce = 17f;					//The force that the engine generates
+	public float rotationForce = 1.3f;				//The force that the rotation
+	//public float slowingVelFactor = .99f;			//The percentage of velocity the ship maintains when not thrusting (e.g., a value of .99 means the ship loses 1% velocity when not thrusting)
+	//public float brakingVelFactor = .95f;			//The percentage of velocty the ship maintains when braking
+	public float angleOfRoll = 30f;					//The angle that the ship "banks" into a turn
+	public float RotationDecraseDueSpeed = 1.0f;    //Rotation speed reduction due to speed
 
 	[Header("Hover Settings")]
 	public float hoverHeight = 1.5f;        //The height the ship maintains when hovering
@@ -30,26 +38,34 @@ public class VehicleMovement : MonoBehaviour
 	public Transform shipBody;				//A reference to the ship's body, this is for cosmetics
 	public float terminalVelocity = 100f;   //The max speed the ship can go
 	public float hoverGravity = 20f;        //The gravity applied to the ship while it is on the ground
-	public float fallGravity = 80f;			//The gravity applied to the ship while it is falling
+	public float fallGravity = 80f;         //The gravity applied to the ship while it is falling
 
 	Rigidbody rigidBody;					//A reference to the ship's rigidbody
 	PlayerInput input;						//A reference to the player's input					
 	float drag;								//The air resistance the ship recieves in the forward direction
 	bool isOnGround;                        //A flag determining if the ship is currently on the ground
 
-
+	private bool _playerAlive = true;
+	private float _oldDriveForce;
+	private float _oldTerminalVelocity;
 	//Our saved shake instance.
 	private CameraShakeInstance _shakeInstance;
-	private bool isTurboActive = false;
+	private bool _isTurboActive = false;
+	private InGameManager _igm;
 
 	void Start()
 	{
 		//Get references to the Rigidbody and PlayerInput components
 		rigidBody = GetComponent<Rigidbody>();
 		input = GetComponent<PlayerInput>();
+		_igm = GameObject.Find("In Game Manager").GetComponent<InGameManager>();
 
 		//Calculate the ship's drag value
 		drag = driveForce / terminalVelocity;
+
+		//Get first values of drive force and terminal velocity
+		_oldDriveForce = driveForce;
+		_oldTerminalVelocity = terminalVelocity;
 
 		//We make a single shake instance that we will fade in and fade out when the player enters and leaves the trigger area.
 		_shakeInstance = CameraShaker.Instance.StartShake(0.1f, 10.0f, 0.1f);
@@ -57,17 +73,45 @@ public class VehicleMovement : MonoBehaviour
 		_shakeInstance.StartFadeOut(0);
 		//We don't want our shake to delete itself once it stops shaking.
 		_shakeInstance.DeleteOnInactive = false;
+
+		_health = FullHealth;
+
+		// Fix Turbo button if it's stuck
+		CrossPlatformInputManager.SetButtonUp("Turbo");
 	}
 
 	void FixedUpdate()
 	{
-		//Calculate the current speed by using the dot product. This tells us
-		//how much of the ship's velocity is in the "forward" direction 
-		speed = Vector3.Dot(rigidBody.velocity, transform.forward);
+		if (_playerAlive)
+        {
+			//Calculate the current speed by using the dot product. This tells us
+			//how much of the ship's velocity is in the "forward" direction 
+			_currentSpeed = Vector3.Dot(rigidBody.velocity, transform.forward);
 
-		//Calculate the forces to be applied to the ship
-		CalculatHover();
-		CalculatePropulsion();
+			//Calculate the forces to be applied to the ship
+			CalculatHover();
+			CalculatePropulsion();
+
+			if (CrossPlatformInputManager.GetButton("Turbo"))
+			{
+				if (!_isTurboActive && _currentTurbo > 0)
+                {
+					TurboActivate();
+					_currentTurbo -= Time.deltaTime * 20;
+                }else if (_isTurboActive && _currentTurbo > 0)
+                {
+					_currentTurbo -= Time.deltaTime * 20;
+                }else if (_isTurboActive && _currentTurbo <= 0)
+                {
+					TurboDeactivate();
+					_currentTurbo = 0;
+				}
+			}
+			if (!CrossPlatformInputManager.GetButton("Turbo") && _isTurboActive)
+			{
+				TurboDeactivate();
+			}
+		}
 	}
 
 	void CalculatHover()
@@ -80,11 +124,9 @@ public class VehicleMovement : MonoBehaviour
 		Ray ray = new Ray(transform.position, -transform.up);
 
 		//Declare a variable that will hold the result of a raycast
-		RaycastHit hitInfo;
-
 		//Determine if the ship is on the ground by Raycasting down and seeing if it hits 
 		//any collider on the whatIsGround layer
-		isOnGround = Physics.Raycast(ray, out hitInfo, maxGroundDist, whatIsGround);
+		isOnGround = Physics.Raycast(ray, out RaycastHit hitInfo, maxGroundDist, whatIsGround);
 
 		//If the ship is on the ground...
 		if (isOnGround)
@@ -145,17 +187,19 @@ public class VehicleMovement : MonoBehaviour
 		// Max Rotation Force is base Rotation Force
 		// Min Rotation Force is half of the base Rotation Force
 		// If Turbo is activated then decrase Rotation Force extra %25
-		float _speedPercantage = GetSpeedPercentage();
-		float _decraseValue = _speedPercantage <= 1 && _speedPercantage >= 0 ? _speedPercantage + 1 : 1;
-		float _calculatedRotationForce = rotationForce / _decraseValue;
-		_calculatedRotationForce = isTurboActive ? _calculatedRotationForce * 0.75f : _calculatedRotationForce;
+		float speedPercantage = GetSpeedPercentage();
+		float decraseValue = speedPercantage >= 0 ? (speedPercantage * RotationDecraseDueSpeed) + 1 : 1;
+		float calculatedRotationForce = rotationForce / decraseValue;
+		//_calculatedRotationForce = _isTurboActive ? _calculatedRotationForce * 0.75f : _calculatedRotationForce;
 		//Debug.Log("GSP: " + GetSpeedPercentage() + " --- DV: " + _decraseValue + " --- CRF: " + _calculatedRotationForce);
 
 		//Calculate the yaw torque based on the rudder and current angular velocity
 		//float rotationTorque = input.rudder - rigidBody.angularVelocity.y;
-		float rotationTorque = input.rudder * _calculatedRotationForce;
+		float rotationTorque = _currentSpeed > 0 && input.thruster < 0
+			? input.rudder * (calculatedRotationForce * 2) // Breaking rotate faster
+			: input.rudder * calculatedRotationForce; // No breake rotate due of algorithm
 		//Apply the torque to the ship's Y axis
-		rigidBody.AddRelativeTorque(0f, speed < 1 && input.thruster < 0 ? -rotationTorque : rotationTorque, 0f, ForceMode.VelocityChange);
+		rigidBody.AddRelativeTorque(0f, _currentSpeed < 1 && input.thruster < 0 ? -rotationTorque : rotationTorque, 0f, ForceMode.VelocityChange);
 
 		//Calculate the current sideways speed by using the dot product. This tells us
 		//how much of the ship's velocity is in the "right" or "left" direction
@@ -170,8 +214,8 @@ public class VehicleMovement : MonoBehaviour
 		rigidBody.AddForce(sideFriction, ForceMode.Acceleration);
 
 		//If not propelling the ship, slow the ships velocity
-		if (input.thruster <= 0f)
-			rigidBody.velocity *= slowingVelFactor;
+		/*if (input.thruster <= 0f)
+			rigidBody.velocity *= slowingVelFactor;*/
 
 		//Braking or driving requires being on the ground, so if the ship
 		//isn't on the ground, exit this method
@@ -179,32 +223,34 @@ public class VehicleMovement : MonoBehaviour
 			return;
 
 		//If the ship is braking, apply the braking velocty reduction
-		if (input.isBraking)
-			rigidBody.velocity *= brakingVelFactor;
+		/*if (input.isBraking)
+			rigidBody.velocity *= brakingVelFactor;*/
 
 		//Calculate and apply the amount of propulsion force by multiplying the drive force
 		//by the amount of applied thruster and subtracting the drag amount
-		float propulsion = speed > terminalVelocity && !isTurboActive 
-			? driveForce * (input.thruster / 2) - drag * Mathf.Clamp(speed, 0f, terminalVelocity) 
-			: driveForce * input.thruster - drag * Mathf.Clamp(speed, 0f, terminalVelocity);
+		/*float propulsion = _currentSpeed > terminalVelocity && !_isTurboActive
+			? driveForce * (input.thruster / 2) - drag * Mathf.Clamp(_currentSpeed, 0f, terminalVelocity) 
+			: driveForce * input.thruster - drag * Mathf.Clamp(_currentSpeed, 0f, terminalVelocity);*/
+		float propulsion = _currentSpeed > terminalVelocity
+			? driveForce * (input.thruster / 2) - drag * Mathf.Clamp(_currentSpeed, 0f, terminalVelocity)
+			: _currentSpeed < 0
+				? driveForce * input.thruster - drag * Mathf.Clamp(_currentSpeed, -terminalVelocity, 0f) * 5
+				: driveForce * input.thruster - drag * Mathf.Clamp(_currentSpeed, 0f, terminalVelocity);
 		/*Debug.Log("TM: " + terminalVelocity);
 		Debug.Log("MC: " + Mathf.Clamp(speed, 0f, terminalVelocity));
 		Debug.Log("PR: " + propulsion);
 		Debug.Log("TF: " + transform.forward);*/
-		
+
 		rigidBody.AddForce(transform.forward * propulsion, ForceMode.Acceleration);
 	}
 
 	public void TurboActivate()
     {
-		Debug.Log("Turbo Activated!!");
+		//Debug.Log("Turbo Activated!!");
+		_isTurboActive = true;
 
-		isTurboActive = true;
-		float oldTerminalVelocity = terminalVelocity;
-		float oldDriveForce = driveForce;
-
-		terminalVelocity = terminalVelocity + (terminalVelocity * 0.3f);
-		driveForce = driveForce * 3.0f;
+		terminalVelocity = _oldTerminalVelocity * 1.3f;
+		driveForce = _oldDriveForce * 3.0f;
 
 		// Calculate the ship's drag value
 		drag = driveForce / terminalVelocity;
@@ -212,11 +258,27 @@ public class VehicleMovement : MonoBehaviour
 		// Activate the camera shake
 		_shakeInstance.StartFadeIn(1f);
 
-		float timeOut = 5.0f;
-		StartCoroutine(TurboDeactivate(oldTerminalVelocity, oldDriveForce, timeOut));
+		//float timeOut = 5.0f;
+		//StartCoroutine(TurboDeactivate(oldTerminalVelocity, oldDriveForce, timeOut));
+		_currentTurbo -= Time.deltaTime * 20;
+		
 	}
 
-	IEnumerator TurboDeactivate(float oldTerminalVelocity, float oldDriveForce, float timeOut)
+	public void TurboDeactivate()
+	{
+		//Debug.Log("Turbo Deactivated!!..");
+		_isTurboActive = false;
+		terminalVelocity = _oldTerminalVelocity;
+		driveForce = _oldDriveForce;
+
+		//Calculate the ship's drag value
+		drag = driveForce / terminalVelocity;
+
+		// Deactivate the camera shake
+		_shakeInstance.StartFadeOut(1f);
+	}
+	
+	/*IEnumerator TurboDeactivate(float oldTerminalVelocity, float oldDriveForce, float timeOut)
 	{
 		// Wait for X second
 		yield return new WaitForSeconds(timeOut);
@@ -232,7 +294,7 @@ public class VehicleMovement : MonoBehaviour
 
 		// Deactivate the camera shake
 		_shakeInstance.StartFadeOut(3f);
-	}
+	}*/
 
 	private void OnCollisionEnter(Collision collision)
     {
@@ -245,18 +307,71 @@ public class VehicleMovement : MonoBehaviour
 			rigidBody.AddForce(-upwardForceFromCollision, ForceMode.Impulse);
 
 			BlockBarricade barricade = collision.gameObject.GetComponent<BlockBarricade>();
-			if (speed > 25)
-			{
-				float barricadeHealth = barricade.getHealth();
-				barricade.takeDamage(1000);
-				this.takeDamage(50*(barricadeHealth / 100)); // Ship take less damage if barricade health is low.
-			}
-			else
-			{
-				// Barricade doesn't take damage because the ship is so slow.
-				takeDamage(speed);
-			}
+			if (barricade.IsBreakable)
+            {
+				if (_currentSpeed > 25)
+				{
+					float barricadeFullHealth = barricade.FullHealth;
+					float barricadeHealth = barricade.GetHealth();
+					int barricadeLevel = barricade.BarricadeLevel;
+					int fullDamageFromBarricade = 30;
+					switch (barricadeLevel)
+                    {
+						case 1:
+							fullDamageFromBarricade = 30;
+							break;
+						case 2:
+							fullDamageFromBarricade = 50;
+							break;
+						case 3:
+							fullDamageFromBarricade = 70;
+							break;
+						default:
+							fullDamageFromBarricade = 70;
+							break;
+					}
 
+					if (_currentSpeed < 50)
+                    {
+						barricade.TakeDamage(barricadeFullHealth * 0.5f);
+					}
+					else if (_currentSpeed < 70)
+                    {
+						barricade.TakeDamage(barricadeFullHealth * 0.75f);
+					}
+					else
+                    {
+						barricade.TakeDamage(barricadeFullHealth);
+					}
+
+					TakeDamage(fullDamageFromBarricade * (barricadeHealth / barricadeFullHealth)); // Ship take less damage if barricade health is low.
+				}
+				else
+				{
+					// Barricade doesn't take damage because the ship is so slow.
+					TakeDamage(_currentSpeed);
+				}
+			} else
+            {
+				if (barricade.BarricadeLevel == 4)
+				{
+					TakeDamage(1000);
+				}else
+                {
+					if (_currentSpeed > 25 && _currentSpeed < 50)
+					{
+						TakeDamage(30);
+					}
+					else if (_currentSpeed > 25 && _currentSpeed < 70)
+					{
+						TakeDamage(60);
+					}
+					else if (_currentSpeed > 25)
+					{
+						TakeDamage(1000);
+					}
+				}
+			}
 		}
 	}
 
@@ -271,24 +386,78 @@ public class VehicleMovement : MonoBehaviour
 			rigidBody.AddForce(-upwardForceFromCollision, ForceMode.Impulse);
 		}
 	}
-	public void takeDamage(float damage)
+	public void TakeDamage(float damage)
     {
-		health -= damage;
-		if (health <= 0)
+		damage *= DamageDecreasePercent;
+		_health -= damage;
+		if (_health <= 0)
         {
-			Debug.LogError("YOU DIE");
-        }
+			DeathEffectApply();
+		}
     }
 
 	public float GetSpeedPercentage()
 	{
 		//Returns the total percentage of speed the ship is traveling
-		return rigidBody.velocity.magnitude / terminalVelocity;
+		//return rigidBody.velocity.magnitude / terminalVelocity;
+		return _currentSpeed / _oldTerminalVelocity;
 	}
 	public bool GetTurboStatus()
 	{
-		//Returns the turbo activate status
-		return isTurboActive;
+		//Returns the Turbo activate status
+		return _isTurboActive;
+	}
+	public float GetTurbo()
+	{
+		//Returns the Turbo value
+		return _currentTurbo;
+	}
+	public void AddTurboPoint(int addedTurboValue)
+	{
+		//Add Turbo value
+		float tempTurboValue = _currentTurbo + addedTurboValue;
+		_currentTurbo = Mathf.Clamp(tempTurboValue, 0, 100);
+		
+	}
+	public float GetSpeed()
+	{
+		//Returns the fixed Current Speed value. (Speed always be absolute)
+		float fixedCurrentSpeed = _currentSpeed < 0.1f && _currentSpeed > -0.1f ? 0 : Mathf.Abs(_currentSpeed);
+		return fixedCurrentSpeed;
+	}
+	public float GetHealth()
+	{
+		//Returns the Health value
+		float fixedHealth = Mathf.Clamp(_health, 0, 999);
+		return fixedHealth;
+	}
+	public void AddHealth(int addedHealthValue)
+	{
+		//Add Health value
+		float tempHealthValue = _health + addedHealthValue;
+		_health = Mathf.Clamp(tempHealthValue, 0, 100);
 	}
 
+	private void DeathEffectApply()
+	{
+		_playerAlive = false;
+		_currentSpeed = 0;
+
+		if (_isTurboActive)
+        {
+			TurboDeactivate();
+        }
+
+		if (DeathEffect != null)
+		{
+			GameObject crashEffectPS = Instantiate(DeathEffect, transform.position, transform.rotation);
+			CameraShaker.Instance.ShakeOnce(4f, 4f, 0.1f, 1.5f);
+			if (IsSpecialColor)
+			{
+				crashEffectPS.GetComponent<Renderer>().material.color = SpecialColor;
+			}
+		}
+
+		_igm.GameOver();
+	}
 }

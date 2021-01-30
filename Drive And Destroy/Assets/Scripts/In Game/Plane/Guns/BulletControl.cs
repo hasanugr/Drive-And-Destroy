@@ -4,8 +4,8 @@ using UnityEngine;
 
 public class BulletControl : MonoBehaviour
 {
-    public GameObject bulletTriggerEffect;
-    public float bulletDamage = 30.0f;
+    public GameObject BulletTriggerEffect;
+    public float BulletDamage = 30.0f;
     
 
     private void OnCollisionEnter(Collision collision)
@@ -17,12 +17,16 @@ public class BulletControl : MonoBehaviour
         ContactPoint contact = collision.contacts[0];
         Quaternion rot = Quaternion.LookRotation(contact.normal);
         Vector3 pos = contact.point + (contact.normal * 0.01f);
-        GameObject bulletHole = Instantiate(bulletTriggerEffect, pos, rot);
+        GameObject bulletHole = Instantiate(BulletTriggerEffect, pos, rot);
 
         if (collision.gameObject.layer == LayerMask.NameToLayer("Barricade"))
         {
             BlockBarricade barricade = collision.gameObject.GetComponent<BlockBarricade>();
-            barricade.takeDamage(bulletDamage);
+            barricade.TakeDamage(BulletDamage);
+        }else if (collision.gameObject.layer == LayerMask.NameToLayer("Boss"))
+        {
+            BossAI boss = collision.gameObject.GetComponent<BossAI>();
+            boss.TakeDamage(BulletDamage);
         }
 
         // Destroy the bullet hole on surface

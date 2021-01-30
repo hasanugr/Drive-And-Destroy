@@ -56,6 +56,7 @@ public class GameManager : MonoBehaviour
     {
 		pd = SaveLoadManager.Load();
 		ChangeActiveVehicle(pd.selectedVehicleId);
+		pd.gold = 9999;
     }
 
 	void Update()
@@ -63,13 +64,14 @@ public class GameManager : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.N))
         {
             //pd.selectedVehicleId += 1;
-            pd.gold += 100;
+            pd.gold += 1000;
+			print(pd.gold);
         }
 
         if (Input.GetKeyDown(KeyCode.B))
         {
             //pd.selectedVehicleId -= 1;
-            pd.gold -= 100;
+            pd.gold -= 1000;
         }
     }
 
