@@ -38,20 +38,45 @@ public class CameraFollow : MonoBehaviour
 
 	void FixedUpdate()
 	{
-		// Camera Hight and Distance functions
-		usedDistance = Mathf.SmoothDampAngle(usedDistance, distance + (parentRigidbody.velocity.magnitude * distanceMultiplier), ref zVelocity, distanceSnapTime);
-		wantedPosition = target.position + (target.up * height) + target.rotation * new Vector3(0, 0, -usedDistance);
-		currentPosition = transform.position;
+		if (movement.GetHealth() > 0)
+        {
+			// Camera Hight and Distance functions
+			usedDistance = Mathf.SmoothDampAngle(usedDistance, distance + (parentRigidbody.velocity.magnitude * distanceMultiplier), ref zVelocity, distanceSnapTime);
+			wantedPosition = target.position + (target.up * height) + target.rotation * new Vector3(0, 0, -usedDistance);
+			currentPosition = transform.position;
 
-		transform.position = Vector3.SmoothDamp(currentPosition, wantedPosition, ref xyzVelocity, 0.01f);
+			transform.position = Vector3.SmoothDamp(currentPosition, wantedPosition, ref xyzVelocity, 0.01f);
 
-		//Generate custom percentage of speed of ship with custom speed value to camera verticle rotation value
-		float speedPercent = movement.GetSpeed() / 80.0f;
+			//Generate custom percentage of speed of ship with custom speed value to camera verticle rotation value
+			float speedPercent = movement.GetSpeed() / 80.0f;
 
-		// Look at height of ship related speed percent.
-		float lookAtHeightRSP = speedPercent >= 1 ? lookAtHeight : lookAtHeight * speedPercent;
-		lookAtVector = new Vector3(0, lookAtHeightRSP, 0);
+			// Look at height of ship related speed percent.
+			float lookAtHeightRSP = speedPercent >= 1 ? lookAtHeight : lookAtHeight * speedPercent;
+			lookAtVector = new Vector3(0, lookAtHeightRSP, 0);
 
-		transform.LookAt(target.position + lookAtVector, target.up);
+			transform.LookAt(target.position + lookAtVector, target.up);
+		}
+	}
+
+	void Update()
+	{
+		if (movement.GetHealth() <= 0)
+		{
+			// Camera Hight and Distance functions
+			usedDistance = Mathf.SmoothDampAngle(usedDistance, distance + (parentRigidbody.velocity.magnitude * distanceMultiplier), ref zVelocity, distanceSnapTime);
+			wantedPosition = target.position + (target.up * height) + target.rotation * new Vector3(0, 0, -usedDistance);
+			currentPosition = transform.position;
+
+			transform.position = Vector3.SmoothDamp(currentPosition, wantedPosition, ref xyzVelocity, 0.01f);
+
+			//Generate custom percentage of speed of ship with custom speed value to camera verticle rotation value
+			float speedPercent = movement.GetSpeed() / 80.0f;
+
+			// Look at height of ship related speed percent.
+			float lookAtHeightRSP = speedPercent >= 1 ? lookAtHeight : lookAtHeight * speedPercent;
+			lookAtVector = new Vector3(0, lookAtHeightRSP, 0);
+
+			transform.LookAt(target.position + lookAtVector, target.up);
+		}
 	}
 }

@@ -7,6 +7,7 @@ public class PlayerData
 {
     // Player Game Data
     private int[] _levels;
+    private int _highScore;
     private int _gold;
     private int _selectedVehicleId;
     private List<List<int[]>> vehicleList;
@@ -25,6 +26,17 @@ public class PlayerData
         set
         {
             _selectedVehicleId = value;
+        }
+    }
+
+    public int highScore { 
+        get
+        {
+            return _highScore;
+        }
+        set
+        {
+            _highScore = value;
         }
     }
 
@@ -87,7 +99,8 @@ public class PlayerData
 
     public void AddDefaultValues()
     {
-        _levels = new int[1]; // new int[] { 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 2, 2, 2, 2, 2, 1, 1, 1, 1, 1, 0 };  //new int[1];
+        _levels = new int[1];
+        _highScore = 0;
         _gold = 0;
         _selectedVehicleId = 1;
         ActivateVehicle(_selectedVehicleId);
@@ -100,6 +113,7 @@ public class PlayerData
     public void AddLoadedValues(PlayerData pd)
     {
         _levels = pd._levels;
+        _highScore = pd._highScore;
         _gold = pd._gold;
         _selectedVehicleId = pd._selectedVehicleId;
         vehicleList = pd.vehicleList;

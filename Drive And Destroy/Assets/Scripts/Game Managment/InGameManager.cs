@@ -29,6 +29,7 @@ public class InGameManager : MonoBehaviour
 
     private GameObject _player;
     private int _playerScore = 0;
+    private int _collectedGold = 0;
 
     [Header("Road Creator")]
     public GameObject StraightRoad;
@@ -53,6 +54,9 @@ public class InGameManager : MonoBehaviour
     public GameObject PlayerControlUIMode3;
 
     private int _selectedPlayerControlUIMode;
+
+    [Header("Terrain Control")]
+    public Transform GrassTerrain;
 
     GameManager _gm;
     private void Start()
@@ -97,6 +101,21 @@ public class InGameManager : MonoBehaviour
     }
     public void GameOver()
     {
+        CameraFollow cameraFollow = cameraHolder.GetComponent<CameraFollow>();
+        float distance = cameraFollow.distance;
+        float height = cameraFollow.height;
+        LeanTween.value(GameOverUI, 0, 2f, 3f).setOnUpdate((float val) =>
+        {
+            cameraFollow.distance = distance + val;
+            cameraFollow.height = height + val * 3;
+        }).setIgnoreTimeScale(true);
+        
+
+        LeanTween.value(GameOverUI, 1, 0.5f, 1f).setOnUpdate((float val) =>
+        {
+            Time.timeScale = val;
+        }).setIgnoreTimeScale(true);
+
         GameOverUI.SetActive(true);
         inGameUI.SetActive(false);
     }
@@ -112,6 +131,15 @@ public class InGameManager : MonoBehaviour
         return _playerScore;
     }
 
+    public void AddGold(int count)
+    {
+        _collectedGold += count;
+    }
+    public int GetCollectedGold()
+    {
+        return _collectedGold;
+    }
+
     public void RoadChangeTrigger()
     {
         if (activeRoads.Count > 6)
@@ -119,6 +147,11 @@ public class InGameManager : MonoBehaviour
             DestroyLastRoad();
         }
         CreateNewRoad();
+    }
+
+    public void ChangeTerrainPosition(Vector3 pos)
+    {
+        GrassTerrain.position = pos;
     }
 
     private void LevelController()

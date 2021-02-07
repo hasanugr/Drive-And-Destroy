@@ -22,10 +22,14 @@ public class VehicleShowVS : MonoBehaviour
     private int[] vehiclePrices = { 0, 1000, 1500, 2000 };
 
     GameManager gm;
+    PopupController _popupController;
     private void OnEnable()
     {
         gm = GameObject.Find(VariableController.GAME_MANAGER).GetComponent<GameManager>();
         showingVehicleId = gm.pd.selectedVehicleId;
+
+        _popupController = GameObject.Find("Popup Controller").GetComponent<PopupController>();
+
         ChangeShowingVehicle();
         CheckActiveButtons();
         SelectBuyControlAndShowButtons();
@@ -64,6 +68,7 @@ public class VehicleShowVS : MonoBehaviour
         }
         else
         {
+            _popupController.OpenPopup("EarnGold");
             Debug.LogError("Paranız Yetersiz.!!");
         }
     }
@@ -82,7 +87,6 @@ public class VehicleShowVS : MonoBehaviour
 
         showingVehicle = Instantiate(showVehicles[showingVehicleId - 1], spawnPosition, spawnRotation);
         showingVehicle.transform.parent = transform;
-
 
         float extraPosition = 0.0f;
         switch (showingVehicleId)

@@ -10,12 +10,14 @@ public class PlayerStatusTextController : MonoBehaviour
     public GameObject HealthBarDotsHolder;
     public Color LowHealColor;
     public Color HighHealColor;
+    public GameObject GetDamagedEffect;
 
     [SerializeField]
     private GameObject[] _healthBarDots = new GameObject[49];
     private float _fullHealth;
     private float _currentHealth;
     private float _healthBarValue;
+    private float _lastCurrentHealth;
 
     [Header("Speed Status")]
     public TextMeshProUGUI SpeedText;
@@ -48,7 +50,12 @@ public class PlayerStatusTextController : MonoBehaviour
     [Header("Player Point Status")]
     public TextMeshProUGUI PointUI;
 
+    [Header("Player Point Status")]
+    public TextMeshProUGUI GoldUI;
+    public GameObject GoldIcon;
+
     private int _playerPoint;
+    private int _playerGold;
 
 
     private GameObject _ship;
@@ -71,6 +78,7 @@ public class PlayerStatusTextController : MonoBehaviour
         TurboBarProccess();
         BossBarProccess();
         PlayerPointProccess();
+        PlayerGoldProccess();
     }
 
     private void HealthBarProccess()
@@ -88,22 +96,41 @@ public class PlayerStatusTextController : MonoBehaviour
         {
             _fullHealth = _vehicleMovement.FullHealth;
         }
-        _currentHealth = Mathf.FloorToInt(_vehicleMovement.GetHealth());
-        _healthBarValue = Mathf.CeilToInt((_currentHealth / _fullHealth) * _healthBarDots.Length);
 
-        for (int i = 0; i < _healthBarDots.Length; i++)
+        _currentHealth = Mathf.FloorToInt(_vehicleMovement.GetHealth());
+        if (_currentHealth != _lastCurrentHealth)
         {
-            if (i < _healthBarValue)
+            bool isGetDamaged = _currentHealth < _lastCurrentHealth;
+            _lastCurrentHealth = _currentHealth;
+            _healthBarValue = Mathf.CeilToInt((_currentHealth / _fullHealth) * _healthBarDots.Length);
+
+            for (int i = 0; i < _healthBarDots.Length; i++)
             {
-                _healthBarDots[i].SetActive(true);
-            }else
+                if (i < _healthBarValue)
+                {
+                    _healthBarDots[i].SetActive(true);
+                }
+                else
+                {
+                    _healthBarDots[i].SetActive(false);
+                }
+            }
+
+            Color lerpedColor = Color.Lerp(LowHealColor, HighHealColor, (_currentHealth / _fullHealth));
+            _healthBarDots[0].GetComponent<Image>().material.color = lerpedColor;
+            if (isGetDamaged)
             {
-                _healthBarDots[i].SetActive(false);
+                // Get Damaged Effect
+                GameObject damagedEffect = GameObject.Instantiate(GetDamagedEffect, this.transform);
+                Image damagedEffectImage = damagedEffect.GetComponent<Image>();
+                LeanTween.value(damagedEffect, 0.3f, 0, 0.5f).setOnUpdate((float val) =>
+                {
+                    Color tempColor = damagedEffectImage.color;
+                    tempColor.a = val;
+                    damagedEffectImage.color = tempColor;
+                }).setDestroyOnComplete(true);
             }
         }
-
-        Color lerpedColor = Color.Lerp(LowHealColor, HighHealColor, (_currentHealth / _fullHealth));
-        _healthBarDots[0].GetComponent<Image>().material.color = lerpedColor;
     }
 
     private void SpeedBarProccess()
@@ -169,5 +196,16 @@ public class PlayerStatusTextController : MonoBehaviour
     {
         _playerPoint = _igm.GetPlayerPoint();
         PointUI.text = _playerPoint.ToString();
+    }
+
+    private void PlayerGoldProccess()
+    {
+        int newGoldValue = _igm.GetCollectedGold();
+        if (newGoldValue > _playerGold)
+        {
+            LeanTween.scale(GoldIcon, new Vector3(1.5f, 1.5f, 1), 0.5f).setEasePunch();
+            _playerGold = newGoldValue;
+            GoldUI.text = _playerGold.ToString();
+        }
     }
 }

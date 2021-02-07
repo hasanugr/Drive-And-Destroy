@@ -12,8 +12,7 @@ public class VehicleMovement : MonoBehaviour
 	public float FullHealth = 100.0f;           //The health of ship, if that value be 0 the ship die
 	public float DamageDecreasePercent = 1.0f;  //Decrease the taken damage from obstacles.
 	public GameObject DeathEffect;
-	public bool IsSpecialColor = false;
-	public Color SpecialColor;
+	public GameObject DeathBody;
 
 	private float _currentSpeed;					//The current forward speed of the ship
 	private float _health;
@@ -49,8 +48,11 @@ public class VehicleMovement : MonoBehaviour
 	private float _oldDriveForce;
 	private float _oldTerminalVelocity;
 	//Our saved shake instance.
-	private CameraShakeInstance _shakeInstance;
 	private bool _isTurboActive = false;
+	private Vector3 _terrainPoisiton;
+
+
+	private CameraShakeInstance _shakeInstance;
 	private InGameManager _igm;
 
 	void Start()
@@ -76,6 +78,8 @@ public class VehicleMovement : MonoBehaviour
 
 		_health = FullHealth;
 
+		_terrainPoisiton = _igm.GrassTerrain.position;
+
 		// Fix Turbo button if it's stuck
 		CrossPlatformInputManager.SetButtonUp("Turbo");
 	}
@@ -91,6 +95,7 @@ public class VehicleMovement : MonoBehaviour
 			//Calculate the forces to be applied to the ship
 			CalculatHover();
 			CalculatePropulsion();
+			TerrainPositionControl();
 
 			if (CrossPlatformInputManager.GetButton("Turbo"))
 			{
@@ -451,13 +456,29 @@ public class VehicleMovement : MonoBehaviour
 		if (DeathEffect != null)
 		{
 			GameObject crashEffectPS = Instantiate(DeathEffect, transform.position, transform.rotation);
+			Destroy(crashEffectPS, 1);
 			CameraShaker.Instance.ShakeOnce(4f, 4f, 0.1f, 1.5f);
-			if (IsSpecialColor)
-			{
-				crashEffectPS.GetComponent<Renderer>().material.color = SpecialColor;
-			}
+
+			shipBody.gameObject.SetActive(false);
+			DeathBody.SetActive(true);
 		}
 
 		_igm.GameOver();
 	}
+
+	private void TerrainPositionControl()
+    {
+		Vector3 playerPos = this.gameObject.transform.position;
+		if (playerPos.x < _terrainPoisiton.x + 500 || playerPos.x > _terrainPoisiton.x + 4500)
+        {
+			_terrainPoisiton.x = playerPos.x - 2500;
+			_igm.ChangeTerrainPosition(_terrainPoisiton);
+        }
+
+		if (playerPos.z < _terrainPoisiton.z + 500 || playerPos.z > _terrainPoisiton.z + 4500)
+        {
+			_terrainPoisiton.z = playerPos.z - 2500;
+			_igm.ChangeTerrainPosition(_terrainPoisiton);
+		}
+    }
 }

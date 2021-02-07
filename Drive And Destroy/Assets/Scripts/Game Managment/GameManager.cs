@@ -56,7 +56,11 @@ public class GameManager : MonoBehaviour
     {
 		pd = SaveLoadManager.Load();
 		ChangeActiveVehicle(pd.selectedVehicleId);
-		pd.gold = 9999;
+    }
+
+	public void SavePlayerData()
+    {
+		SaveLoadManager.Save(pd);
     }
 
 	void Update()
@@ -87,6 +91,11 @@ public class GameManager : MonoBehaviour
 			}
 		}
 	}
+
+	public void AddGold(int val)
+    {
+		pd.gold += val;
+    }
 
 	public bool IsActiveGame()
 	{
