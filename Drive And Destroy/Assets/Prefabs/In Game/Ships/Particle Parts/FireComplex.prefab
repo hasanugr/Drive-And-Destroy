@@ -18961,8 +18961,6 @@ GameObject:
   - component: {fileID: 1026127298883656664}
   - component: {fileID: 1026127298887080952}
   - component: {fileID: 1026127298886080824}
-  - component: {fileID: 1026127298893541914}
-  - component: {fileID: 1026127298893541916}
   m_Layer: 0
   m_Name: FireComplex
   m_TagString: Fire
@@ -19037,33 +19035,6 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
---- !u!114 &1026127298893541914
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1026127298883815416}
-  m_Enabled: 0
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 29014cd42b6d273408e0ceefd336c0b3, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  minDuration: 8
-  maxDuration: 10
---- !u!114 &1026127298893541916
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1026127298883815416}
-  m_Enabled: 0
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 039587c051912eb4ead9e58344c5f3ce, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  multiplier: 1
 --- !u!1 &1026127298883815420
 GameObject:
   m_ObjectHideFlags: 0

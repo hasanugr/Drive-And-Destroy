@@ -13,18 +13,16 @@ public class PlayerInput : MonoBehaviour
 {
 	public string verticalAxisName = "Vertical";        //The name of the thruster axis
 	public string horizontalAxisName = "Horizontal";    //The name of the rudder axis
-	public string brakingKey = "Brake";                 //The name of the brake button
 
 	//We hide these in the inspector because we want 
 	//them public but we don't want people trying to change them
 	[HideInInspector] public float thruster;						//The current thruster value
 	[HideInInspector] public float rudder;							//The current rudder value
-	[HideInInspector] public bool isBraking;						//The current brake value
-	[HideInInspector] public bool isReverseRotate;					//The current reverse rotate effect status
+	[HideInInspector] public bool isReverseRotate;                  //The current reverse rotate effect status
+	[HideInInspector] public bool isAccelerationControlActive;      //The current Acceleration rotate status
 
 	
 	private bool _isVehicleControlTypeChecked;
-	private bool _isAccelerationControlActive;      //The current Acceleration rotate status
 	private float _xAtStart;
 
     private void Start()
@@ -43,24 +41,14 @@ public class PlayerInput : MonoBehaviour
 			CheckPlayerControlType();
 		}
 
-		//If a GameManager exists and the game is not active...
-		if (GameManager.instance != null && !GameManager.instance.IsActiveGame())
-		{
-			//...set all inputs to neutral values and exit this method
-			thruster = rudder = 0f;
-			isBraking = false;
-			return;
-		}
-
 		//Get the values of the thruster, rudder, and brake from the input class
 		thruster = CrossPlatformInputManager.GetAxis(verticalAxisName);
-		rudder = _isAccelerationControlActive ? Mathf.Clamp(Input.acceleration.x - _xAtStart, -1f, 1f) : CrossPlatformInputManager.GetAxis(horizontalAxisName);
-		if (_isAccelerationControlActive)
+		rudder = isAccelerationControlActive ? Mathf.Clamp(Input.acceleration.x - _xAtStart, -1f, 1f) : CrossPlatformInputManager.GetAxis(horizontalAxisName);
+		if (isAccelerationControlActive)
         {
-			rudder = rudder < 0.05f && rudder > -0.05f ? 0 : rudder * 3;
+			rudder = rudder < 0.05f && rudder > -0.05f ? 0 : rudder * 4;
         }
 		rudder = isReverseRotate ? rudder * (-1) : rudder;
-		//isBraking = CrossPlatformInputManager.GetButton(brakingKey);
 	}
 
 	public void ResetAccelerationStartPoint()
@@ -73,7 +61,7 @@ public class PlayerInput : MonoBehaviour
 		int vehicleControlTypeId = GameManager.instance.pd.vehicleControlType;
 		if (vehicleControlTypeId == 1)
 		{
-			_isAccelerationControlActive = true;
+			isAccelerationControlActive = true;
 			ResetAccelerationStartPoint();
 		}
 		_isVehicleControlTypeChecked = true;

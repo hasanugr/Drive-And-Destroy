@@ -13,4 +13,5 @@ public static class VariableController
     // In Game Values
     public static readonly int FirstLevelEndPoint = 500;
     public static readonly int SecondLevelEndPoint = 1000;
+    public static readonly int ThirthLevelEndPoint = 1500;
 }

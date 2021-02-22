@@ -19068,6 +19068,7 @@ MonoBehaviour:
   BulletTriggerEffect: {fileID: 1134129239631916, guid: 5eefd68b323d46f408c0330554d3667e,
     type: 3}
   BulletDamage: 20
+  Trails: []
 --- !u!54 &7040305668977940069
 Rigidbody:
   m_ObjectHideFlags: 0

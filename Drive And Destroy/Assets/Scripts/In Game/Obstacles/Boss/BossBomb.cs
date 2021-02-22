@@ -10,12 +10,14 @@ public class BossBomb : MonoBehaviour
 
     private GameObject ship;
     private VehicleMovement vehicleMovement;
+    private AudioManager _audioManager;
 
     // Start is called before the first frame update
     void Start()
     {
         ship = GameObject.FindWithTag("Player");
         vehicleMovement = ship.GetComponent<VehicleMovement>();
+        _audioManager = FindObjectOfType<AudioManager>();
     }
 
     private void OnTriggerEnter(Collider collider)
@@ -28,6 +30,7 @@ public class BossBomb : MonoBehaviour
             // Destroy the bullet when touch any collision
             Destroy(this.gameObject);
 
+            _audioManager.PlayOneShot("BossBombExp");
             // Get the contact point and create bullet hole at contact point
             if (BombTriggerEffect)
             {

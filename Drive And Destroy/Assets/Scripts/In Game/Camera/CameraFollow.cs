@@ -9,6 +9,7 @@ public class CameraFollow : MonoBehaviour
 	public float height = 1.0f; // The height of the camera
 
 	public float lookAtHeight = 1.0f; // An offset of the target
+	public float positionSmoothTime = 0.01f; // An offset of the target
 
 	private Rigidbody parentRigidbody; // Used to determine how far the camera should zoom out when the car moves forward
 
@@ -38,36 +39,14 @@ public class CameraFollow : MonoBehaviour
 
 	void FixedUpdate()
 	{
-		if (movement.GetHealth() > 0)
+		if (movement.GetHealth() >= 0)
         {
 			// Camera Hight and Distance functions
 			usedDistance = Mathf.SmoothDampAngle(usedDistance, distance + (parentRigidbody.velocity.magnitude * distanceMultiplier), ref zVelocity, distanceSnapTime);
 			wantedPosition = target.position + (target.up * height) + target.rotation * new Vector3(0, 0, -usedDistance);
 			currentPosition = transform.position;
 
-			transform.position = Vector3.SmoothDamp(currentPosition, wantedPosition, ref xyzVelocity, 0.01f);
-
-			//Generate custom percentage of speed of ship with custom speed value to camera verticle rotation value
-			float speedPercent = movement.GetSpeed() / 80.0f;
-
-			// Look at height of ship related speed percent.
-			float lookAtHeightRSP = speedPercent >= 1 ? lookAtHeight : lookAtHeight * speedPercent;
-			lookAtVector = new Vector3(0, lookAtHeightRSP, 0);
-
-			transform.LookAt(target.position + lookAtVector, target.up);
-		}
-	}
-
-	void Update()
-	{
-		if (movement.GetHealth() <= 0)
-		{
-			// Camera Hight and Distance functions
-			usedDistance = Mathf.SmoothDampAngle(usedDistance, distance + (parentRigidbody.velocity.magnitude * distanceMultiplier), ref zVelocity, distanceSnapTime);
-			wantedPosition = target.position + (target.up * height) + target.rotation * new Vector3(0, 0, -usedDistance);
-			currentPosition = transform.position;
-
-			transform.position = Vector3.SmoothDamp(currentPosition, wantedPosition, ref xyzVelocity, 0.01f);
+			transform.position = Vector3.SmoothDamp(currentPosition, wantedPosition, ref xyzVelocity, positionSmoothTime);
 
 			//Generate custom percentage of speed of ship with custom speed value to camera verticle rotation value
 			float speedPercent = movement.GetSpeed() / 80.0f;

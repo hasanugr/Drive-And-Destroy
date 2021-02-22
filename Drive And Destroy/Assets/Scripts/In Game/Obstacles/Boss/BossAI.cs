@@ -18,6 +18,7 @@ public class BossAI : MonoBehaviour
     private GameObject _targetObject;
     private Rigidbody _bossRigidbody;
     private InGameManager _igm;
+    private AudioManager _audioManager;
 
     [Header("Drive Settings")]
     public float SpeedAcceleration = 1.0f;
@@ -54,6 +55,7 @@ public class BossAI : MonoBehaviour
     void Start()
     {
         _igm = GameObject.Find("In Game Manager").GetComponent<InGameManager>();
+        _audioManager = FindObjectOfType<AudioManager>();
         _targetObject = GameObject.FindGameObjectWithTag("Player");
         _bossRigidbody = this.GetComponent<Rigidbody>();
         _health = BossFullHealth;
@@ -80,54 +82,61 @@ public class BossAI : MonoBehaviour
 
     public void TakeDamage(float damage)
     {
-        _health -= Mathf.FloorToInt(damage);
-        _igm.BossCurrentHealth = _health;
-
-        if (_health <= 0)
+        if (_health > 0)
         {
-            _igm.IsBossAlive = false;
 
-            // Destroy the Laser Gun Effect if laser gun active when Boss die.
-            LaserWarning.SetActive(false);
-            LaserFire.SetActive(false);
-            // Deactivate the camera shake
-            _shakeInstance.StartFadeOut(0.1f);
+            _health -= Mathf.FloorToInt(damage);
+            _igm.BossCurrentHealth = _health;
 
-            // Destroy all boss object
-            BossBody.SetActive(false);
-            Destroy(this.gameObject, 0.5f);
-            CrashEffectApply();
+            if (_health <= 0)
+            {
+                _igm.IsBossAlive = false;
+                _igm.IsBossActivated = false;
+                _igm.IsNextLevelTime = true;
+                _igm.IncreaseReachedLevel();
 
-            switch (BossLevel)
+                // Destroy the Laser Gun Effect if laser gun active when Boss die.
+                LaserWarning.SetActive(false);
+                LaserFire.SetActive(false);
+                // Deactivate the camera shake
+                _shakeInstance.StartFadeOut(0.1f);
+
+                // Destroy all boss object
+                BossBody.SetActive(false);
+                Destroy(this.gameObject, 0.5f);
+                CrashEffectApply();
+
+                switch (BossLevel)
+                {
+                    case 1:
+                        _igm.AddPlayerPoint(150);
+                        break;
+                    case 2:
+                        _igm.AddPlayerPoint(200);
+                        break;
+                    case 3:
+                        _igm.AddPlayerPoint(300);
+                        break;
+                    default:
+                        _igm.AddPlayerPoint(300);
+                        break;
+                }
+            }else
             {
-                case 1:
-                    _igm.AddPlayerPoint(150);
-                    break;
-                case 2:
-                    _igm.AddPlayerPoint(250);
-                    break;
-                case 3:
-                    _igm.AddPlayerPoint(500);
-                    break;
-                default:
-                    _igm.AddPlayerPoint(150);
-                    break;
-            }
-        }else
-        {
-            // Default value is 0
-            float onePercentOfFullHeal = BossFullHealth / 100;
-            if (_health < onePercentOfFullHeal * 10)
-            {
-                _rotateSpeedMod = 3;
-            }
-            else if (_health < onePercentOfFullHeal * 30)
-            {
-                _rotateSpeedMod = 2;
-            }
-            else if (_health < onePercentOfFullHeal * 60)
-            {
-                _rotateSpeedMod = 1;
+                // Default value is 0
+                float onePercentOfFullHeal = BossFullHealth / 100;
+                if (_health < onePercentOfFullHeal * 10)
+                {
+                    _rotateSpeedMod = 3;
+                }
+                else if (_health < onePercentOfFullHeal * 30)
+                {
+                    _rotateSpeedMod = 2;
+                }
+                else if (_health < onePercentOfFullHeal * 60)
+                {
+                    _rotateSpeedMod = 1;
+                }
             }
         }
     }
@@ -253,7 +262,7 @@ public class BossAI : MonoBehaviour
             }
         }
         randomWallDistance = Mathf.Clamp(randomWallDistance, 2, 18);
-        print("RotatePositionChange --> " + randomWallDistance);
+        // print("RotatePositionChange --> " + randomWallDistance);
         _targetDistanceFromLeftWall = randomWallDistance;
 
         AttackToPlayer();
@@ -300,13 +309,14 @@ public class BossAI : MonoBehaviour
     IEnumerator FireTheLaser(float timeOut)
     {
         LaserWarning.SetActive(true);
-
+        _audioManager.Play("BossLaserWarmup");
         // Wait for X second
         yield return new WaitForSeconds(timeOut);
 
         if (_health > 0)
         {
             LaserFire.SetActive(true);
+            _audioManager.Play("BossLaserShoot");
             // Activate the camera shake
             _shakeInstance.StartFadeIn(0.1f);
 
@@ -319,6 +329,7 @@ public class BossAI : MonoBehaviour
         // Wait for X second
         yield return new WaitForSeconds(timeOut);
 
+        _audioManager.Stop("BossLaserShoot");
         LaserWarning.SetActive(false);
         LaserFire.SetActive(false);
         // Deactivate the camera shake

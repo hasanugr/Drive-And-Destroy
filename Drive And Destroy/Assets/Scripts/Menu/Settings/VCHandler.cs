@@ -14,11 +14,14 @@ public class VCHandler : MonoBehaviour
     public float moveSpeed = 2.0f;
     private bool switching = false;
     private float t = 0.0f;
-    
+
+    private AudioManager _audioManager;
+
     // Start is called before the first frame update
     void Start()
     {
         ControlShemes[SelectedShemeIndex].GetComponent<RawImage>().color = onColor;
+        _audioManager = FindObjectOfType<AudioManager>();
     }
 
     // Update is called once per frame
@@ -55,8 +58,9 @@ public class VCHandler : MonoBehaviour
 
     public void SelectVehicleControlSheme(int index)
     {
-        if (!switching)
+        if (!switching && SelectedShemeIndex != index)
         {
+            _audioManager.Play("SettingsVehicleControl");
             SelectingShemeIndex = index;
             switching = true;
         }

@@ -1,10 +1,4 @@
-﻿//This script manages the timing and flow of the game. It is also responsible for telling
-//the UI when and how to update
-
-using System.Collections;
-using UnityEngine;
-using UnityEngine.SceneManagement;
-
+﻿using UnityEngine;
 
 public class GameManager : MonoBehaviour
 {
@@ -20,18 +14,10 @@ public class GameManager : MonoBehaviour
 
 	[Header("Race Settings")]
 	public int heal = 100;                  //The heal of vehicle
-	public int numberOfLaps = 1;			//The number of laps to complete
 	public VehicleMovement vehicleMovement; //A reference to the ship's VehicleMovement script
 
 	[Header("UI References")]
-	public ShipUI shipUI;					//A reference to the ship's ShipUI script
-	public LapTimeUI lapTimeUI;				//A reference to the LapTimeUI script in the scene
 	public GameObject gameOverUI;			//A reference to the UI objects that appears when the game is complete
-/*
-	float[] lapTimes;						//An array containing the player's lap times
-	int currentLap = 0;						//The current lap the player is on
-	bool isGameOver;						//A flag to determine if the game is over
-	bool raceHasBegun;  */                    //A flag to determine if the race has begun
 
 
 	void Awake()
@@ -63,22 +49,6 @@ public class GameManager : MonoBehaviour
 		SaveLoadManager.Save(pd);
     }
 
-	void Update()
-	{
-        if (Input.GetKeyDown(KeyCode.N))
-        {
-            //pd.selectedVehicleId += 1;
-            pd.gold += 1000;
-			print(pd.gold);
-        }
-
-        if (Input.GetKeyDown(KeyCode.B))
-        {
-            //pd.selectedVehicleId -= 1;
-            pd.gold -= 1000;
-        }
-    }
-
 	public void ChangeActiveVehicle(int vehicleId)
 	{
 		pd.selectedVehicleId = vehicleId;
@@ -96,11 +66,4 @@ public class GameManager : MonoBehaviour
     {
 		pd.gold += val;
     }
-
-	public bool IsActiveGame()
-	{
-		//If the race has begun and the game is not over, we have an active game
-		return true; //raceHasBegun && !isGameOver;
-	}
-
 }

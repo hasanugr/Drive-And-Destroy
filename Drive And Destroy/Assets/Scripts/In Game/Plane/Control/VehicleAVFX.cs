@@ -15,7 +15,10 @@ public class VehicleAVFX : MonoBehaviour
 	public float engineMinVol = 0f;			//The minimum volume of the engine
 	public float engineMaxVol = .6f;		//The maximum volume of the engine
 	public float engineMinPitch = .3f;		//The minimum pitch of the engine
-	public float engineMaxPitch = .8f;		//The maximum pitch of the engine
+	public float engineMaxPitch = .8f;      //The maximum pitch of the engine
+
+	private bool _isEngineSoundActive = true;
+	private bool _isRubbingWallActive = false;
 
 	PlayerInput input;						//A reference to the player's input
 	VehicleMovement movement;				//A reference to the ship's VehicleMovement script
@@ -23,7 +26,10 @@ public class VehicleAVFX : MonoBehaviour
 	ParticleSystem.MainModule mainModule;	//A module for storing and changing the thruster particles
 
 	float thrusterStartLife;				//The start life that the thrusters normally have
-	float lightStartIntensity;				//The intensity that the exhaust light normally has
+	float lightStartIntensity;              //The intensity that the exhaust light normally has
+
+	GameManager _gm;
+	private InGameManager _igm;
 
 
 	//The Reset method is called by Unity whenever a script it added to an object or when a component
@@ -44,10 +50,17 @@ public class VehicleAVFX : MonoBehaviour
 
 	void Start()
 	{
+		_igm = GameObject.Find("In Game Manager").GetComponent<InGameManager>();
+		_gm = GameObject.Find(VariableController.GAME_MANAGER).GetComponent<GameManager>();
+
 		//Get references to the PlayerInput, VehicleMovement, and AudioSource components
 		input = GetComponent<PlayerInput>();
 		movement = GetComponent<VehicleMovement>();
-		engineAudio = GetComponent<AudioSource>();
+		if (_gm.pd.sound)
+		{
+			engineAudio = GetComponent<AudioSource>();
+			engineAudio.Play();
+		}
 
 		//Record the thruster's particle start life property
 		mainModule = engineThrusterL.main;
@@ -87,6 +100,15 @@ public class VehicleAVFX : MonoBehaviour
 			//...modify the volume and pitch based on the speed of the ship
 			engineAudio.volume = Mathf.Lerp(engineMinVol, engineMaxVol, speedPercent);
 			engineAudio.pitch = Mathf.Lerp(engineMinPitch, engineMaxPitch, speedPercent);
+			if (_igm.GameIsPaused && _isEngineSoundActive)
+            {
+				engineAudio.Pause();
+				_isEngineSoundActive = false;
+            }else if (!_igm.GameIsPaused && !_isEngineSoundActive)
+            {
+				engineAudio.UnPause();
+				_isEngineSoundActive = true;
+			}
 		}
 	}
 
@@ -124,7 +146,7 @@ public class VehicleAVFX : MonoBehaviour
 		float currentIntensity = lightStartIntensity * input.thruster;
 
 		//If the ship is moving forward and not braking...
-		if (currentIntensity >= 0f && !input.isBraking)
+		if (currentIntensity >= 0f)
 		{
 			//... set the light's color and intensity
 			exhaustLight.color = thrustColor;
@@ -149,11 +171,21 @@ public class VehicleAVFX : MonoBehaviour
 			//Move the wallgrind particle effect to the point of collision and play it
 			wallGrind.transform.position = collision.contacts[0].point;
 			wallGrind.Play(true);
+			if (!_isRubbingWallActive)
+			{
+				//	_audioManager.Play("CarRubbing");
+				_isRubbingWallActive = true;
+			}
 		}
 		else if (collision.gameObject.layer == LayerMask.NameToLayer("Wall") && movement.GetSpeed() <= 5)
         {
 			wallGrind.Stop(true);
-        }
+			if (_isRubbingWallActive)
+			{
+				//_audioManager.Stop("CarRubbing");
+				_isRubbingWallActive = false;
+			}
+		}
 	}
 
 	//Called when the ship stops colliding with something solid
@@ -161,5 +193,10 @@ public class VehicleAVFX : MonoBehaviour
 	{
 		//Stop playing the wallgrind particles
 		wallGrind.Stop(true);
+		if (_isRubbingWallActive)
+		{
+			//_audioManager.Stop("CarRubbing");
+			_isRubbingWallActive = false;
+		}
 	}
 }

@@ -13,7 +13,6 @@ public class VehicleGuns : MonoBehaviour
     public float bulletShootDelay = 0;
     public float bulletSpeed = 100.0f;
     public float bulletRate = 0.5f;
-    [Range(0.1f, 10.0f)]
 
     private Transform bulletPosition1;
     private Transform bulletPosition2;
@@ -21,11 +20,18 @@ public class VehicleGuns : MonoBehaviour
     private bool isDoubleWeapon = false;
     public bool isShootingSameTime = true;
     private bool useFirstWeapon = true;
+    private string _gunFireSoundName;
+
+    ObjectPooler _bulletPool;
+    AudioManager _audioManager;
 
     private void Start()
     {
         // Fix Fire button if it's stuck
         CrossPlatformInputManager.SetButtonUp("Fire");
+        _audioManager = FindObjectOfType<AudioManager>();
+        string selectedVehicleId = GameManager.instance.selectedVehicle.name;
+        _gunFireSoundName = "GunFire" + selectedVehicleId;
 
         bulletPosition1 = Guns[0].transform;
         if (Guns.Length > 1)
@@ -33,6 +39,15 @@ public class VehicleGuns : MonoBehaviour
             isDoubleWeapon = true;
             bulletPosition2 = Guns[1].transform;
         }
+
+        _bulletPool = new ObjectPooler(bulletPrefab);
+        _bulletPool.FillThePool(15);
+
+        /*if (bulletShootEffect)
+        {
+            ObjectPooler bulletShootEffectPool = new ObjectPooler(bulletShootEffect);
+            bulletShootEffectPool.FillThePool(5);
+        }*/
     }
 
     // Update is called once per frame
@@ -55,6 +70,7 @@ public class VehicleGuns : MonoBehaviour
             {
                 StartCoroutine(FireSingleWeapon());
             }
+            _audioManager.PlayOneShot(_gunFireSoundName);
         }
     }
 
@@ -78,10 +94,15 @@ public class VehicleGuns : MonoBehaviour
             yield return new WaitForSeconds(bulletShootDelay);
         }
 
-        GameObject bullet = Instantiate(bulletPrefab, bulletPosition1.position, bulletPosition1.rotation);
+        /*GameObject bullet = bulletPool.GetObjectFromPool();
+        bullet.transform.position = bulletPosition1.position;
+        bullet.transform.rotation = bulletPosition1.rotation;*/
+        GameObject bullet = _bulletPool.GetObjectFromPoolAtPosition(bulletPosition1.position, bulletPosition1.rotation);
+
         bullet.GetComponent<Rigidbody>().velocity = this.GetComponent<Rigidbody>().velocity + (transform.forward * bulletSpeed);
 
-        Destroy(bullet, 2f);
+        // Destroy(bullet, 2f);
+        StartCoroutine(SendToPoolObjectTimout(bullet, 2f));
 
         // Wait for X second
         yield return new WaitForSeconds(bulletRate);
@@ -96,14 +117,21 @@ public class VehicleGuns : MonoBehaviour
         StartCoroutine(FireEffectWeapon(bulletPosition2));*/
 
         // Then bullet create
-        allowFire = false; 
-        GameObject bullet = Instantiate(bulletPrefab, bulletPosition1.position, bulletPosition1.rotation);
-        GameObject bullet2 = Instantiate(bulletPrefab, bulletPosition2.position, bulletPosition2.rotation);
+        allowFire = false;
+        /*GameObject bullet = bulletPool.GetObjectFromPool();
+        bullet.transform.position = bulletPosition1.position;
+        bullet.transform.rotation = bulletPosition1.rotation;
+        GameObject bullet2 = bulletPool.GetObjectFromPool();
+        bullet2.transform.position = bulletPosition2.position;
+        bullet2.transform.rotation = bulletPosition2.rotation;*/
+        GameObject bullet = _bulletPool.GetObjectFromPoolAtPosition(bulletPosition1.position, bulletPosition1.rotation);
+        GameObject bullet2 = _bulletPool.GetObjectFromPoolAtPosition(bulletPosition2.position, bulletPosition2.rotation);
 
         bullet.GetComponent<Rigidbody>().velocity = this.GetComponent<Rigidbody>().velocity + (transform.forward * bulletSpeed);
         bullet2.GetComponent<Rigidbody>().velocity = this.GetComponent<Rigidbody>().velocity + (transform.forward * bulletSpeed);
-        Destroy(bullet, 2f);
-        Destroy(bullet2, 2f);
+
+        StartCoroutine(SendToPoolObjectTimout(bullet, 2f));
+        StartCoroutine(SendToPoolObjectTimout(bullet2, 2f));
 
         // Wait for X second
         yield return new WaitForSeconds(bulletRate);
@@ -122,23 +150,39 @@ public class VehicleGuns : MonoBehaviour
             /*StartCoroutine(FireEffectWeapon(bulletPosition1));*/
 
             // Then bullet create
-            bullet = Instantiate(bulletPrefab, bulletPosition1.position, bulletPosition1.rotation);
-        }else
+            /*bullet = bulletPool.GetObjectFromPool();
+            bullet.transform.position = bulletPosition1.position;
+            bullet.transform.rotation = bulletPosition1.rotation;*/
+            bullet = _bulletPool.GetObjectFromPoolAtPosition(bulletPosition1.position, bulletPosition1.rotation);
+        }
+        else
         {
             // Shoot effect
-/*            StartCoroutine(FireEffectWeapon(bulletPosition2));
-*/
+            /*            StartCoroutine(FireEffectWeapon(bulletPosition2));
+            */
             // Then bullet create
-            bullet = Instantiate(bulletPrefab, bulletPosition2.position, bulletPosition2.rotation);
+            /*bullet = bulletPool.GetObjectFromPool();
+            bullet.transform.position = bulletPosition2.position;
+            bullet.transform.rotation = bulletPosition2.rotation;*/
+            bullet = _bulletPool.GetObjectFromPoolAtPosition(bulletPosition2.position, bulletPosition2.rotation);
         }
 
         bullet.GetComponent<Rigidbody>().velocity = this.GetComponent<Rigidbody>().velocity + (transform.forward * bulletSpeed);
         useFirstWeapon = !useFirstWeapon;
-        Destroy(bullet, 2f);
+
+        StartCoroutine(SendToPoolObjectTimout(bullet, 2f));
 
         // Wait for X second
         yield return new WaitForSeconds(bulletRate / 2);
 
         allowFire = true;
+    }
+
+    private IEnumerator SendToPoolObjectTimout(GameObject bulletObject, float time)
+    {
+        // Wait for X second
+        yield return new WaitForSeconds(time);
+
+        _bulletPool.SendObjectToPool(bulletObject);
     }
 }

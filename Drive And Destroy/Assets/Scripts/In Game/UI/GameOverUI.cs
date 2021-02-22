@@ -17,6 +17,7 @@ public class GameOverUI : MonoBehaviour
     public TextMeshProUGUI RestartButtonText;
     public Image MenuButtonBG;
     public TextMeshProUGUI MenuButtonText;
+    public GameObject TouchBlockPanel;
 
     [SerializeField]
     private int _newScore;
@@ -33,6 +34,7 @@ public class GameOverUI : MonoBehaviour
 
         AddUIValues();
         CalculateGold();
+        StartCoroutine(DisableTheTouchBlock(1.5f));
 
         Image GameOverUIImage = gameObject.GetComponent<Image>();
         LeanTween.value(gameObject, 0, 1f, 1f).setOnUpdate((float val) =>
@@ -54,6 +56,11 @@ public class GameOverUI : MonoBehaviour
         }).setIgnoreTimeScale(true);
 
         _gm.SavePlayerData();
+    }
+
+    private void OnDisable()
+    {
+        TouchBlockPanel.SetActive(true);
     }
 
     private void CalculateGold()
@@ -99,5 +106,13 @@ public class GameOverUI : MonoBehaviour
         Color textColor = text.color;
         textColor.a = val;
         text.color = textColor;
+    }
+
+    IEnumerator DisableTheTouchBlock(float time)
+    {
+        //yield on a new YieldInstruction that waits for 5 seconds.
+        yield return new WaitForSeconds(time);
+
+        TouchBlockPanel.SetActive(false);
     }
 }

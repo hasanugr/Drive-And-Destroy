@@ -26,6 +26,8 @@ public class VehicleMovement : MonoBehaviour
 	public float angleOfRoll = 30f;					//The angle that the ship "banks" into a turn
 	public float RotationDecraseDueSpeed = 1.0f;    //Rotation speed reduction due to speed
 
+	private float _lerpedRudder;
+
 	[Header("Hover Settings")]
 	public float hoverHeight = 1.5f;        //The height the ship maintains when hovering
 	public float maxGroundDist = 5f;        //The distance the ship can be above the ground before it is "falling"
@@ -38,6 +40,10 @@ public class VehicleMovement : MonoBehaviour
 	public float terminalVelocity = 100f;   //The max speed the ship can go
 	public float hoverGravity = 20f;        //The gravity applied to the ship while it is on the ground
 	public float fallGravity = 80f;         //The gravity applied to the ship while it is falling
+
+	[Header("Boost Effects")]
+	public GameObject HealBoostEffect;
+	public GameObject TurboBoostEffect;
 
 	Rigidbody rigidBody;					//A reference to the ship's rigidbody
 	PlayerInput input;						//A reference to the player's input					
@@ -54,6 +60,7 @@ public class VehicleMovement : MonoBehaviour
 
 	private CameraShakeInstance _shakeInstance;
 	private InGameManager _igm;
+	private AudioManager _audioManager;
 
 	void Start()
 	{
@@ -61,6 +68,7 @@ public class VehicleMovement : MonoBehaviour
 		rigidBody = GetComponent<Rigidbody>();
 		input = GetComponent<PlayerInput>();
 		_igm = GameObject.Find("In Game Manager").GetComponent<InGameManager>();
+		_audioManager = FindObjectOfType<AudioManager>();
 
 		//Calculate the ship's drag value
 		drag = driveForce / terminalVelocity;
@@ -78,7 +86,7 @@ public class VehicleMovement : MonoBehaviour
 
 		_health = FullHealth;
 
-		_terrainPoisiton = _igm.GrassTerrain.position;
+		_terrainPoisiton = _igm.GetActiveTerrainPosition();
 
 		// Fix Turbo button if it's stuck
 		CrossPlatformInputManager.SetButtonUp("Turbo");
@@ -183,7 +191,7 @@ public class VehicleMovement : MonoBehaviour
 		//Calculate the rotation needed for this new angle
 		Quaternion bodyRotation = transform.rotation * Quaternion.Euler(0f, 0f, angle);
 		//Finally, apply this angle to the ship's body
-		shipBody.rotation = Quaternion.Lerp(shipBody.rotation, bodyRotation, Time.deltaTime * 10f);
+		shipBody.rotation = Quaternion.Lerp(shipBody.rotation, bodyRotation, Time.deltaTime * 8f);
 	}
 
 	void CalculatePropulsion()
@@ -198,13 +206,15 @@ public class VehicleMovement : MonoBehaviour
 		//_calculatedRotationForce = _isTurboActive ? _calculatedRotationForce * 0.75f : _calculatedRotationForce;
 		//Debug.Log("GSP: " + GetSpeedPercentage() + " --- DV: " + _decraseValue + " --- CRF: " + _calculatedRotationForce);
 
+		//Calculate the rudder for the soft rotate (Exclude Tilt vehicle control type)
+		_lerpedRudder = input.isAccelerationControlActive ? input.rudder : Mathf.Lerp(_lerpedRudder, input.rudder, Time.deltaTime * 8f);
 		//Calculate the yaw torque based on the rudder and current angular velocity
 		//float rotationTorque = input.rudder - rigidBody.angularVelocity.y;
 		float rotationTorque = _currentSpeed > 0 && input.thruster < 0
-			? input.rudder * (calculatedRotationForce * 2) // Breaking rotate faster
-			: input.rudder * calculatedRotationForce; // No breake rotate due of algorithm
+			? _lerpedRudder * (calculatedRotationForce * 2) // Breaking rotate faster
+			: _lerpedRudder * calculatedRotationForce; // No breake rotate due of algorithm
 		//Apply the torque to the ship's Y axis
-		rigidBody.AddRelativeTorque(0f, _currentSpeed < 1 && input.thruster < 0 ? -rotationTorque : rotationTorque, 0f, ForceMode.VelocityChange);
+		rigidBody.AddRelativeTorque(0f, (_currentSpeed < 1 && input.thruster < 0 ? -rotationTorque : rotationTorque), 0f, ForceMode.VelocityChange);
 
 		//Calculate the current sideways speed by using the dot product. This tells us
 		//how much of the ship's velocity is in the "right" or "left" direction
@@ -303,6 +313,24 @@ public class VehicleMovement : MonoBehaviour
 
 	private void OnCollisionEnter(Collision collision)
     {
+		if (_currentSpeed > 5)
+		{
+			float customCrashSoundVolume = 0.4f;
+			if (_currentSpeed < 25)
+			{
+				customCrashSoundVolume = 0.05f;
+			}
+			else if (_currentSpeed < 50)
+			{
+				customCrashSoundVolume = 0.1f;
+			}
+			else if (_currentSpeed < 75)
+			{
+				customCrashSoundVolume = 0.2f;
+			}
+			_audioManager.Play("CarCrash", customCrashSoundVolume);
+		}
+
 		//If the ship has collided with an object on the Barricade layer...
 		if (collision.gameObject.layer == LayerMask.NameToLayer("Barricade"))
 		{
@@ -378,6 +406,13 @@ public class VehicleMovement : MonoBehaviour
 				}
 			}
 		}
+
+		//If the ship has collided with an object on the Wall layer...
+		if (collision.gameObject.layer == LayerMask.NameToLayer("Wall"))
+		{
+			Vector3 sideForceFromCollision = Vector3.Dot(collision.impulse, transform.right) * transform.right;
+			rigidBody.AddForce(sideForceFromCollision * 1.2f, ForceMode.Impulse);
+		}
 	}
 
     void OnCollisionStay(Collision collision)
@@ -389,15 +424,27 @@ public class VehicleMovement : MonoBehaviour
 			//to keep it stuck on the track (instead up popping up over the wall)
 			Vector3 upwardForceFromCollision = Vector3.Dot(collision.impulse, transform.up) * transform.up;
 			rigidBody.AddForce(-upwardForceFromCollision, ForceMode.Impulse);
+
+			Vector3 sideForceFromCollision = Vector3.Dot(collision.impulse, transform.right) * transform.right;
+			rigidBody.AddForce(sideForceFromCollision * 1.2f, ForceMode.Impulse);
+
+			if (_currentSpeed > 5) { 
+				float rotationTorque = 3f;
+				rigidBody.AddRelativeTorque(0f, (collision.gameObject.name == "Left Wall" ? rotationTorque : -rotationTorque), 0f, ForceMode.VelocityChange);
+			}
 		}
 	}
-	public void TakeDamage(float damage)
+
+    public void TakeDamage(float damage)
     {
-		damage *= DamageDecreasePercent;
-		_health -= damage;
-		if (_health <= 0)
-        {
-			DeathEffectApply();
+		if (_health > 0)
+		{
+			damage *= DamageDecreasePercent;
+			_health -= damage;
+			if (_health <= 0)
+			{
+				DeathEffectApply();
+			}
 		}
     }
 
@@ -422,7 +469,7 @@ public class VehicleMovement : MonoBehaviour
 		//Add Turbo value
 		float tempTurboValue = _currentTurbo + addedTurboValue;
 		_currentTurbo = Mathf.Clamp(tempTurboValue, 0, 100);
-		
+		TurboBoostEffect.SetActive(true);
 	}
 	public float GetSpeed()
 	{
@@ -441,6 +488,7 @@ public class VehicleMovement : MonoBehaviour
 		//Add Health value
 		float tempHealthValue = _health + addedHealthValue;
 		_health = Mathf.Clamp(tempHealthValue, 0, 100);
+		HealBoostEffect.SetActive(true);
 	}
 
 	private void DeathEffectApply()

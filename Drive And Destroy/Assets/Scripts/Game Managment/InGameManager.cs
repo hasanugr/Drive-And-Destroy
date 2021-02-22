@@ -2,15 +2,22 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnityStandardAssets.CrossPlatformInput;
+using UnityEngine.UI;
+using TMPro;
 
 public class InGameManager : MonoBehaviour
 {
     [Header("General")]
-    public static bool GameIsPaused = false;
+    [HideInInspector]
+    public bool GameIsStarted = false;
+    [HideInInspector]
+    public bool GameIsPaused = false;
     public GameObject pauseMenuUI;
     public GameObject GameOverUI;
     public GameObject inGameUI;
     public GameObject lateLoadObject;
+    public PlayerStatusTextController PlayerStatusTextController;
     public GameObject cameraHolder;
     public GameObject spawnPoint;
 
@@ -21,10 +28,13 @@ public class InGameManager : MonoBehaviour
     [HideInInspector]
     public bool IsBossAlive = false;
     [HideInInspector]
+    public bool IsNextLevelTime = false;
+    [HideInInspector]
     public int BossFullHealth;
     [HideInInspector]
     public int BossCurrentHealth;
     private int _createdBossRoad = 0;
+    [SerializeField]
     private int _reachedLevel = 1;
 
     private GameObject _player;
@@ -40,6 +50,7 @@ public class InGameManager : MonoBehaviour
     public GameObject BossModeRoad;
     public GameObject NextLevelRoad;
     public List<GameObject> activeRoads;
+    public int StepToAddCountdownReset = 3;
 
     private Vector3 insPosition;
     private Quaternion insRotation;
@@ -47,6 +58,13 @@ public class InGameManager : MonoBehaviour
 
     private int blockStepLeft = 0;
     private int blockStepRight = 0;
+
+    [Header("Game Countdown Timer")]
+    public float TimerMaxValue = 3;
+    public GameObject TimerUIObj;
+    public TextMeshProUGUI TimerUI;
+
+    private float _timerCountdown;
 
     [Header("Player Control UI")]
     public GameObject PlayerControlUIMode1;
@@ -56,16 +74,47 @@ public class InGameManager : MonoBehaviour
     private int _selectedPlayerControlUIMode;
 
     [Header("Terrain Control")]
-    public Transform GrassTerrain;
+    public GameObject[] Terrains;
+
+    private int _activeTerrain = 0;
 
     GameManager _gm;
     private void Start()
     {
         _gm = GameObject.Find(VariableController.GAME_MANAGER).GetComponent<GameManager>();
         _selectedPlayerControlUIMode = _gm.pd.vehicleControlType;
+        Time.timeScale = 1f;
+        _timerCountdown = TimerMaxValue;
 
         SpawnTheVehicle();
+        StartCoroutine(CountdownToStart());
+        cameraHolder.GetComponent<CameraFollow>().enabled = true;
+    }
+
+    IEnumerator CountdownToStart()
+    {
+        while (_timerCountdown > 0)
+        {
+            yield return new WaitForSeconds(1f);
+            TimerUI.text = _timerCountdown.ToString();
+            LeanTween.scale(TimerUIObj, new Vector3(1.5f, 1.5f, 1), 0.5f).setEasePunch();
+            _timerCountdown--;
+        }
+
+        yield return new WaitForSeconds(1f);
+        TimerUI.text = "GO";
+        LeanTween.scale(TimerUIObj, new Vector3(1.5f, 1.5f, 1), 1f).setEaseInExpo();
+        LeanTween.value(TimerUIObj, 0, 1f, 1f).setOnUpdate((float val) =>
+        {
+            Color textColor = TimerUI.color;
+            textColor.a = 1 - val;
+            TimerUI.color = textColor;
+        });
         ProcessAfterLoad();
+        GameIsStarted = true;
+        cameraHolder.GetComponent<CameraFollow>().positionSmoothTime = 0.01f;
+        yield return new WaitForSeconds(1f);
+        TimerUIObj.transform.parent.gameObject.SetActive(false);
     }
 
     public void Resume()
@@ -88,7 +137,7 @@ public class InGameManager : MonoBehaviour
     {
         SceneManager.LoadScene(SceneManager.GetActiveScene().name);
         pauseMenuUI.SetActive(false);
-        inGameUI.SetActive(true);
+        //inGameUI.SetActive(true);
         Time.timeScale = 1f;
         GameIsPaused = false;
     }
@@ -118,6 +167,7 @@ public class InGameManager : MonoBehaviour
 
         GameOverUI.SetActive(true);
         inGameUI.SetActive(false);
+        CrossPlatformInputManager.SetButtonUp("Fire");
     }
 
     public void AddPlayerPoint(int point)
@@ -131,6 +181,11 @@ public class InGameManager : MonoBehaviour
         return _playerScore;
     }
 
+    public int GetReachedLevel()
+    {
+        return _reachedLevel;
+    }
+
     public void AddGold(int count)
     {
         _collectedGold += count;
@@ -138,6 +193,11 @@ public class InGameManager : MonoBehaviour
     public int GetCollectedGold()
     {
         return _collectedGold;
+    }
+
+    public void ResetCountdownTimer()
+    {
+        PlayerStatusTextController.ResetTheCounter();
     }
 
     public void RoadChangeTrigger()
@@ -149,30 +209,40 @@ public class InGameManager : MonoBehaviour
         CreateNewRoad();
     }
 
+    public Vector3 GetActiveTerrainPosition()
+    {
+        return Terrains[_activeTerrain].transform.position;
+    }
+
     public void ChangeTerrainPosition(Vector3 pos)
     {
-        GrassTerrain.position = pos;
+        Transform activeTerrainTransform = Terrains[_activeTerrain].transform;
+        activeTerrainTransform.position = pos;
+    }
+
+    public void ChangeActiveTerrain()
+    {
+        Vector3 tempPos = Terrains[_activeTerrain].transform.position;
+        Terrains[_activeTerrain].SetActive(false);
+        _activeTerrain = Mathf.Clamp((_reachedLevel - 1), 0, 3);
+        Terrains[_activeTerrain].transform.position = new Vector3(tempPos.x, Terrains[_activeTerrain].transform.position.y, tempPos.z);
+        Terrains[_activeTerrain].SetActive(true);
+    }
+
+    public void IncreaseReachedLevel()
+    {
+        _reachedLevel += 1;
+        print("IncreaseReachedLevel --> " + _reachedLevel);
     }
 
     private void LevelController()
     {
-        if (_playerScore > VariableController.FirstLevelEndPoint && _reachedLevel == 1)
+        if ((_playerScore > VariableController.FirstLevelEndPoint && _reachedLevel == 1) || 
+            (_playerScore > VariableController.SecondLevelEndPoint && _reachedLevel == 2) || 
+            (_playerScore > VariableController.ThirthLevelEndPoint && _reachedLevel == 3) ||
+            ((_reachedLevel >= 4) && (_playerScore > (VariableController.ThirthLevelEndPoint - VariableController.SecondLevelEndPoint) * _reachedLevel)))
         {
-            _reachedLevel = 2;
             ActivateTheBoss();
-        }
-        else if (_playerScore > VariableController.SecondLevelEndPoint && _reachedLevel == 2)
-        {
-            _reachedLevel = 3;
-            ActivateTheBoss();
-        }
-        else if (_reachedLevel >= 3)
-        {
-            if (_playerScore > (VariableController.SecondLevelEndPoint - VariableController.FirstLevelEndPoint) * _reachedLevel)
-            {
-                _reachedLevel++;
-                ActivateTheBoss();
-            }
         }
     }
 
@@ -187,7 +257,6 @@ public class InGameManager : MonoBehaviour
 
     private void ProcessAfterLoad()
     {
-        cameraHolder.GetComponent<CameraFollow>().enabled = true;
         lateLoadObject.SetActive(true);
 
         switch(_selectedPlayerControlUIMode)
@@ -235,63 +304,18 @@ public class InGameManager : MonoBehaviour
         // The traps won't add to road when boss activated.
         if (IsBossActivated)
         {
-            if (IsBossAlive)
-            {
-                _createdBossRoad++;
-                _lastRoad.GetComponent<BossRoadControl>().StartProccess(_reachedLevel, _createdBossRoad); // ************************* //
-            }
-            else
-            {
-                _createdBossRoad = 0;
-                IsBossActivated = false;
-                // _lastRoad.GetComponent<NextLevelRoadControl>().StartProccess(_playerScore); // ************************* //
-            }
+            _createdBossRoad++;
+            _lastRoad.GetComponent<BossRoadControl>().StartProccess(_reachedLevel, _createdBossRoad);
         }
         else
         {
-            _lastRoad.GetComponent<RoadBarricadeControl>().AddBarricades(_playerScore);
+            _lastRoad.GetComponent<RoadBarricadeControl>().AddBarricades(_reachedLevel);
         }
     }
 
     private bool IsFreeForNewRoad(string selectedNewRoadName)
     {
         bool _isFree = true;
-        /*float[] _checkLengths = new float[3];
-        float[] _checkDeflections = new float[3];
-
-        switch (selectedNewRoadName)
-        {
-            case "Straight Road":
-                _checkLengths = new float[] { 400f, 400f, 400f };
-                _checkDeflections = new float[] { -0.1f, 0f, 0.1f };
-                break;
-            case "Soft Left Road":
-                _checkLengths = new float[] { 600f, 450f, 350f };
-                _checkDeflections = new float[] { -0.6f, -0.25f, 0f };
-                break;
-            case "Soft Right Road":
-                _checkLengths = new float[] { 600f, 450f, 350f };
-                _checkDeflections = new float[] { 0.6f, 0.25f, 0f };
-                break;
-            case "Hard Left Road":
-                _checkLengths = new float[] { 400f, 350f, 300f };
-                _checkDeflections = new float[] { -1f, -0.5f, 0f };
-                break;
-            case "Hard Right Road":
-                _checkLengths = new float[] { 400f, 350f, 300f };
-                _checkDeflections = new float[] { 1f, 0.5f, 0f };
-                break;
-        }
-
-        for (int i = 0; i < _checkLengths.Length; i++)
-        {
-            Ray myRay = new Ray(insPosition, insForward + (transform.right * _checkDeflections[i]));
-            if (Physics.Raycast(myRay, out RaycastHit _hit, _checkLengths[i]))
-            {
-                _isFree = false;
-                break;
-            }
-        }*/
 
         if ((selectedNewRoadName == "Soft Left Road" || selectedNewRoadName == "Hard Left Road"))
         {
@@ -313,13 +337,12 @@ public class InGameManager : MonoBehaviour
 
         if (IsBossActivated)
         {
-            if (IsBossAlive)
-            {
-                _roads = new GameObject[] { BossModeRoad };
-            }else
-            {
-                _roads = new GameObject[] { NextLevelRoad };
-            }
+            _roads = new GameObject[] { BossModeRoad };
+        }else if (IsNextLevelTime)
+        {
+            _roads = new GameObject[] { NextLevelRoad };
+            IsNextLevelTime = false;
+            _createdBossRoad = 0;
         }
         else
         {
@@ -334,7 +357,7 @@ public class InGameManager : MonoBehaviour
                 blockStepRight -= 1;
             }
         }
-        
+
         int _randomNumber = Random.Range(0, _roads.Length);
 
         GameObject selectedRoad = _roads[_randomNumber];
@@ -344,6 +367,5 @@ public class InGameManager : MonoBehaviour
     private void ActivateTheBoss()
     {
         IsBossActivated = true;
-        IsBossAlive = true;
     }
 }

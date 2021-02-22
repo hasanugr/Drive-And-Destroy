@@ -25,9 +25,16 @@ public class SwitchHandler : MonoBehaviour
     private bool switching = false;
     private float t = 0.0f;
 
+    private string _switchFieldName;
+
+    private AudioManager _audioManager;
+
     private void Awake()
     {
         SBPointTransform = SBPoint.GetComponent<RectTransform>();
+        _audioManager = FindObjectOfType<AudioManager>();
+
+        _switchFieldName = SwitchHead.parent.name;
 
         SBPointSize = SBPointTransform.sizeDelta.x;
         float SwitchHeadSizeX = SwitchHead.sizeDelta.x;
@@ -104,6 +111,19 @@ public class SwitchHandler : MonoBehaviour
 
     public void Switch()
     {
+        if (_switchFieldName == "Music")
+        {
+            if (isOn)
+            {
+                _audioManager.Stop("Theme");
+            }
+            else
+            {
+                _audioManager.Play("Theme");
+            }
+        }
+
+        _audioManager.Play("SettingsSwitch");
         switching = true;
     }
 }

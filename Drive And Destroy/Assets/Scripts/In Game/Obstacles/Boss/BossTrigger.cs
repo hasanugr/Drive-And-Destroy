@@ -7,6 +7,7 @@ public class BossTrigger : MonoBehaviour
     public GameObject BossRoad;
 
     private BossRoadControl _bossRoadControl;
+    private bool _isBossSpawned;
 
     private void Start()
     {
@@ -15,9 +16,10 @@ public class BossTrigger : MonoBehaviour
 
     private void OnTriggerEnter(Collider collider)
     {
-        if (collider.gameObject.CompareTag("PlayerShip"))
+        if (collider.gameObject.CompareTag("PlayerShip") && !_isBossSpawned)
         {
             _bossRoadControl.BossSpawn();
+            _isBossSpawned = true;
         }
     }
 }

@@ -8,6 +8,8 @@ TagManager:
   - PlayerSensor
   - PlayerShip
   - FxTemporaire
+  - Fire
+  - BackBlock
   layers:
   - Default
   - TransparentFX

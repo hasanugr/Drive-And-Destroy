@@ -19049,6 +19049,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   BulletTriggerEffect: {fileID: 100008, guid: a62892f06f8a48641a5c36d395567ef5, type: 3}
   BulletDamage: 20
+  Trails: []
 --- !u!54 &2514824616497541670
 Rigidbody:
   m_ObjectHideFlags: 0

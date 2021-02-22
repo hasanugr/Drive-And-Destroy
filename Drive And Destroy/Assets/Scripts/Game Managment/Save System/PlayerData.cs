@@ -101,7 +101,7 @@ public class PlayerData
     {
         _levels = new int[1];
         _highScore = 0;
-        _gold = 0;
+        _gold = 9999;
         _selectedVehicleId = 1;
         ActivateVehicle(_selectedVehicleId);
 
@@ -139,8 +139,13 @@ public class PlayerData
 
     public bool IsVehicleActive(int vehicleId)
     {
-        bool result = false;
+        if (vehicleList == null)
+        {
+            ActivateVehicle(_selectedVehicleId);
+        }
 
+        bool result = false;
+        
         foreach (List<int[]> item in vehicleList)
         {
             if (item[0][0] == vehicleId)
@@ -158,6 +163,7 @@ public class PlayerData
         {
             vehicleList = new List<List<int[]>>();
         }
+
         vehicleList.Add(new List<int[]>(AddVehicleValues(vehicleId)));
     }
 

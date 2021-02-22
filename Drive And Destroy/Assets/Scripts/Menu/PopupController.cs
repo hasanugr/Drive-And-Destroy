@@ -5,7 +5,12 @@ using UnityEngine;
 public class PopupController : MonoBehaviour
 {
     public GameObject EarnGoldPopup;
+    AudioManager _audioManager;
 
+    private void Start()
+    {
+        _audioManager = FindObjectOfType<AudioManager>();
+    }
 
     public void OpenPopup(string popupName)
     {
@@ -14,6 +19,7 @@ public class PopupController : MonoBehaviour
 
     public void ClosePopup(string popupName)
     {
+        _audioManager.Play("Button");
         MovePopupAsWant(popupName, 0);
     }
 

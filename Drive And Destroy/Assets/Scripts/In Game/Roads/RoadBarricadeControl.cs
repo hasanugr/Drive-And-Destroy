@@ -5,12 +5,23 @@ using UnityEngine;
 
 public class RoadBarricadeControl : MonoBehaviour
 {
+    public int RoadMaterialTest = 0;
+    private int _activeRMT = 0;
+    [Header("Enivronment")]
+    public MeshRenderer RoadMeshRenderer;
+    public GameObject[] Environments;
+    public Material[] RoadMaterials;
+
+    private Material[] _tempMaterials;
+
+    [Header("Barricades")]
     public GameObject[] BarricadePoints;
     public GameObject[] Barricades;
     public Transform BarricadesHolderTransform;
 
-    private int _playerScore;
+    private int _reachedLevel;
 
+    private InGameManager _igm;
     /*
      * BasicToQuarters -> Adding basic barricades to first and last quarters of road.
      * BasicSeriesToMiddle -> Adding 5 basic barricades to middle of road as series.
@@ -25,10 +36,20 @@ public class RoadBarricadeControl : MonoBehaviour
         DoubleGateToMiddle,
     }
 
-    public void AddBarricades(int playerScore)
+    private void Start()
     {
-        _playerScore = playerScore;
-        BarricadeTypes barricadeType = GetRandomBarricade();
+        _igm = GameObject.Find("In Game Manager").GetComponent<InGameManager>();
+        _reachedLevel = _igm.GetReachedLevel();
+
+        EnvironmentAdd();
+        RoadMaterialAdd();
+    }
+
+    public void AddBarricades(int reachedLevel)
+    {
+       BarricadeTypes barricadeType = GetRandomBarricade();
+       _reachedLevel = reachedLevel;
+
        switch (barricadeType)
         {
             case BarricadeTypes.BasicToQuarters:
@@ -98,16 +119,20 @@ public class RoadBarricadeControl : MonoBehaviour
     private void AddBasicToQuarters()
     {
         GameObject basicBarricade;
-
-        if (_playerScore < VariableController.FirstLevelEndPoint)
+        switch (_reachedLevel)
         {
-            basicBarricade = Barricades[0];
-        }else if (_playerScore < VariableController.SecondLevelEndPoint)
-        {
-            basicBarricade = Barricades[2];
-        }else
-        {
-            basicBarricade = Barricades[4];
+            case 1:
+                basicBarricade = Barricades[0];
+                break;
+            case 2:
+                basicBarricade = Barricades[2];
+                break;
+            case 3:
+                basicBarricade = Barricades[4];
+                break;
+            default:
+                basicBarricade = Barricades[4];
+                break;
         }
 
         BarricadePoints[1].transform.Translate(BarricadePoints[1].transform.right * UnityEngine.Random.Range(-6, 7), Space.World);
@@ -123,17 +148,20 @@ public class RoadBarricadeControl : MonoBehaviour
     {
         GameObject movingBarricade;
 
-        if (_playerScore < VariableController.FirstLevelEndPoint)
+        switch (_reachedLevel)
         {
-            movingBarricade = Barricades[1];
-        }
-        else if (_playerScore < VariableController.SecondLevelEndPoint)
-        {
-            movingBarricade = Barricades[3];
-        }
-        else
-        {
-            movingBarricade = Barricades[5];
+            case 1:
+                movingBarricade = Barricades[1];
+                break;
+            case 2:
+                movingBarricade = Barricades[3];
+                break;
+            case 3:
+                movingBarricade = Barricades[5];
+                break;
+            default:
+                movingBarricade = Barricades[5];
+                break;
         }
 
         GameObject firstQuarterBarricade = Instantiate(movingBarricade, BarricadePoints[1].transform.position, BarricadePoints[1].transform.rotation);
@@ -147,17 +175,20 @@ public class RoadBarricadeControl : MonoBehaviour
     {
         GameObject basicBarricadeSeries;
 
-        if (_playerScore < VariableController.FirstLevelEndPoint)
+        switch (_reachedLevel)
         {
-            basicBarricadeSeries = Barricades[0];
-        }
-        else if (_playerScore < VariableController.SecondLevelEndPoint)
-        {
-            basicBarricadeSeries = Barricades[2];
-        }
-        else
-        {
-            basicBarricadeSeries = Barricades[4];
+            case 1:
+                basicBarricadeSeries = Barricades[0];
+                break;
+            case 2:
+                basicBarricadeSeries = Barricades[2];
+                break;
+            case 3:
+                basicBarricadeSeries = Barricades[4];
+                break;
+            default:
+                basicBarricadeSeries = Barricades[4];
+                break;
         }
 
         GameObject firstQuarterBarricade = Instantiate(basicBarricadeSeries, BarricadePoints[2].transform.position, BarricadePoints[2].transform.rotation);
@@ -183,24 +214,69 @@ public class RoadBarricadeControl : MonoBehaviour
         BlockBarricade middleBreackableDoorConf = middleBreackableDoor.GetComponent<BlockBarricade>();
         Material middleBreackableDoorMat = middleBreackableDoor.GetComponent<Renderer>().material;
 
-        if (_playerScore < VariableController.FirstLevelEndPoint)
+        switch (_reachedLevel)
         {
-            middleBreackableDoorMat.color = Color.green;
-            middleBreackableDoorConf.SpecialColor = Color.green;
-            middleBreackableDoorConf.FullHealth = 40;
+            case 1:
+                middleBreackableDoorMat.color = Color.green;
+                middleBreackableDoorConf.SpecialColor = Color.green;
+                middleBreackableDoorConf.FullHealth = 40;
+                break;
+            case 2:
+                middleBreackableDoorMat.color = Color.yellow;
+                middleBreackableDoorConf.SpecialColor = Color.yellow;
+                middleBreackableDoorConf.FullHealth = 70;
+                break;
+            case 3:
+                middleBreackableDoorMat.color = Color.red;
+                middleBreackableDoorConf.SpecialColor = Color.red;
+                middleBreackableDoorConf.FullHealth = 100;
+                break;
+            default:
+                middleBreackableDoorMat.color = Color.red;
+                middleBreackableDoorConf.SpecialColor = Color.red;
+                middleBreackableDoorConf.FullHealth = 130;
+                break;
         }
-        else if (_playerScore < VariableController.SecondLevelEndPoint)
+        
+    }
+
+    private void EnvironmentAdd()
+    {
+        switch (_reachedLevel)
         {
-            middleBreackableDoorMat.color = Color.yellow;
-            middleBreackableDoorConf.SpecialColor = Color.yellow;
-            middleBreackableDoorConf.FullHealth = 70;
-        }
-        else
-        {
-            middleBreackableDoorMat.color = Color.red;
-            middleBreackableDoorConf.SpecialColor = Color.red;
-            middleBreackableDoorConf.FullHealth = 100;
+            case 1:
+                Environments[0].SetActive(true);
+                break;
+            case 2:
+                Environments[1].SetActive(true);
+                break;
+            case 3:
+                Environments[2].SetActive(true);
+                break;
+            default:
+                Environments[3].SetActive(true);
+                break;
         }
     }
 
+    private void RoadMaterialAdd()
+    {
+        _tempMaterials = RoadMeshRenderer.materials;
+        switch (_reachedLevel)
+        {
+            case 1:
+                _tempMaterials[0] = RoadMaterials[0];
+                break;
+            case 2:
+                _tempMaterials[0] = RoadMaterials[1];
+                break;
+            case 3:
+                _tempMaterials[0] = RoadMaterials[2];
+                break;
+            default:
+                _tempMaterials[0] = RoadMaterials[3];
+                break;
+        }
+        RoadMeshRenderer.materials = _tempMaterials;
+    }
 }

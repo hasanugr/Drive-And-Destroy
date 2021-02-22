@@ -8,7 +8,8 @@ public class BoostTrigger : MonoBehaviour
     {
         Turbo,
         Heal,
-        Gold
+        Gold,
+        Timer
     }
 
     public BoostTypes BoostType;
@@ -21,15 +22,20 @@ public class BoostTrigger : MonoBehaviour
 
     private InGameManager _igm;
     private Vector3 _childBodyObjectScale;
+    private AudioManager _audioManager;
 
     // Start is called before the first frame update
     void Start()
     {
         _igm = GameObject.Find("In Game Manager").GetComponent<InGameManager>();
-        _childBodyObjectScale = ChildBodyObject.transform.localScale;
+        _audioManager = FindObjectOfType<AudioManager>();
 
-        LeanTween.rotateAround(this.gameObject, transform.up, 360, RotateAroundTime).setLoopClamp();
-        LeanTween.scale(ChildBodyObject, _childBodyObjectScale * EasePunchSize, 1).setEasePunch().setLoopPingPong();
+        if (ChildBodyObject != null)
+        {
+            _childBodyObjectScale = ChildBodyObject.transform.localScale;
+            LeanTween.rotateAround(this.gameObject, transform.up, 360, RotateAroundTime).setLoopClamp();
+            LeanTween.scale(ChildBodyObject, _childBodyObjectScale * EasePunchSize, 1).setEasePunch().setLoopPingPong();
+        }
     }
 
     private void OnTriggerEnter(Collider collider)
@@ -44,23 +50,29 @@ public class BoostTrigger : MonoBehaviour
             {
                 if (vehicleMovement.GetTurbo() < 100)
                 {
+                    _audioManager.Play("BoostSound");
                     vehicleMovement.AddTurboPoint(ValueToAdd);
                     isDestroy = true;
                 }
             }
             else if (BoostType == BoostTypes.Heal)
             {
-                print("Heal Taked.!!");
                 if (vehicleMovement.GetHealth() < 100)
                 {
-                    print("Heal Boosted.!! " + vehicleMovement.GetHealth());
+                    _audioManager.Play("BoostSound");
                     vehicleMovement.AddHealth(ValueToAdd);
                     isDestroy = true;
                 }
             }else if (BoostType == BoostTypes.Gold)
             {
+                _audioManager.Play("CoinPickup");
                 _igm.AddGold(ValueToAdd);
-                    isDestroy = true;
+                isDestroy = true;
+            }else if (BoostType == BoostTypes.Timer)
+            {
+                _audioManager.Play("BoostSound");
+                _igm.ResetCountdownTimer();
+                gameObject.SetActive(false);
             }
 
             if (isDestroy)

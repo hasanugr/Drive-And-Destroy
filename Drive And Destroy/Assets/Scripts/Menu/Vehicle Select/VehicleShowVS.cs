@@ -23,9 +23,12 @@ public class VehicleShowVS : MonoBehaviour
 
     GameManager gm;
     PopupController _popupController;
+    AudioManager _audioManager;
+
     private void OnEnable()
     {
         gm = GameObject.Find(VariableController.GAME_MANAGER).GetComponent<GameManager>();
+        _audioManager = FindObjectOfType<AudioManager>();
         showingVehicleId = gm.pd.selectedVehicleId;
 
         _popupController = GameObject.Find("Popup Controller").GetComponent<PopupController>();
@@ -37,6 +40,7 @@ public class VehicleShowVS : MonoBehaviour
 
     public void NextVehicle()
     {
+        _audioManager.Play("Button");
         showingVehicleId += 1;
         ChangeShowingVehicle();
         CheckActiveButtons();
@@ -45,6 +49,7 @@ public class VehicleShowVS : MonoBehaviour
 
     public void PrevVehicle()
     {
+        _audioManager.Play("Button");
         showingVehicleId -= 1;
         ChangeShowingVehicle();
         CheckActiveButtons();
@@ -53,6 +58,7 @@ public class VehicleShowVS : MonoBehaviour
 
     public void SelectVehicle()
     {
+        _audioManager.Play("GarageSelect");
         gm.ChangeActiveVehicle(showingVehicleId);
         SelectBuyControlAndShowButtons();
     }
@@ -65,11 +71,12 @@ public class VehicleShowVS : MonoBehaviour
             SelectVehicle();
 
             gm.pd.gold -= vehiclePrices[showingVehicleId - 1];
+            _audioManager.Play("GarageBuy");
         }
         else
         {
             _popupController.OpenPopup("EarnGold");
-            Debug.LogError("Paranız Yetersiz.!!");
+            _audioManager.Play("GarageBuyDenied");
         }
     }
 

@@ -4,21 +4,31 @@ using UnityEngine;
 
 public class RoadTrigger : MonoBehaviour
 {
-    private InGameManager igm;
+    public bool IsBossRoad;
+    public GameObject BackBlockObstacle;
+
+    private InGameManager _igm;
 
     // Start is called before the first frame update
     void Start()
     {
-        igm = GameObject.Find("In Game Manager").GetComponent<InGameManager>();
+        _igm = GameObject.Find("In Game Manager").GetComponent<InGameManager>();
     }
 
     private void OnTriggerEnter(Collider collider)
     {
         // Trigger the Create New Road and add it to after last added road.
-        if (collider.tag == "PlayerShip")
+        if (collider.CompareTag("PlayerShip"))
         {
-            igm.RoadChangeTrigger();
-            igm.AddPlayerPoint(10);
+            _igm.RoadChangeTrigger();
+            if (!IsBossRoad)
+            {
+                _igm.AddPlayerPoint(10);
+            }
+            if (BackBlockObstacle != null)
+            {
+                BackBlockObstacle.SetActive(true);
+            }
             transform.gameObject.SetActive(false);
         }
     }

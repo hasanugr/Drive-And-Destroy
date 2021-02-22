@@ -50,12 +50,23 @@ public class PlayerStatusTextController : MonoBehaviour
     [Header("Player Point Status")]
     public TextMeshProUGUI PointUI;
 
-    [Header("Player Point Status")]
+    private int _playerPoint;
+
+    [Header("Player Gold Status")]
     public TextMeshProUGUI GoldUI;
     public GameObject GoldIcon;
 
-    private int _playerPoint;
     private int _playerGold;
+
+    [Header("Countdown Timer")]
+    public float DamagePerSecond = 20;
+    public float TimerMaxValue = 30;
+    public TextMeshProUGUI TimerUI;
+    public GameObject TimerRotatingIconOutside;
+    public GameObject TimerRotatingIconInside;
+
+    private float _timerCountdown;
+    private float _timerDamageCount;
 
 
     private GameObject _ship;
@@ -68,10 +79,13 @@ public class PlayerStatusTextController : MonoBehaviour
         _ship = GameObject.FindWithTag("Player");
         _vehicleMovement = _ship.GetComponent<VehicleMovement>();
         _igm = GameObject.Find("In Game Manager").GetComponent<InGameManager>();
+
+        ResetTheCounter();
+        CountdownTimerRotateMoveStart();
     }
 
     // Update is called once per frame
-    void Update()
+    void FixedUpdate()
     {
         HealthBarProccess();
         SpeedBarProccess();
@@ -79,6 +93,13 @@ public class PlayerStatusTextController : MonoBehaviour
         BossBarProccess();
         PlayerPointProccess();
         PlayerGoldProccess();
+        CountdownTimerProccess();
+    }
+
+    public void ResetTheCounter()
+    {
+        _timerCountdown = TimerMaxValue;
+        TimerUI.text = _timerCountdown.ToString();
     }
 
     private void HealthBarProccess()
@@ -207,5 +228,33 @@ public class PlayerStatusTextController : MonoBehaviour
             _playerGold = newGoldValue;
             GoldUI.text = _playerGold.ToString();
         }
+    }
+    
+    private void CountdownTimerProccess()
+    {
+        if (_igm.GameIsStarted)
+        {
+            if (_timerCountdown > 0)
+            {
+                _timerCountdown -= Time.deltaTime;
+                _timerCountdown = Mathf.Clamp(_timerCountdown, 0, TimerMaxValue);
+                TimerUI.text = Mathf.CeilToInt(_timerCountdown).ToString();
+            }
+            else
+            {
+                _timerCountdown -= Time.deltaTime;
+                if ((_timerDamageCount - _timerCountdown) >= 1)
+                {
+                    _timerDamageCount = _timerCountdown;
+                    _vehicleMovement.TakeDamage(DamagePerSecond);
+                }
+            }
+        }
+    }
+
+    private void CountdownTimerRotateMoveStart()
+    {
+        LeanTween.rotateAroundLocal(TimerRotatingIconInside, Vector3.forward, 360f, 7f).setRepeat(-1);
+        LeanTween.rotateAroundLocal(TimerRotatingIconOutside, Vector3.forward, -360f, 6f).setRepeat(-1);
     }
 }

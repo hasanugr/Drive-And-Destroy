@@ -4,57 +4,82 @@ using UnityEngine;
 
 public class RoadBoostController : MonoBehaviour
 {
+    public GameObject CountdownTimer;
     public GameObject GoldFirst;
     public GameObject GoldLast;
     public GameObject Turbo;
     public GameObject Heal;
 
     private InGameManager _igm;
-    private int _playerScore;
     private int _boostLuckLevel;
 
-    private int[] HealLuckPercent = { 50, 30, 10 };
-    private int[] TurboLuckPercent = { 50, 40, 30 };
+    private int[] HealLuckPercent = { 50, 30, 20, 10 };
+    private int[] TurboLuckPercent = { 50, 40, 30, 20 };
     // Start is called before the first frame update
     void Start()
     {
         _igm = GameObject.Find("In Game Manager").GetComponent<InGameManager>();
-        _playerScore = _igm.GetPlayerPoint();
         BoostLuckController();
 
+        CountdownTimerAdd();
         TurboAdd();
         HealAdd();
     }
 
     private void BoostLuckController()
     {
-        if (_playerScore < VariableController.FirstLevelEndPoint)
+        switch (_igm.GetReachedLevel())
         {
-            _boostLuckLevel = 0;
+            case 1:
+                _boostLuckLevel = 0;
+                break;
+            case 2:
+                _boostLuckLevel = 1;
+                break;
+            case 3:
+                _boostLuckLevel = 2;
+                break;
+            default:
+                _boostLuckLevel = 3;
+                break;
         }
-        else if (_playerScore < VariableController.SecondLevelEndPoint)
+    }
+
+    private void CountdownTimerAdd()
+    {
+        if (CountdownTimer != null)
         {
-            _boostLuckLevel = 1;
-        }
-        else
-        {
-            _boostLuckLevel = 2;
+            if (_igm.StepToAddCountdownReset == 0)
+            {
+                CountdownTimer.SetActive(true);
+                _igm.StepToAddCountdownReset = 3;
+            }
+            else
+            {
+                _igm.StepToAddCountdownReset -= 1;
+            }
         }
     }
 
     private void TurboAdd()
     {
-        if (IsShouldWork(TurboLuckPercent[_boostLuckLevel]))
+        if (Turbo != null)
         {
-            Turbo.SetActive(true);
+            if (IsShouldWork(TurboLuckPercent[_boostLuckLevel]))
+            {
+                Turbo.SetActive(true);
+            }
         }
     }
 
     private void HealAdd()
     {
-        if (IsShouldWork(HealLuckPercent[_boostLuckLevel]))
+        if (Heal != null)
         {
-            Heal.SetActive(true);
+            if (IsShouldWork(HealLuckPercent[_boostLuckLevel]))
+            {
+                Heal.SetActive(true);
+            }
         }
     }
 
