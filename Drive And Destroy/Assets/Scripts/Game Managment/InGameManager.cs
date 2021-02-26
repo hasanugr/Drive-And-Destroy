@@ -20,6 +20,7 @@ public class InGameManager : MonoBehaviour
     public PlayerStatusTextController PlayerStatusTextController;
     public GameObject cameraHolder;
     public GameObject spawnPoint;
+    public GameObject StartPointEnvironment;
 
     [HideInInspector]
     public bool IsVirusEffected = false;
@@ -198,6 +199,16 @@ public class InGameManager : MonoBehaviour
     public void ResetCountdownTimer()
     {
         PlayerStatusTextController.ResetTheCounter();
+
+        if(StartPointEnvironment != null)
+        {
+            Destroy(StartPointEnvironment);
+        }
+    }
+
+    public void ActivateVirusEffectStatus(string virusType, float duration)
+    {
+        PlayerStatusTextController.ActivateTheVirusCounter(virusType, duration);
     }
 
     public void RoadChangeTrigger()

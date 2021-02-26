@@ -64,7 +64,7 @@ public class VirusEffectTrigger : MonoBehaviour
         if (col.CompareTag("PlayerShip") && !_igm.IsVirusEffected)
         {
             StartVirusEffect();
-
+            
             _igm.IsVirusEffected = true;
             _thisBoxCollider.enabled = false;
             VirusPartycleSystem.SetActive(false);
@@ -73,7 +73,7 @@ public class VirusEffectTrigger : MonoBehaviour
 
     public void StartVirusEffect()
     {
-        VirusEffectTypes virusEffectType = GetRandomEffect();
+        VirusEffectTypes virusEffectType = VirusEffectTypes.ChangeRotateController; //GetRandomEffect();
         switch (virusEffectType)
         {
             case VirusEffectTypes.ShakeTheCamera:
@@ -101,11 +101,12 @@ public class VirusEffectTrigger : MonoBehaviour
     private void DestroyObject()
     {
         _igm.IsVirusEffected = false;
-        Destroy(this.transform.parent.gameObject);
+        Destroy(gameObject);
     }
 
     IEnumerator StartShakeTheCamera()
     {
+        _igm.ActivateVirusEffectStatus("Earthquake", CameraShakeEffectDuration);
         _shakeInstance.StartFadeIn(0.1f);
 
         //yield on a new YieldInstruction that waits for X(CameraShakeEffectDuration) seconds.
@@ -117,6 +118,7 @@ public class VirusEffectTrigger : MonoBehaviour
 
     IEnumerator StartHalfBlindView()
     {
+        _igm.ActivateVirusEffectStatus("Myopic", HalfBlindDuration);
         GameObject halfBlindVolume = Instantiate(HalfBlindVolumeObject);
 
         //yield on a new YieldInstruction that waits for X(HalfBlindDuration) seconds.
@@ -128,6 +130,7 @@ public class VirusEffectTrigger : MonoBehaviour
 
     IEnumerator StartChangeRotateController()
     {
+        _igm.ActivateVirusEffectStatus("ReverseMovement", ChangeRotateDuration);
         _playerInput.isReverseRotate = true;
 
         //yield on a new YieldInstruction that waits for X(ChangeRotateDuration) seconds.

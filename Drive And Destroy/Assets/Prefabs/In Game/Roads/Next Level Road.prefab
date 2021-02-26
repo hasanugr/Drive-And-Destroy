@@ -146,6 +146,7 @@ MonoBehaviour:
   GoldLast: {fileID: 508480551849122897}
   Turbo: {fileID: 3460512569430259141}
   Heal: {fileID: 1740880692665275964}
+  IsBoostSpawnActive: 0
 --- !u!1 &3952786514148355880
 GameObject:
   m_ObjectHideFlags: 0
@@ -370,7 +371,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 532b5dab293b5c34ca82873f45da18a2, type: 2}
+  - {fileID: 2100000, guid: 9ad585b632af54b4aa02bc5cd5c37172, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -1917,7 +1918,7 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Materials.Array.data[0]
       value: 
-      objectReference: {fileID: 2100000, guid: f856ed6436664034383d5fa42b86b206, type: 2}
+      objectReference: {fileID: 2100000, guid: 630479e535a256642876b16d385e9411, type: 2}
     - target: {fileID: -7511558181221131132, guid: 552306bba84b5f44a8fed75e553287b8,
         type: 3}
       propertyPath: m_Materials.Array.data[1]

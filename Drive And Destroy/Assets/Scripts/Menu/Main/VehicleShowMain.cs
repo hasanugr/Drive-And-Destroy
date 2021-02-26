@@ -50,6 +50,6 @@ public class VehicleShowMain : MonoBehaviour
 
     public void StartGame()
     {
-        SceneManager.LoadScene("1");
+        SceneManager.LoadScene("Game");
     }
 }

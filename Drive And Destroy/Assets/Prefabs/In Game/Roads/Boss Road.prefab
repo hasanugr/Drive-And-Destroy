@@ -348,6 +348,7 @@ MonoBehaviour:
   GoldLast: {fileID: 5895568101422371518}
   Turbo: {fileID: 268721574787094594}
   Heal: {fileID: 7360178773872575737}
+  IsBoostSpawnActive: 0
 --- !u!1 &2184102640714161451
 GameObject:
   m_ObjectHideFlags: 0

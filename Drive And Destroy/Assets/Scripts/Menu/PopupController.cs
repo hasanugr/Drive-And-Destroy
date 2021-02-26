@@ -5,6 +5,7 @@ using UnityEngine;
 public class PopupController : MonoBehaviour
 {
     public GameObject EarnGoldPopup;
+    public GameObject ExitGamePopup;
     AudioManager _audioManager;
 
     private void Start()
@@ -30,6 +31,14 @@ public class PopupController : MonoBehaviour
             case "EarnGold":
                 LeanTween.scaleY(EarnGoldPopup, type, 0.1f);
                 break;
+            case "ExitGame":
+                LeanTween.scaleY(ExitGamePopup, type, 0.1f);
+                break;
         }
+    }
+
+    public void ExitGame()
+    {
+        Application.Quit();
     }
 }

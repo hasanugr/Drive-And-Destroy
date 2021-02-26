@@ -23890,6 +23890,7 @@ MonoBehaviour:
   GoldLast: {fileID: 6334717921920491497}
   Turbo: {fileID: 8020176056514619256}
   Heal: {fileID: 7910917998461993854}
+  IsBoostSpawnActive: 1
 --- !u!1 &7242245030375775315
 GameObject:
   m_ObjectHideFlags: 0
@@ -27981,6 +27982,20 @@ MonoBehaviour:
   - {fileID: 6218207099915962408, guid: bf732ac11b672024a890711f40b4baea, type: 3}
   - {fileID: 5631275216816007838, guid: 87a92a6704e29a148bc2862465cea120, type: 3}
   BarricadesHolderTransform: {fileID: 1034630139237625153}
+  GlassBaricade: {fileID: 8998131651012432886, guid: 388a13d0f9428ac459b399a94a03dca5,
+    type: 3}
+  MovingBarricade: {fileID: 3995600367550734894, guid: 7137d418e43331d4e80eab306dee3ab2,
+    type: 3}
+  UnbreakableSupriseBarricade: {fileID: 1285239725888427132, guid: 7e37b641af1f34b08b8be3feafbe9011,
+    type: 3}
+  DoubleGateBarricade: {fileID: 6218207099915962408, guid: bf732ac11b672024a890711f40b4baea,
+    type: 3}
+  VirusEffect: {fileID: 5631275216816007838, guid: 87a92a6704e29a148bc2862465cea120,
+    type: 3}
+  BarricadeColor1: {r: 0.37647057, g: 0.62483656, b: 0.7490196, a: 0.7490196}
+  BarricadeColor2: {r: 0.37647057, g: 0.7490196, b: 0.438562, a: 0.7490196}
+  BarricadeColor3: {r: 0.7490196, g: 0.7490196, b: 0.37647057, a: 0.7490196}
+  BarricadeColor4: {r: 0.7490196, g: 0.37647057, b: 0.37647057, a: 0.7490196}
 --- !u!64 &8153772797825110464
 MeshCollider:
   m_ObjectHideFlags: 0

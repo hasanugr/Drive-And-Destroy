@@ -19,7 +19,7 @@ public class VehicleShowVS : MonoBehaviour
 
     public int showingVehicleId;
     private GameObject showingVehicle;
-    private int[] vehiclePrices = { 0, 1000, 1500, 2000 };
+    private int[] vehiclePrices = { 0, 4750, 7500, 9900 };
 
     GameManager gm;
     PopupController _popupController;

@@ -431,8 +431,8 @@ MonoBehaviour:
   terminalVelocity: 100
   hoverGravity: 20
   fallGravity: 50
-  HealBoostEffect: {fileID: 0}
-  TurboBoostEffect: {fileID: 0}
+  HealBoostEffect: {fileID: 219924806223955807}
+  TurboBoostEffect: {fileID: 3353445570458588005}
 --- !u!114 &4788577476204844318
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -912,6 +912,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: Boost Effects
       objectReference: {fileID: 0}
+    - target: {fileID: 4161190335064645860, guid: 1c7dbd0966e965746bce699094e2fe10,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 4322249628367608887, guid: 1c7dbd0966e965746bce699094e2fe10,
         type: 3}
       propertyPath: m_RootOrder
@@ -972,6 +977,18 @@ PrefabInstance:
 --- !u!4 &3228490811665674166 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 4322249628367608887, guid: 1c7dbd0966e965746bce699094e2fe10,
+    type: 3}
+  m_PrefabInstance: {fileID: 1672612730841576321}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1 &219924806223955807 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 1457763407739303134, guid: 1c7dbd0966e965746bce699094e2fe10,
+    type: 3}
+  m_PrefabInstance: {fileID: 1672612730841576321}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1 &3353445570458588005 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 4161190335064645860, guid: 1c7dbd0966e965746bce699094e2fe10,
     type: 3}
   m_PrefabInstance: {fileID: 1672612730841576321}
   m_PrefabAsset: {fileID: 0}

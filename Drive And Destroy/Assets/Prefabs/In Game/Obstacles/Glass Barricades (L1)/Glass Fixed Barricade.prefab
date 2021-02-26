@@ -106,10 +106,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 18f2dfc124afc0e4c97ba839c9d9438b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  CrashEffect: {fileID: 4230510634110435334, guid: a5648e239a7905642afdc7e9284f274e,
-    type: 3}
-  IsSpecialColor: 0
-  SpecialColor: {r: 0, g: 0, b: 0, a: 0}
+  CrashEffects:
+  - {fileID: 4230510634110435334, guid: 52ec8ce012d1f9747a0b42e214d8393e, type: 3}
+  - {fileID: 4230510634110435334, guid: faff5c78a5f1eeb46b37856d851bbc96, type: 3}
+  - {fileID: 4230510634110435334, guid: b6f5a7f01300b0c41be4c8aab315aa2a, type: 3}
+  - {fileID: 4230510634110435334, guid: a5648e239a7905642afdc7e9284f274e, type: 3}
   FullHealth: 20
   IsBreakable: 1
   BarricadeLevel: 1

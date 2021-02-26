@@ -8,6 +8,8 @@ public class BossBomb : MonoBehaviour
     public GameObject BombTriggerEffect;
     public float BombDamage = 30.0f;
 
+    private bool _bombActive = true;
+
     private GameObject ship;
     private VehicleMovement vehicleMovement;
     private AudioManager _audioManager;
@@ -41,7 +43,12 @@ public class BossBomb : MonoBehaviour
                 CameraShaker.Instance.ShakeOnce(4f, 4f, 0.1f, 1f);
             }
 
-            vehicleMovement.TakeDamage(BombDamage);
+            if (_bombActive)
+            {
+                print("BossBomb Triggered!");
+                _bombActive = false;
+                vehicleMovement.TakeDamage(BombDamage);
+            }
 
         }
     }

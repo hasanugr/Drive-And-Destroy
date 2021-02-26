@@ -4,9 +4,7 @@ using UnityEngine;
 
 public class BlockBarricade : MonoBehaviour
 {
-    public GameObject CrashEffect;
-    public bool IsSpecialColor = false;
-    public Color SpecialColor;
+    public GameObject[] CrashEffects;
     public float FullHealth = 100;
     public bool IsBreakable = true;
     public int BarricadeLevel = 0;
@@ -18,6 +16,9 @@ public class BlockBarricade : MonoBehaviour
     {
         _igm = GameObject.Find("In Game Manager").GetComponent<InGameManager>();
         _health = FullHealth;
+
+        /*gameObject.GetComponent<BoxCollider>().enabled = true;
+        gameObject.GetComponent<MeshRenderer>().enabled = true;*/
     }
 
     public void TakeDamage (float damage)
@@ -37,13 +38,16 @@ public class BlockBarricade : MonoBehaviour
                         _igm.AddPlayerPoint(20);
                         break;
                     case 2:
-                        _igm.AddPlayerPoint(30);
+                        _igm.AddPlayerPoint(25);
                         break;
                     case 3:
-                        _igm.AddPlayerPoint(50);
+                        _igm.AddPlayerPoint(30);
+                        break;
+                    case 4:
+                        _igm.AddPlayerPoint(35);
                         break;
                     default:
-                        _igm.AddPlayerPoint(50);
+                        _igm.AddPlayerPoint(35);
                         break;
                 }
             }
@@ -57,13 +61,34 @@ public class BlockBarricade : MonoBehaviour
 
     private void CrashEffectApply()
     {
-        if (CrashEffect != null)
+        if (CrashEffects.Length > 0)
         {
-            GameObject crashEffectPS = Instantiate(CrashEffect, transform.position, transform.rotation);
-            if (IsSpecialColor)
+            /*gameObject.GetComponent<BoxCollider>().enabled = false;
+            gameObject.GetComponent<MeshRenderer>().enabled = false;*/
+            switch (BarricadeLevel)
             {
-                crashEffectPS.GetComponent<Renderer>().material.color = SpecialColor;
+                case 1:
+                    Instantiate(CrashEffects[0], transform.position, transform.rotation);
+                    //CrashEffects[0].SetActive(true);
+                    break;
+                case 2:
+                    Instantiate(CrashEffects[1], transform.position, transform.rotation);
+                    //CrashEffects[1].SetActive(true);
+                    break;
+                case 3:
+                    Instantiate(CrashEffects[2], transform.position, transform.rotation);
+                    //CrashEffects[2].SetActive(true);
+                    break;
+                case 4:
+                    Instantiate(CrashEffects[3], transform.position, transform.rotation);
+                    //CrashEffects[3].SetActive(true);
+                    break;
+                default:
+                    Instantiate(CrashEffects[3], transform.position, transform.rotation);
+                    //CrashEffects[3].SetActive(true);
+                    break;
             }
         }
+
     }
 }

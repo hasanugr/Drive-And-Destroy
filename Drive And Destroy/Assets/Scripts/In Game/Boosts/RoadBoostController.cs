@@ -9,6 +9,7 @@ public class RoadBoostController : MonoBehaviour
     public GameObject GoldLast;
     public GameObject Turbo;
     public GameObject Heal;
+    public bool IsBoostSpawnActive = true;
 
     private InGameManager _igm;
     private int _boostLuckLevel;
@@ -19,11 +20,13 @@ public class RoadBoostController : MonoBehaviour
     void Start()
     {
         _igm = GameObject.Find("In Game Manager").GetComponent<InGameManager>();
-        BoostLuckController();
-
         CountdownTimerAdd();
-        TurboAdd();
-        HealAdd();
+
+        if (IsBoostSpawnActive) { 
+            BoostLuckController();
+            TurboAdd();
+            HealAdd();
+        }
     }
 
     private void BoostLuckController()

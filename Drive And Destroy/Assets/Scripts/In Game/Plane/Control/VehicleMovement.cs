@@ -347,7 +347,7 @@ public class VehicleMovement : MonoBehaviour
 					float barricadeFullHealth = barricade.FullHealth;
 					float barricadeHealth = barricade.GetHealth();
 					int barricadeLevel = barricade.BarricadeLevel;
-					int fullDamageFromBarricade = 30;
+					int fullDamageFromBarricade;
 					switch (barricadeLevel)
                     {
 						case 1:
@@ -364,26 +364,24 @@ public class VehicleMovement : MonoBehaviour
 							break;
 					}
 
-					if (_currentSpeed < 50)
-                    {
-						barricade.TakeDamage(barricadeFullHealth * 0.5f);
-					}
-					else if (_currentSpeed < 70)
-                    {
-						barricade.TakeDamage(barricadeFullHealth * 0.75f);
-					}
-					else
-                    {
-						barricade.TakeDamage(barricadeFullHealth);
-					}
+					float damagePercentBySpeed = _currentSpeed < 50 ? 0.5f : _currentSpeed < 70 ? 0.75f : 1f;
 
-					TakeDamage(fullDamageFromBarricade * (barricadeHealth / barricadeFullHealth)); // Ship take less damage if barricade health is low.
+					barricade.TakeDamage(barricadeFullHealth * damagePercentBySpeed);
+
+					float damageToPlayer = (fullDamageFromBarricade * (barricadeHealth / barricadeFullHealth)) * damagePercentBySpeed;
+					if (damageToPlayer > 0)
+                    {
+						TakeDamage(damageToPlayer); // Ship take less damage if barricade health is low.
+                    }
 				}
-				else
+				/*else
 				{
 					// Barricade doesn't take damage because the ship is so slow.
-					TakeDamage(_currentSpeed);
-				}
+					if (_currentSpeed > 0)
+                    {
+						TakeDamage(_currentSpeed / 5);
+                    }
+				}*/
 			} else
             {
 				if (barricade.BarricadeLevel == 4)
@@ -437,6 +435,7 @@ public class VehicleMovement : MonoBehaviour
 
     public void TakeDamage(float damage)
     {
+		print("Take Damage: " + damage);
 		if (_health > 0)
 		{
 			damage *= DamageDecreasePercent;

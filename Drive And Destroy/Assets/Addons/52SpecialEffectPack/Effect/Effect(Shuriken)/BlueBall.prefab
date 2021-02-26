@@ -19044,7 +19044,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 100008}
-  m_Enabled: 0
+  m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: f7794c33cb087bc44947938f6f33fe47, type: 3}
   m_Name: 
@@ -19056,7 +19056,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 100008}
-  m_Enabled: 0
+  m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 69e3c62c4a36a60499b012483f817559, type: 3}
   m_Name: 
@@ -19069,12 +19069,14 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 100008}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 50c36ec887a5c40cebcad2128aab8ae8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  bulletHolePrefab: {fileID: 100006, guid: 1fc7dfffb398d0b48b056795e222cbc4, type: 3}
+  BulletTriggerEffect: {fileID: 0}
+  BulletDamage: 30
+  Trails: []
 --- !u!54 &2514824616497541670
 Rigidbody:
   m_ObjectHideFlags: 0

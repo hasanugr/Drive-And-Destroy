@@ -5,8 +5,6 @@ using UnityEngine;
 
 public class RoadBarricadeControl : MonoBehaviour
 {
-    public int RoadMaterialTest = 0;
-    private int _activeRMT = 0;
     [Header("Enivronment")]
     public MeshRenderer RoadMeshRenderer;
     public GameObject[] Environments;
@@ -18,6 +16,16 @@ public class RoadBarricadeControl : MonoBehaviour
     public GameObject[] BarricadePoints;
     public GameObject[] Barricades;
     public Transform BarricadesHolderTransform;
+
+    public GameObject GlassBaricade;
+    public GameObject MovingBarricade;
+    public GameObject UnbreakableSupriseBarricade;
+    public GameObject DoubleGateBarricade;
+    public GameObject VirusEffect;
+    public Color BarricadeColor1;
+    public Color BarricadeColor2;
+    public Color BarricadeColor3;
+    public Color BarricadeColor4;
 
     private int _reachedLevel;
 
@@ -96,11 +104,8 @@ public class RoadBarricadeControl : MonoBehaviour
     {
         if (IsShouldWork(oddsPercent))
         {
-            GameObject virusEffect = Barricades[8];
-
             BarricadePoints[0].transform.Translate(BarricadePoints[0].transform.right * UnityEngine.Random.Range(-6, 7), Space.World);
-            GameObject exitBarricade = Instantiate(virusEffect, BarricadePoints[0].transform.position, BarricadePoints[0].transform.rotation);
-            exitBarricade.transform.parent = BarricadesHolderTransform;
+            Instantiate(VirusEffect, BarricadePoints[0].transform.position, BarricadePoints[0].transform.rotation, BarricadesHolderTransform);
         }
     }
 
@@ -108,135 +113,51 @@ public class RoadBarricadeControl : MonoBehaviour
     {
         if (IsShouldWork(oddsPercent))
         {
-            GameObject unbreakableBarricade = Barricades[6];
-            
             BarricadePoints[4].transform.Translate(BarricadePoints[4].transform.right * UnityEngine.Random.Range(-6, 7), Space.World);
-            GameObject exitBarricade = Instantiate(unbreakableBarricade, BarricadePoints[4].transform.position, BarricadePoints[4].transform.rotation);
-            exitBarricade.transform.parent = BarricadesHolderTransform;
+            Instantiate(UnbreakableSupriseBarricade, BarricadePoints[4].transform.position, BarricadePoints[4].transform.rotation, BarricadesHolderTransform);
         }
     }
 
     private void AddBasicToQuarters()
     {
-        GameObject basicBarricade;
-        switch (_reachedLevel)
-        {
-            case 1:
-                basicBarricade = Barricades[0];
-                break;
-            case 2:
-                basicBarricade = Barricades[2];
-                break;
-            case 3:
-                basicBarricade = Barricades[4];
-                break;
-            default:
-                basicBarricade = Barricades[4];
-                break;
-        }
-
         BarricadePoints[1].transform.Translate(BarricadePoints[1].transform.right * UnityEngine.Random.Range(-6, 7), Space.World);
         BarricadePoints[3].transform.Translate(BarricadePoints[3].transform.right * UnityEngine.Random.Range(-6, 7), Space.World);
-        GameObject firstQuarterBarricade = Instantiate(basicBarricade, BarricadePoints[1].transform.position, BarricadePoints[1].transform.rotation);
-        GameObject lastQuarterBarricade = Instantiate(basicBarricade, BarricadePoints[3].transform.position, BarricadePoints[3].transform.rotation);
+        GameObject firstQuarterBarricade = Instantiate(GlassBaricade, BarricadePoints[1].transform.position, BarricadePoints[1].transform.rotation, BarricadesHolderTransform);
+        GameObject lastQuarterBarricade = Instantiate(GlassBaricade, BarricadePoints[3].transform.position, BarricadePoints[3].transform.rotation, BarricadesHolderTransform);
 
-        firstQuarterBarricade.transform.parent = BarricadesHolderTransform;
-        lastQuarterBarricade.transform.parent = BarricadesHolderTransform;
+        AddBarricadeLevelStats(firstQuarterBarricade);
+        AddBarricadeLevelStats(lastQuarterBarricade);
     }
 
     private void AddMovingBasicToQuarters()
     {
-        GameObject movingBarricade;
+        GameObject firstQuarterBarricade = Instantiate(MovingBarricade, BarricadePoints[1].transform.position, BarricadePoints[1].transform.rotation, BarricadesHolderTransform);
+        GameObject lastQuarterBarricade = Instantiate(MovingBarricade, BarricadePoints[3].transform.position, BarricadePoints[3].transform.rotation, BarricadesHolderTransform);
 
-        switch (_reachedLevel)
-        {
-            case 1:
-                movingBarricade = Barricades[1];
-                break;
-            case 2:
-                movingBarricade = Barricades[3];
-                break;
-            case 3:
-                movingBarricade = Barricades[5];
-                break;
-            default:
-                movingBarricade = Barricades[5];
-                break;
-        }
-
-        GameObject firstQuarterBarricade = Instantiate(movingBarricade, BarricadePoints[1].transform.position, BarricadePoints[1].transform.rotation);
-        GameObject lastQuarterBarricade = Instantiate(movingBarricade, BarricadePoints[3].transform.position, BarricadePoints[3].transform.rotation);
-
-        firstQuarterBarricade.transform.parent = BarricadesHolderTransform;
-        lastQuarterBarricade.transform.parent = BarricadesHolderTransform;
+        AddBarricadeLevelStats(firstQuarterBarricade);
+        AddBarricadeLevelStats(lastQuarterBarricade);
     }
 
     private void AddBasicSeriesToMiddle()
     {
-        GameObject basicBarricadeSeries;
-
-        switch (_reachedLevel)
-        {
-            case 1:
-                basicBarricadeSeries = Barricades[0];
-                break;
-            case 2:
-                basicBarricadeSeries = Barricades[2];
-                break;
-            case 3:
-                basicBarricadeSeries = Barricades[4];
-                break;
-            default:
-                basicBarricadeSeries = Barricades[4];
-                break;
-        }
-
-        GameObject firstQuarterBarricade = Instantiate(basicBarricadeSeries, BarricadePoints[2].transform.position, BarricadePoints[2].transform.rotation);
+        GameObject firstQuarterBarricade = Instantiate(GlassBaricade, BarricadePoints[2].transform.position, BarricadePoints[2].transform.rotation, BarricadesHolderTransform);
         BarricadePoints[2].transform.Translate(BarricadePoints[2].transform.forward * 3, Space.World);
         BarricadePoints[2].transform.Translate(BarricadePoints[2].transform.right * 6, Space.World);
-        GameObject secondQuarterBarricade = Instantiate(basicBarricadeSeries, BarricadePoints[2].transform.position, BarricadePoints[2].transform.rotation);
+        GameObject secondQuarterBarricade = Instantiate(GlassBaricade, BarricadePoints[2].transform.position, BarricadePoints[2].transform.rotation, BarricadesHolderTransform);
         BarricadePoints[2].transform.Translate(BarricadePoints[2].transform.right * -12, Space.World);
-        GameObject thirthQuarterBarricade = Instantiate(basicBarricadeSeries, BarricadePoints[2].transform.position, BarricadePoints[2].transform.rotation);
+        GameObject thirthQuarterBarricade = Instantiate(GlassBaricade, BarricadePoints[2].transform.position, BarricadePoints[2].transform.rotation, BarricadesHolderTransform);
 
-        firstQuarterBarricade.transform.parent = BarricadesHolderTransform;
-        secondQuarterBarricade.transform.parent = BarricadesHolderTransform;
-        thirthQuarterBarricade.transform.parent = BarricadesHolderTransform;
+        AddBarricadeLevelStats(firstQuarterBarricade);
+        AddBarricadeLevelStats(secondQuarterBarricade);
+        AddBarricadeLevelStats(thirthQuarterBarricade);
     }
 
     private void AddDoubleGateToMiddle()
     {
-        GameObject doubleGateBarricade = Barricades[7];
-
-        GameObject middleBarricade = Instantiate(doubleGateBarricade, BarricadePoints[2].transform.position, BarricadePoints[2].transform.rotation);
-        middleBarricade.transform.parent = BarricadesHolderTransform;
+        GameObject middleBarricade = Instantiate(DoubleGateBarricade, BarricadePoints[2].transform.position, BarricadePoints[2].transform.rotation, BarricadesHolderTransform);
 
         GameObject middleBreackableDoor = middleBarricade.transform.GetChild(0).GetChild(0).GetChild(0).GetChild(0).gameObject;
-        BlockBarricade middleBreackableDoorConf = middleBreackableDoor.GetComponent<BlockBarricade>();
-        Material middleBreackableDoorMat = middleBreackableDoor.GetComponent<Renderer>().material;
-
-        switch (_reachedLevel)
-        {
-            case 1:
-                middleBreackableDoorMat.color = Color.green;
-                middleBreackableDoorConf.SpecialColor = Color.green;
-                middleBreackableDoorConf.FullHealth = 40;
-                break;
-            case 2:
-                middleBreackableDoorMat.color = Color.yellow;
-                middleBreackableDoorConf.SpecialColor = Color.yellow;
-                middleBreackableDoorConf.FullHealth = 70;
-                break;
-            case 3:
-                middleBreackableDoorMat.color = Color.red;
-                middleBreackableDoorConf.SpecialColor = Color.red;
-                middleBreackableDoorConf.FullHealth = 100;
-                break;
-            default:
-                middleBreackableDoorMat.color = Color.red;
-                middleBreackableDoorConf.SpecialColor = Color.red;
-                middleBreackableDoorConf.FullHealth = 130;
-                break;
-        }
+        AddBarricadeLevelStats(middleBreackableDoor);
         
     }
 
@@ -278,5 +199,41 @@ public class RoadBarricadeControl : MonoBehaviour
                 break;
         }
         RoadMeshRenderer.materials = _tempMaterials;
+    }
+
+    private void AddBarricadeLevelStats(GameObject barricadeParent)
+    {
+        Transform barricade = barricadeParent.transform.GetChild(0);
+        Material barricadeMaterial = barricade.GetComponent<Renderer>().material;
+        BlockBarricade barricadeBlockBarricade = barricade.GetComponent<BlockBarricade>();
+
+        switch (_reachedLevel)
+        {
+            case 1:
+                barricadeMaterial.color = BarricadeColor1;
+                barricadeBlockBarricade.BarricadeLevel = _reachedLevel;
+                barricadeBlockBarricade.FullHealth = 20;
+                break;
+            case 2:
+                barricadeMaterial.color = BarricadeColor2;
+                barricadeBlockBarricade.BarricadeLevel = _reachedLevel;
+                barricadeBlockBarricade.FullHealth = 40;
+                break;
+            case 3:
+                barricadeMaterial.color = BarricadeColor3;
+                barricadeBlockBarricade.BarricadeLevel = _reachedLevel;
+                barricadeBlockBarricade.FullHealth = 60;
+                break;
+            case 4:
+                barricadeMaterial.color = BarricadeColor4;
+                barricadeBlockBarricade.BarricadeLevel = _reachedLevel;
+                barricadeBlockBarricade.FullHealth = 80;
+                break;
+            default:
+                barricadeMaterial.color = BarricadeColor4;
+                barricadeBlockBarricade.BarricadeLevel = _reachedLevel;
+                barricadeBlockBarricade.FullHealth = 80;
+                break;
+        }
     }
 }

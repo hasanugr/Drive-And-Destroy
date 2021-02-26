@@ -58,7 +58,22 @@ public class PlayerStatusTextController : MonoBehaviour
 
     private int _playerGold;
 
+    [Header("Countdown Virus")]
+    public GameObject VirusHolder;
+    public Image VirusBar;
+    public TextMeshProUGUI VirusUI;
+    public GameObject MyopicVirus;
+    public GameObject EarthquakeVirus;
+    public GameObject ReverseMovementVirus;
+
+    private float _virusCountdown;
+    private float _virusCountdownMax;
+    private float _virusCountdownBarValue;
+    private bool _isVirusActive;
+
+
     [Header("Countdown Timer")]
+    public GameObject TimerHolder;
     public float DamagePerSecond = 20;
     public float TimerMaxValue = 30;
     public TextMeshProUGUI TimerUI;
@@ -93,13 +108,37 @@ public class PlayerStatusTextController : MonoBehaviour
         BossBarProccess();
         PlayerPointProccess();
         PlayerGoldProccess();
+        CountdownVirusProccess();
         CountdownTimerProccess();
     }
 
     public void ResetTheCounter()
     {
+        LeanTween.scale(TimerHolder, new Vector3(1.5f, 1.5f, 1f), 1f).setEasePunch();
         _timerCountdown = TimerMaxValue;
         TimerUI.text = _timerCountdown.ToString();
+    }
+
+    public void ActivateTheVirusCounter(string virusType, float virusDuration)
+    {
+        switch (virusType)
+        {
+            case "Myopic":
+                MyopicVirus.SetActive(true);
+                break;
+            case "Earthquake":
+                EarthquakeVirus.SetActive(true);
+                break;
+            case "ReverseMovement":
+                ReverseMovementVirus.SetActive(true);
+                break;
+        }
+        _virusCountdown = virusDuration;
+        _virusCountdownMax = _virusCountdown;
+        VirusUI.text = _virusCountdown.ToString();
+        VirusHolder.SetActive(true);
+        _isVirusActive = true;
+        LeanTween.scale(VirusHolder, new Vector3(1.5f, 1.5f, 1f), 1f).setEasePunch();
     }
 
     private void HealthBarProccess()
@@ -227,6 +266,30 @@ public class PlayerStatusTextController : MonoBehaviour
             LeanTween.scale(GoldIcon, new Vector3(1.5f, 1.5f, 1), 0.5f).setEasePunch();
             _playerGold = newGoldValue;
             GoldUI.text = _playerGold.ToString();
+        }
+    }
+    
+    private void CountdownVirusProccess()
+    {
+        if (_igm.GameIsStarted && _isVirusActive)
+        {
+            if (_virusCountdown > 0)
+            {
+                _virusCountdown -= Time.deltaTime;
+                _virusCountdown = Mathf.Clamp(_virusCountdown, 0, _virusCountdownMax);
+                VirusUI.text = Mathf.CeilToInt(_virusCountdown).ToString();
+
+                _virusCountdownBarValue = _virusCountdown / _virusCountdownMax;
+                VirusBar.fillAmount = _virusCountdownBarValue;
+            }
+            else
+            {
+                _isVirusActive = false;
+                MyopicVirus.SetActive(false);
+                EarthquakeVirus.SetActive(false);
+                ReverseMovementVirus.SetActive(false);
+                VirusHolder.SetActive(false);
+            }
         }
     }
     

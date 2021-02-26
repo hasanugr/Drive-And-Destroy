@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class GameManager : MonoBehaviour
 {
@@ -24,6 +25,34 @@ public class GameManager : MonoBehaviour
 	{
 		MakeSingleton();
 		LoadPlayerData();
+	}
+
+	void OnApplicationFocus(bool pauseStatus)
+	{
+		Scene scene = SceneManager.GetActiveScene();
+		
+		if (scene.name == "Game")
+		{
+			if (!pauseStatus)
+            {
+				// Your app is now in the background.
+				// If Game Activated start Pause system proccess.
+				InGameManager igm = GameObject.Find("In Game Manager").GetComponent<InGameManager>();
+				igm.Pause();
+			}
+		}else
+        {
+			if (pauseStatus)
+			{
+				// Your app is NO LONGER in the background.
+				Time.timeScale = 1;
+			}
+			else
+			{
+				// Your app is now in the background.
+				Time.timeScale = 0;
+			}
+        }
 	}
 
 	private void MakeSingleton()

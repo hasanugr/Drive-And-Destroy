@@ -5,6 +5,8 @@ using UnityEngine;
 
 public class TextController : MonoBehaviour
 {
+    public GameObject Highscore;
+    public TextMeshProUGUI HighscoreText;
     public TextMeshProUGUI[] goldTextArr;
 
     private int currentGold;
@@ -14,6 +16,7 @@ public class TextController : MonoBehaviour
     {
         gm = GameObject.Find(VariableController.GAME_MANAGER).GetComponent<GameManager>();
         ChangeGoldText();
+        HighscoreShow();
     }
 
     // Update is called once per frame
@@ -31,6 +34,15 @@ public class TextController : MonoBehaviour
         foreach(TextMeshProUGUI goldText in goldTextArr)
         {
             goldText.text = currentGold.ToString();
+        }
+    }
+
+    private void HighscoreShow()
+    {
+        if (gm.pd.highScore > 0)
+        {
+            HighscoreText.text = gm.pd.highScore.ToString();
+            Highscore.SetActive(true);
         }
     }
 }
