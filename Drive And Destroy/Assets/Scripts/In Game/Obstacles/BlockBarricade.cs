@@ -9,6 +9,11 @@ public class BlockBarricade : MonoBehaviour
     public bool IsBreakable = true;
     public int BarricadeLevel = 0;
 
+    private GameObject _barricadeHolder;
+    private BoxCollider _barricadeBoxCollider;
+    private MeshRenderer _barricadeMeshRenderer;
+    private int[] _destroyPoints = { 20, 25, 30, 35 };
+    private int _barricadeLevelToIndex;
     private float _health;
     private InGameManager _igm;
 
@@ -17,8 +22,15 @@ public class BlockBarricade : MonoBehaviour
         _igm = GameObject.Find("In Game Manager").GetComponent<InGameManager>();
         _health = FullHealth;
 
-        /*gameObject.GetComponent<BoxCollider>().enabled = true;
-        gameObject.GetComponent<MeshRenderer>().enabled = true;*/
+        _barricadeHolder = gameObject.transform.parent.gameObject;
+        _barricadeBoxCollider = gameObject.GetComponent<BoxCollider>();
+        _barricadeMeshRenderer = gameObject.GetComponent<MeshRenderer>();
+    }
+
+    private void OnEnable()
+    {
+        _health = FullHealth;
+        _barricadeLevelToIndex = Mathf.Clamp(BarricadeLevel, 1, 4) - 1;
     }
 
     public void TakeDamage (float damage)
@@ -29,27 +41,8 @@ public class BlockBarricade : MonoBehaviour
 
             if (_health <= 0)
             {
-                Destroy(this.transform.parent.gameObject);
+                _igm.AddPlayerPoint(_destroyPoints[_barricadeLevelToIndex]);
                 CrashEffectApply();
-
-                switch (BarricadeLevel)
-                {
-                    case 1:
-                        _igm.AddPlayerPoint(20);
-                        break;
-                    case 2:
-                        _igm.AddPlayerPoint(25);
-                        break;
-                    case 3:
-                        _igm.AddPlayerPoint(30);
-                        break;
-                    case 4:
-                        _igm.AddPlayerPoint(35);
-                        break;
-                    default:
-                        _igm.AddPlayerPoint(35);
-                        break;
-                }
             }
         }
     }
@@ -63,32 +56,20 @@ public class BlockBarricade : MonoBehaviour
     {
         if (CrashEffects.Length > 0)
         {
-            /*gameObject.GetComponent<BoxCollider>().enabled = false;
-            gameObject.GetComponent<MeshRenderer>().enabled = false;*/
-            switch (BarricadeLevel)
-            {
-                case 1:
-                    Instantiate(CrashEffects[0], transform.position, transform.rotation);
-                    //CrashEffects[0].SetActive(true);
-                    break;
-                case 2:
-                    Instantiate(CrashEffects[1], transform.position, transform.rotation);
-                    //CrashEffects[1].SetActive(true);
-                    break;
-                case 3:
-                    Instantiate(CrashEffects[2], transform.position, transform.rotation);
-                    //CrashEffects[2].SetActive(true);
-                    break;
-                case 4:
-                    Instantiate(CrashEffects[3], transform.position, transform.rotation);
-                    //CrashEffects[3].SetActive(true);
-                    break;
-                default:
-                    Instantiate(CrashEffects[3], transform.position, transform.rotation);
-                    //CrashEffects[3].SetActive(true);
-                    break;
-            }
+            _barricadeBoxCollider.enabled = false;
+            _barricadeMeshRenderer.enabled = false;
+
+            CrashEffects[_barricadeLevelToIndex].SetActive(true);
+            StartCoroutine(DisableBarricade(2.2f));
         }
 
+    }
+
+    IEnumerator DisableBarricade(float waitForSeconds)
+    {
+        yield return new WaitForSeconds(waitForSeconds);
+        _barricadeHolder.SetActive(false);
+        _barricadeBoxCollider.enabled = true;
+        _barricadeMeshRenderer.enabled = true;
     }
 }

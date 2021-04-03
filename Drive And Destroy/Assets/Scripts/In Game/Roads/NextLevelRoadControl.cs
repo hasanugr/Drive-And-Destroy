@@ -4,18 +4,19 @@ using UnityEngine;
 
 public class NextLevelRoadControl : MonoBehaviour
 {
-    InGameManager _igm;
+    public GameObject BackBlock;
+    public GameObject DeleteRoadTrigger;
+
     // Start is called before the first frame update
     void Start()
     {
-        _igm = GameObject.Find("In Game Manager").GetComponent<InGameManager>();
+        BackBlock.SetActive(false);
+        DeleteRoadTrigger.SetActive(true);
     }
-    private void OnTriggerEnter(Collider collider)
+
+    private void OnEnable()
     {
-        if (collider.CompareTag("PlayerShip"))
-        {
-            _igm.ChangeActiveTerrain();
-            gameObject.SetActive(false);
-        }
+        BackBlock.SetActive(false);
+        DeleteRoadTrigger.SetActive(true);
     }
 }

@@ -11,7 +11,7 @@ public static class VariableController
     public static readonly string GOLD_COUNT = "GD Counts/Gold Count";
 
     // In Game Values
-    public static readonly int FirstLevelEndPoint = 500;
-    public static readonly int SecondLevelEndPoint = 1000;
-    public static readonly int ThirthLevelEndPoint = 1500;
+    public static readonly int FirstLevelEndPoint = 500;//500;
+    public static readonly int SecondLevelEndPoint = 1250;//1250;
+    public static readonly int ThirthLevelEndPoint = 2250;//2250;
 }

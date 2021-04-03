@@ -26,6 +26,23 @@ public class RoadBoostController : MonoBehaviour
             BoostLuckController();
             TurboAdd();
             HealAdd();
+            GoldsAdd();
+        }
+    }
+
+    private void OnEnable()
+    {
+        if (_igm != null)
+        {
+            CountdownTimerAdd();
+
+            if (IsBoostSpawnActive)
+            {
+                BoostLuckController();
+                TurboAdd();
+                HealAdd();
+                GoldsAdd();
+            }
         }
     }
 
@@ -64,6 +81,15 @@ public class RoadBoostController : MonoBehaviour
         }
     }
 
+    private void GoldsAdd()
+    {
+        if (GoldFirst != null && GoldLast != null)
+        {
+            GoldFirst.SetActive(true);
+            GoldLast.SetActive(true);
+        }
+    }
+
     private void TurboAdd()
     {
         if (Turbo != null)
@@ -91,5 +117,14 @@ public class RoadBoostController : MonoBehaviour
         int random = UnityEngine.Random.Range(0, 101);
         bool isIt = random <= percent;
         return isIt;
+    }
+
+    private void OnDisable()
+    {
+        GoldFirst.SetActive(false);
+        GoldLast.SetActive(false);
+        Turbo.SetActive(false);
+        Heal.SetActive(false);
+        CountdownTimer.SetActive(false);
     }
 }

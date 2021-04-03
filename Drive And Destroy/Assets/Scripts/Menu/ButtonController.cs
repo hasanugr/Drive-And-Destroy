@@ -11,6 +11,7 @@ public class ButtonController : MonoBehaviour
     private GameObject ShipSelectMenu;
     [SerializeField]
     private GameObject SettingsMenu;
+
     [Header("3D Canvas")]
     [SerializeField]
     private GameObject Main3D;
@@ -21,6 +22,7 @@ public class ButtonController : MonoBehaviour
     GameManager _gm;
     AudioManager _audioManager;
     PopupController _popupController;
+    AdmobManager _admobManager;
 
     // Start is called before the first frame update
     void Start()
@@ -28,6 +30,7 @@ public class ButtonController : MonoBehaviour
         _gm = GameObject.Find(VariableController.GAME_MANAGER).GetComponent<GameManager>();
         _audioManager = FindObjectOfType<AudioManager>();
         _popupController = GameObject.Find("Popup Controller").GetComponent<PopupController>();
+        _admobManager = FindObjectOfType<AdmobManager>();
     }
 
     private void Update()
@@ -44,6 +47,16 @@ public class ButtonController : MonoBehaviour
     public void ButtonSound()
     {
         _audioManager.Play("Button");
+    }
+
+    public void WatchRewardedAds(bool isPopup)
+    {
+        if (isPopup)
+        {
+            _popupController.ClosePopupInstantly("EarnGold");
+        }
+
+        _admobManager.ShowRewardedAd();
     }
 
     public void SavePlayer()

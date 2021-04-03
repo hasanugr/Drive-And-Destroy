@@ -7,14 +7,13 @@ public class BossAI : MonoBehaviour
 {
     [Header("General Settings")]
     public GameObject BossBody;
-    public int BossFullHealth = 500;
     public int BossLevel = 1;
     public GameObject CrashEffect;
     public bool IsSpecialColor = false;
     public Color SpecialColor;
 
-    [SerializeField]
-    private int _health = 500;
+    private int _bossFullHealth = 9999;
+    private int _health = 9999;
     private GameObject _targetObject;
     private Rigidbody _bossRigidbody;
     private InGameManager _igm;
@@ -42,10 +41,14 @@ public class BossAI : MonoBehaviour
     [Header("Weapon Settings")]
     public GameObject ThrowPoint;
     public GameObject ThrowingObject;
+    public GameObject ThrowingObjectTriggerEffect;
     public GameObject LaserWarning;
     public GameObject LaserFire;
     public float LaserCameraShakeMagnitude = 1.0f;
     public float LaserCameraShakeRoughness = 12.0f;
+
+    ObjectPooler _bossBombsPool;
+    ObjectPooler _bossBombTriggerEffectPool;
 
     //Our saved shake instance.
     private CameraShakeInstance _shakeInstance;
@@ -58,10 +61,12 @@ public class BossAI : MonoBehaviour
         _audioManager = FindObjectOfType<AudioManager>();
         _targetObject = GameObject.FindGameObjectWithTag("Player");
         _bossRigidbody = this.GetComponent<Rigidbody>();
-        _health = BossFullHealth;
-        _igm.IsBossAlive = true;
-        _igm.BossFullHealth = BossFullHealth;
-        _igm.BossCurrentHealth = _health;
+        BossLevelStatsAdd();
+
+        _bossBombsPool = new ObjectPooler(ThrowingObject);
+        _bossBombsPool.FillThePool(2);
+        _bossBombTriggerEffectPool = new ObjectPooler(ThrowingObjectTriggerEffect);
+        _bossBombTriggerEffectPool.FillThePool(2);
 
         InvokeRepeating("RotatePositionChange", 0.5f, _rotateTimeLapsForMode0);
 
@@ -124,7 +129,7 @@ public class BossAI : MonoBehaviour
             }else
             {
                 // Default value is 0
-                float onePercentOfFullHeal = BossFullHealth / 100;
+                float onePercentOfFullHeal = _bossFullHealth / 100;
                 if (_health < onePercentOfFullHeal * 10)
                 {
                     _rotateSpeedMod = 3;
@@ -144,6 +149,39 @@ public class BossAI : MonoBehaviour
     public float GetHealth()
     {
         return _health;
+    }
+
+    public void BombTriggerEffect(Vector3 pos, Quaternion rot)
+    {
+        GameObject bombTriggerEffect = _bossBombTriggerEffectPool.GetObjectFromPoolAtPosition(pos, rot);
+
+        StartCoroutine(SendToPoolObjectTimout(bombTriggerEffect, "BombTriggerEffect", 3f));
+    }
+
+    private void BossLevelStatsAdd()
+    {
+        int reachedLevel = _igm.GetReachedLevel();
+        switch (reachedLevel)
+        {
+            case 1:
+                _bossFullHealth = 350;
+                break;
+            case 2:
+                _bossFullHealth = 550;
+                break;
+            case 3:
+                _bossFullHealth = 750;
+                break;
+            default:
+                _bossFullHealth = 1000;
+                break;
+        }
+
+
+        _health = _bossFullHealth;
+        _igm.IsBossAlive = true;
+        _igm.BossFullHealth = _bossFullHealth;
+        _igm.BossCurrentHealth = _health;
     }
 
     private void CrashEffectApply()
@@ -300,10 +338,12 @@ public class BossAI : MonoBehaviour
     {
         Vector3 throwPoint = ThrowPoint.transform.position;
         Quaternion throwRotation = ThrowPoint.transform.rotation;
-        GameObject obj = Instantiate(ThrowingObject, throwPoint, throwRotation);
-        obj.GetComponent<Rigidbody>().velocity = _bossRigidbody.velocity - (transform.forward * 10);
+        GameObject bossBomb = _bossBombsPool.GetObjectFromPoolAtPosition(throwPoint, throwRotation);
+        Rigidbody bossBombRigidbody = bossBomb.GetComponent<Rigidbody>();
+        bossBombRigidbody.velocity = new Vector3(0, 0, 0);
+        bossBombRigidbody.velocity = _bossRigidbody.velocity - (transform.forward * 10);
 
-        Destroy(obj, 10);
+        StartCoroutine(SendToPoolObjectTimout(bossBomb, "Bomb", 5f));
     }
 
     IEnumerator FireTheLaser(float timeOut)
@@ -334,5 +374,20 @@ public class BossAI : MonoBehaviour
         LaserFire.SetActive(false);
         // Deactivate the camera shake
         _shakeInstance.StartFadeOut(0.5f);
+    }
+
+    private IEnumerator SendToPoolObjectTimout(GameObject bulletObject, string objectType, float time)
+    {
+        // Wait for X second
+        yield return new WaitForSeconds(time);
+
+        if (objectType == "Bomb")
+        {
+            _bossBombsPool.SendObjectToPool(bulletObject);
+        }
+        else if (objectType == "BombTriggerEffect")
+        {
+            _bossBombTriggerEffectPool.SendObjectToPool(bulletObject);
+        }
     }
 }

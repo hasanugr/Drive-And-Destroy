@@ -147,8 +147,8 @@ Shader "Shader Forge/Flag" {
                 i.normalDir *= faceSign;
                 float3x3 tangentTransform = float3x3( i.tangentDir, i.bitangentDir, i.normalDir);
                 float3 viewDirection = normalize(_WorldSpaceCameraPos.xyz - i.posWorld.xyz);
-                float4 node_4638 = _Time;
-                float2 node_5266 = (i.uv0+node_4638.g*float2(0.2,0));
+                float4 node_5827 = _Time;
+                float2 node_5266 = (i.uv0+node_5827.g*float2(0.2,0));
                 float3 _BumpMap_var = UnpackNormal(tex2D(_BumpMap,TRANSFORM_TEX(node_5266, _BumpMap)));
                 float _NormalStrength_var = UNITY_ACCESS_INSTANCED_PROP( Props, _NormalStrength );
                 float3 normalLocal = lerp(_BumpMap_var.rgb,float3(0.5,0.5,1),_NormalStrength_var);
@@ -380,8 +380,8 @@ Shader "Shader Forge/Flag" {
                 i.normalDir *= faceSign;
                 float3x3 tangentTransform = float3x3( i.tangentDir, i.bitangentDir, i.normalDir);
                 float3 viewDirection = normalize(_WorldSpaceCameraPos.xyz - i.posWorld.xyz);
-                float4 node_5962 = _Time;
-                float2 node_5266 = (i.uv0+node_5962.g*float2(0.2,0));
+                float4 node_6243 = _Time;
+                float2 node_5266 = (i.uv0+node_6243.g*float2(0.2,0));
                 float3 _BumpMap_var = UnpackNormal(tex2D(_BumpMap,TRANSFORM_TEX(node_5266, _BumpMap)));
                 float _NormalStrength_var = UNITY_ACCESS_INSTANCED_PROP( Props, _NormalStrength );
                 float3 normalLocal = lerp(_BumpMap_var.rgb,float3(0.5,0.5,1),_NormalStrength_var);

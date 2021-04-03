@@ -5,7 +5,6 @@ using EZCameraShake;
 
 public class BossBomb : MonoBehaviour
 {
-    public GameObject BombTriggerEffect;
     public float BombDamage = 30.0f;
 
     private bool _bombActive = true;
@@ -14,12 +13,20 @@ public class BossBomb : MonoBehaviour
     private VehicleMovement vehicleMovement;
     private AudioManager _audioManager;
 
+    BossAI _bossAI;
+
     // Start is called before the first frame update
     void Start()
     {
         ship = GameObject.FindWithTag("Player");
         vehicleMovement = ship.GetComponent<VehicleMovement>();
         _audioManager = FindObjectOfType<AudioManager>();
+        _bossAI = FindObjectOfType<BossAI>();
+    }
+
+    private void OnEnable()
+    {
+        _bombActive = true;
     }
 
     private void OnTriggerEnter(Collider collider)
@@ -29,24 +36,18 @@ public class BossBomb : MonoBehaviour
             Vector3 pos = this.gameObject.transform.position;
             Quaternion rot = this.gameObject.transform.rotation;
 
-            // Destroy the bullet when touch any collision
-            Destroy(this.gameObject);
+            // Take passive the bullet when touch any collision
+            gameObject.SetActive(false);
 
             _audioManager.PlayOneShot("BossBombExp");
             // Get the contact point and create bullet hole at contact point
-            if (BombTriggerEffect)
-            {
-                GameObject bombEffect = Instantiate(BombTriggerEffect, pos, rot);
-                // Destroy the bullet hole on surface
-                Destroy(bombEffect, 3f);
-
-                CameraShaker.Instance.ShakeOnce(4f, 4f, 0.1f, 1f);
-            }
-
+            
             if (_bombActive)
             {
                 print("BossBomb Triggered!");
                 _bombActive = false;
+                _bossAI.BombTriggerEffect(pos, rot);
+                CameraShaker.Instance.ShakeOnce(4f, 4f, 0.1f, 1f);
                 vehicleMovement.TakeDamage(BombDamage);
             }
 

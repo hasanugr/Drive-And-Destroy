@@ -13,12 +13,11 @@ public class GameManager : MonoBehaviour
 	public GameObject[] vehicles;
 	public GameObject selectedVehicle;
 
+	private int _playedGameCount;
+
 	[Header("Race Settings")]
 	public int heal = 100;                  //The heal of vehicle
 	public VehicleMovement vehicleMovement; //A reference to the ship's VehicleMovement script
-
-	[Header("UI References")]
-	public GameObject gameOverUI;			//A reference to the UI objects that appears when the game is complete
 
 
 	void Awake()
@@ -95,4 +94,15 @@ public class GameManager : MonoBehaviour
     {
 		pd.gold += val;
     }
+
+	public void PlayedGameCountIncrease()
+    {
+		_playedGameCount++;
+	}
+
+	public int GetPlayedGameCount()
+    {
+		return _playedGameCount;
+
+	}
 }

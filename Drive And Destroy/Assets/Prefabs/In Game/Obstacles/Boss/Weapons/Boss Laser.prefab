@@ -56,10 +56,11 @@ MeshRenderer:
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
   m_RayTracingMode: 2
+  m_RayTraceProcedural: 0
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: f70307df34273ee4eb8828d334d7e65a, type: 2}
+  - {fileID: 2100000, guid: f1b9f4656f48b7140b8bdeb6eb224a99, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -80,6 +81,7 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
+  m_AdditionalVertexStreams: {fileID: 0}
 --- !u!136 &854440963875750635
 CapsuleCollider:
   m_ObjectHideFlags: 0
@@ -329,7 +331,24 @@ PrefabInstance:
       propertyPath: EmissionModule.rateOverTime.scalar
       value: 200
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    - target: {fileID: 19900002, guid: ce6816dd0b84ee54e9d6e52a32576433, type: 3}
+      propertyPath: m_Materials.Array.size
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 19900004, guid: ce6816dd0b84ee54e9d6e52a32576433, type: 3}
+      propertyPath: m_Materials.Array.size
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 19900006, guid: ce6816dd0b84ee54e9d6e52a32576433, type: 3}
+      propertyPath: m_Materials.Array.size
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 19900010, guid: ce6816dd0b84ee54e9d6e52a32576433, type: 3}
+      propertyPath: m_Materials.Array.size
+      value: 1
+      objectReference: {fileID: 0}
+    m_RemovedComponents:
+    - {fileID: 114000013284431698, guid: ce6816dd0b84ee54e9d6e52a32576433, type: 3}
   m_SourcePrefab: {fileID: 100100000, guid: ce6816dd0b84ee54e9d6e52a32576433, type: 3}
 --- !u!4 &6935116046143240464 stripped
 Transform:

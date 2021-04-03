@@ -43,6 +43,7 @@ public class InGameManager : MonoBehaviour
     private int _collectedGold = 0;
 
     [Header("Road Creator")]
+    public int MaxRoadInScene = 6;
     public GameObject StraightRoad;
     public GameObject SoftLeftRoad;
     public GameObject SoftRightRoad;
@@ -53,12 +54,21 @@ public class InGameManager : MonoBehaviour
     public List<GameObject> activeRoads;
     public int StepToAddCountdownReset = 3;
 
+    [SerializeField]
+    private List<string> _activeRoadsNames;
     private Vector3 insPosition;
     private Quaternion insRotation;
-    // private Vector3 insForward;
-
+    
     private int blockStepLeft = 0;
     private int blockStepRight = 0;
+
+    private ObjectPooler _straightRoadPool;
+    private ObjectPooler _softLeftRoadPool;
+    private ObjectPooler _softRightRoadPool;
+    private ObjectPooler _hardLeftRoadPool;
+    private ObjectPooler _hardRightRoadPool;
+    private ObjectPooler _bossRoadPool;
+    private ObjectPooler _nextLevelRoadPool;
 
     [Header("Game Countdown Timer")]
     public float TimerMaxValue = 3;
@@ -80,6 +90,7 @@ public class InGameManager : MonoBehaviour
     private int _activeTerrain = 0;
 
     GameManager _gm;
+
     private void Start()
     {
         _gm = GameObject.Find(VariableController.GAME_MANAGER).GetComponent<GameManager>();
@@ -87,9 +98,11 @@ public class InGameManager : MonoBehaviour
         Time.timeScale = 1f;
         _timerCountdown = TimerMaxValue;
 
+        CreatePoolObjects();
         SpawnTheVehicle();
         StartCoroutine(CountdownToStart());
         cameraHolder.GetComponent<CameraFollow>().enabled = true;
+
     }
 
     IEnumerator CountdownToStart()
@@ -112,10 +125,34 @@ public class InGameManager : MonoBehaviour
             TimerUI.color = textColor;
         });
         ProcessAfterLoad();
+        _gm.PlayedGameCountIncrease();
         GameIsStarted = true;
         cameraHolder.GetComponent<CameraFollow>().positionSmoothTime = 0.01f;
         yield return new WaitForSeconds(1f);
         TimerUIObj.transform.parent.gameObject.SetActive(false);
+    }
+
+    private void CreatePoolObjects()
+    {
+        _straightRoadPool = new ObjectPooler(StraightRoad);
+        _straightRoadPool.FillThePool(6);
+        _softLeftRoadPool = new ObjectPooler(SoftLeftRoad);
+        _softLeftRoadPool.FillThePool(3);
+        _softRightRoadPool = new ObjectPooler(SoftRightRoad);
+        _softRightRoadPool.FillThePool(3);
+        _hardLeftRoadPool = new ObjectPooler(HardLeftRoad);
+        _hardLeftRoadPool.FillThePool(3);
+        _hardRightRoadPool = new ObjectPooler(HardRightRoad);
+        _hardRightRoadPool.FillThePool(3);
+        _bossRoadPool = new ObjectPooler(BossModeRoad);
+        _bossRoadPool.FillThePool(6);
+        _nextLevelRoadPool = new ObjectPooler(NextLevelRoad);
+        _nextLevelRoadPool.FillThePool(1);
+
+        // Create 3 Road too before start
+        RoadChangeTrigger();
+        RoadChangeTrigger();
+        RoadChangeTrigger();
     }
 
     public void Resume()
@@ -138,7 +175,6 @@ public class InGameManager : MonoBehaviour
     {
         SceneManager.LoadScene(SceneManager.GetActiveScene().name);
         pauseMenuUI.SetActive(false);
-        //inGameUI.SetActive(true);
         Time.timeScale = 1f;
         GameIsPaused = false;
     }
@@ -213,7 +249,7 @@ public class InGameManager : MonoBehaviour
 
     public void RoadChangeTrigger()
     {
-        if (activeRoads.Count > 6)
+        if (activeRoads.Count >= MaxRoadInScene)
         {
             DestroyLastRoad();
         }
@@ -225,10 +261,20 @@ public class InGameManager : MonoBehaviour
         return Terrains[_activeTerrain].transform.position;
     }
 
-    public void ChangeTerrainPosition(Vector3 pos)
+    public void ChangeTerrainPosition(string fixWay)
     {
         Transform activeTerrainTransform = Terrains[_activeTerrain].transform;
-        activeTerrainTransform.position = pos;
+        Vector3 tempPos = activeTerrainTransform.position;
+        switch (fixWay)
+        {
+            case "Vertical":
+                tempPos.z = _player.transform.position.z - 1000;
+                break;
+            case "Horizontal":
+                tempPos.x = _player.transform.position.x - 1000;
+                break;
+        }
+        activeTerrainTransform.position = tempPos;
     }
 
     public void ChangeActiveTerrain()
@@ -243,7 +289,6 @@ public class InGameManager : MonoBehaviour
     public void IncreaseReachedLevel()
     {
         _reachedLevel += 1;
-        print("IncreaseReachedLevel --> " + _reachedLevel);
     }
 
     private void LevelController()
@@ -292,25 +337,88 @@ public class InGameManager : MonoBehaviour
 
     private void DestroyLastRoad()
     {
-        Destroy(activeRoads[0]);
+        string roadName = _activeRoadsNames[0];
+        switch (roadName)
+        {
+            case "Straight":
+                _straightRoadPool.SendObjectToPool(activeRoads[0]);
+                break;
+            case "SoftLeft":
+                _softLeftRoadPool.SendObjectToPool(activeRoads[0]);
+                break;
+            case "SoftRight":
+                _softRightRoadPool.SendObjectToPool(activeRoads[0]);
+                break;
+            case "HardLeft":
+                _hardLeftRoadPool.SendObjectToPool(activeRoads[0]);
+                break;
+            case "HardRight":
+                _hardRightRoadPool.SendObjectToPool(activeRoads[0]);
+                break;
+            case "BossMode":
+                _bossRoadPool.SendObjectToPool(activeRoads[0]);
+                break;
+            case "NextLevel":
+                _nextLevelRoadPool.SendObjectToPool(activeRoads[0]);
+                break;
+            default:
+                print(roadName + " object is couldn't send to pool.!");
+                break;
+        }
         activeRoads.RemoveAt(0);
+        _activeRoadsNames.RemoveAt(0);
     }
 
     private void CreateNewRoad()
     {
-        Transform LastObjectChildTransform = activeRoads[activeRoads.Count - 1].transform.GetChild(1).transform;
-        insPosition = LastObjectChildTransform.position;
-        insRotation = LastObjectChildTransform.rotation;
-        // insForward = LastObjectChildTransform.forward;
+        if (activeRoads.Count <= 0)
+        {
+            insPosition = transform.position;
+            insRotation = transform.rotation;
+        }
+        else
+        {
+            Transform LastObjectChildTransform = activeRoads[activeRoads.Count - 1].transform.GetChild(1).transform;
+            insPosition = LastObjectChildTransform.position;
+            insRotation = LastObjectChildTransform.rotation;
+        }
 
-        GameObject _newRoad;
+        string newRoadName;
         do
         {
-            _newRoad = GetNewRoad();
-        } while (!IsFreeForNewRoad(_newRoad.name));
-        
-        GameObject _lastRoad = Instantiate(_newRoad, insPosition, insRotation);
+            newRoadName = GetNewRoad();
+        } while (!IsFreeForNewRoad(newRoadName));
+
+        GameObject _lastRoad;
+        switch (newRoadName)
+        {
+            case "Straight":
+                _lastRoad = _straightRoadPool.GetObjectFromPoolAtPosition(insPosition, insRotation);
+                break;
+            case "SoftLeft":
+                _lastRoad = _softLeftRoadPool.GetObjectFromPoolAtPosition(insPosition, insRotation);
+                break;
+            case "SoftRight":
+                _lastRoad = _softRightRoadPool.GetObjectFromPoolAtPosition(insPosition, insRotation);
+                break;
+            case "HardLeft":
+                _lastRoad = _hardLeftRoadPool.GetObjectFromPoolAtPosition(insPosition, insRotation);
+                break;
+            case "HardRight":
+                _lastRoad = _hardRightRoadPool.GetObjectFromPoolAtPosition(insPosition, insRotation);
+                break;
+            case "BossMode":
+                _lastRoad = _bossRoadPool.GetObjectFromPoolAtPosition(insPosition, insRotation);
+                break;
+            case "NextLevel":
+                _lastRoad = _nextLevelRoadPool.GetObjectFromPoolAtPosition(insPosition, insRotation);
+                break;
+            default:
+                _lastRoad = _straightRoadPool.GetObjectFromPoolAtPosition(insPosition, insRotation);
+                break;
+        }
         activeRoads.Add(_lastRoad);
+        _activeRoadsNames.Add(newRoadName);
 
         // The traps won't add to road when boss activated.
         if (IsBossActivated)
@@ -318,22 +426,18 @@ public class InGameManager : MonoBehaviour
             _createdBossRoad++;
             _lastRoad.GetComponent<BossRoadControl>().StartProccess(_reachedLevel, _createdBossRoad);
         }
-        else
-        {
-            _lastRoad.GetComponent<RoadBarricadeControl>().AddBarricades(_reachedLevel);
-        }
     }
 
     private bool IsFreeForNewRoad(string selectedNewRoadName)
     {
         bool _isFree = true;
 
-        if ((selectedNewRoadName == "Soft Left Road" || selectedNewRoadName == "Hard Left Road"))
+        if ((selectedNewRoadName == "SoftLeft" || selectedNewRoadName == "HardLeft"))
         {
             blockStepLeft = 2;
             blockStepRight = 0;
         }
-        else if ((selectedNewRoadName == "Soft Right Road" || selectedNewRoadName == "Hard Right Road"))
+        else if ((selectedNewRoadName == "SoftRight" || selectedNewRoadName == "HardRight"))
         {
             blockStepRight = 2;
             blockStepLeft = 0;
@@ -342,36 +446,43 @@ public class InGameManager : MonoBehaviour
         return _isFree;
     }
 
-    private GameObject GetNewRoad()
+    private string GetNewRoad()
     {
-        GameObject[] _roads = { StraightRoad, SoftLeftRoad, SoftRightRoad, HardLeftRoad, HardRightRoad };
+        string[] _roads = { "Straight", "SoftLeft", "SoftRight", "HardLeft", "HardRight" };
 
         if (IsBossActivated)
         {
-            _roads = new GameObject[] { BossModeRoad };
+            _roads = new string[] { "BossMode" };
         }else if (IsNextLevelTime)
         {
-            _roads = new GameObject[] { NextLevelRoad };
+            _roads = new string[] { "NextLevel" };
             IsNextLevelTime = false;
             _createdBossRoad = 0;
         }
         else
         {
-            if (blockStepLeft > 0)
+            if (activeRoads.Count < 3)
             {
-                _roads = new GameObject[] { StraightRoad, SoftRightRoad, HardRightRoad };
-                blockStepLeft -= 1;
+                _roads = new string[] { "Straight" };
             }
-            else if (blockStepRight > 0)
+            else
             {
-                _roads = new GameObject[] { StraightRoad, SoftLeftRoad, HardLeftRoad };
-                blockStepRight -= 1;
+                if (blockStepLeft > 0)
+                {
+                    _roads = new string[] { "Straight", "SoftRight", "HardRight" };
+                    blockStepLeft -= 1;
+                }
+                else if (blockStepRight > 0)
+                {
+                    _roads = new string[] { "Straight", "SoftLeft", "HardLeft" };
+                    blockStepRight -= 1;
+                }
             }
         }
 
         int _randomNumber = Random.Range(0, _roads.Length);
 
-        GameObject selectedRoad = _roads[_randomNumber];
+        string selectedRoad = _roads[_randomNumber];
         return selectedRoad;
     }
 

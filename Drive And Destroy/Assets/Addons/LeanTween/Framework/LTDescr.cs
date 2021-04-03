@@ -1017,7 +1017,8 @@ public class LTDescr
 		return false;
 	}
 
-	public void callOnCompletes(){
+	public void callOnCompletes()
+    {
 		if(this.type==TweenAction.GUI_ROTATE)
 			this._optional.ltRect.rotateFinished = true;
 

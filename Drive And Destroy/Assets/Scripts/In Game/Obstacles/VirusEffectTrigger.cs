@@ -13,11 +13,12 @@ public class VirusEffectTrigger : MonoBehaviour
     [Header("Camera Shake Settings")]
     public float CameraShakeMagnitude = 6.0f;
     public float CameraShakeRoughness = 12.0f;
-    public float CameraShakeEffectDuration = 10.0f;
+    public float CameraShakeEffectDuration = 7.0f;
 
     [Header("Half Blind Settings")]
     public float HalfBlindDuration = 5.0f;
-    public GameObject HalfBlindVolumeObject;
+
+    private PostProcessControl _postProcessController;
 
     [Header("Change Rotate Settings")]
     public float ChangeRotateDuration = 5.0f;
@@ -56,6 +57,15 @@ public class VirusEffectTrigger : MonoBehaviour
         // Change Rotate Part //
         GameObject targetObject = GameObject.FindGameObjectWithTag("Player");
         _playerInput = targetObject.GetComponent<PlayerInput>();
+
+        GameObject globalVolume = GameObject.FindGameObjectWithTag("PostProcess");
+        _postProcessController = globalVolume.GetComponent<PostProcessControl>();
+    }
+
+    private void OnEnable()
+    {
+        _thisBoxCollider.enabled = true;
+        VirusPartycleSystem.SetActive(true);
     }
 
     private void OnTriggerEnter(Collider col)
@@ -73,7 +83,7 @@ public class VirusEffectTrigger : MonoBehaviour
 
     public void StartVirusEffect()
     {
-        VirusEffectTypes virusEffectType = VirusEffectTypes.ChangeRotateController; //GetRandomEffect();
+        VirusEffectTypes virusEffectType = GetRandomEffect();
         switch (virusEffectType)
         {
             case VirusEffectTypes.ShakeTheCamera:
@@ -101,7 +111,8 @@ public class VirusEffectTrigger : MonoBehaviour
     private void DestroyObject()
     {
         _igm.IsVirusEffected = false;
-        Destroy(gameObject);
+        
+        gameObject.SetActive(false);
     }
 
     IEnumerator StartShakeTheCamera()
@@ -119,12 +130,12 @@ public class VirusEffectTrigger : MonoBehaviour
     IEnumerator StartHalfBlindView()
     {
         _igm.ActivateVirusEffectStatus("Myopic", HalfBlindDuration);
-        GameObject halfBlindVolume = Instantiate(HalfBlindVolumeObject);
+        _postProcessController.ActivateDOF();
 
         //yield on a new YieldInstruction that waits for X(HalfBlindDuration) seconds.
         yield return new WaitForSeconds(HalfBlindDuration);
 
-        Destroy(halfBlindVolume);
+        _postProcessController.DeactivateDOF();
         DestroyObject();
     }
 

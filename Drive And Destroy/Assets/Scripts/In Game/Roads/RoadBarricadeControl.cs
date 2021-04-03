@@ -5,6 +5,8 @@ using UnityEngine;
 
 public class RoadBarricadeControl : MonoBehaviour
 {
+    public GameObject BoostsHolder;
+
     [Header("Enivronment")]
     public MeshRenderer RoadMeshRenderer;
     public GameObject[] Environments;
@@ -13,15 +15,16 @@ public class RoadBarricadeControl : MonoBehaviour
     private Material[] _tempMaterials;
 
     [Header("Barricades")]
-    public GameObject[] BarricadePoints;
-    public GameObject[] Barricades;
-    public Transform BarricadesHolderTransform;
-
-    public GameObject GlassBaricade;
-    public GameObject MovingBarricade;
-    public GameObject UnbreakableSupriseBarricade;
-    public GameObject DoubleGateBarricade;
-    public GameObject VirusEffect;
+    public GameObject BackBlock;
+    public GameObject DeleteRoadTrigger;
+    public GameObject EntryVirus;
+    public GameObject FirstQuarterFixed;
+    public GameObject FirstQuarterMoving;
+    public GameObject[] HalfTripleFixed;
+    public GameObject HalfDoubleGate;
+    public GameObject LastQuarterFixed;
+    public GameObject LastQuarterMoving;
+    public GameObject ExitSupriseUnbreakable;
     public Color BarricadeColor1;
     public Color BarricadeColor2;
     public Color BarricadeColor3;
@@ -48,15 +51,48 @@ public class RoadBarricadeControl : MonoBehaviour
     {
         _igm = GameObject.Find("In Game Manager").GetComponent<InGameManager>();
         _reachedLevel = _igm.GetReachedLevel();
-
+        
         EnvironmentAdd();
         RoadMaterialAdd();
+        if (_igm.transform.position != this.transform.position)
+        {
+            // Will added baricades if this road not the first road.
+            AddBarricades();
+            BoostsHolder.SetActive(true);
+            BackBlock.SetActive(false);
+        }else
+        {
+            BackBlock.SetActive(true);
+        }
+        DeleteRoadTrigger.SetActive(true);
     }
 
-    public void AddBarricades(int reachedLevel)
+    private void OnEnable()
+    {
+        if (_igm != null)
+        {
+            _reachedLevel = _igm.GetReachedLevel();
+
+            EnvironmentAdd();
+            RoadMaterialAdd();
+            if (_igm.transform.position != this.transform.position)
+            {
+                // Will added baricades if this road not the first road.
+                AddBarricades();
+                BoostsHolder.SetActive(true);
+                BackBlock.SetActive(false);
+            }
+            else
+            {
+                BackBlock.SetActive(true);
+            }
+            DeleteRoadTrigger.SetActive(true);
+        }
+    }
+
+    public void AddBarricades()
     {
        BarricadeTypes barricadeType = GetRandomBarricade();
-       _reachedLevel = reachedLevel;
 
        switch (barricadeType)
         {
@@ -104,8 +140,8 @@ public class RoadBarricadeControl : MonoBehaviour
     {
         if (IsShouldWork(oddsPercent))
         {
-            BarricadePoints[0].transform.Translate(BarricadePoints[0].transform.right * UnityEngine.Random.Range(-6, 7), Space.World);
-            Instantiate(VirusEffect, BarricadePoints[0].transform.position, BarricadePoints[0].transform.rotation, BarricadesHolderTransform);
+            EntryVirus.transform.Translate(EntryVirus.transform.right * UnityEngine.Random.Range(-6, 7));
+            EntryVirus.SetActive(true);
         }
     }
 
@@ -113,51 +149,49 @@ public class RoadBarricadeControl : MonoBehaviour
     {
         if (IsShouldWork(oddsPercent))
         {
-            BarricadePoints[4].transform.Translate(BarricadePoints[4].transform.right * UnityEngine.Random.Range(-6, 7), Space.World);
-            Instantiate(UnbreakableSupriseBarricade, BarricadePoints[4].transform.position, BarricadePoints[4].transform.rotation, BarricadesHolderTransform);
+            ExitSupriseUnbreakable.transform.Translate(ExitSupriseUnbreakable.transform.right * UnityEngine.Random.Range(-6, 7));
+            ExitSupriseUnbreakable.SetActive(true);
         }
     }
 
     private void AddBasicToQuarters()
     {
-        BarricadePoints[1].transform.Translate(BarricadePoints[1].transform.right * UnityEngine.Random.Range(-6, 7), Space.World);
-        BarricadePoints[3].transform.Translate(BarricadePoints[3].transform.right * UnityEngine.Random.Range(-6, 7), Space.World);
-        GameObject firstQuarterBarricade = Instantiate(GlassBaricade, BarricadePoints[1].transform.position, BarricadePoints[1].transform.rotation, BarricadesHolderTransform);
-        GameObject lastQuarterBarricade = Instantiate(GlassBaricade, BarricadePoints[3].transform.position, BarricadePoints[3].transform.rotation, BarricadesHolderTransform);
+        FirstQuarterFixed.transform.Translate(FirstQuarterFixed.transform.right * UnityEngine.Random.Range(-6, 7));
+        LastQuarterFixed.transform.Translate(FirstQuarterFixed.transform.right * UnityEngine.Random.Range(-6, 7));
+        
+        AddBarricadeLevelStats(FirstQuarterFixed);
+        AddBarricadeLevelStats(LastQuarterFixed);
 
-        AddBarricadeLevelStats(firstQuarterBarricade);
-        AddBarricadeLevelStats(lastQuarterBarricade);
+        FirstQuarterFixed.SetActive(true);
+        LastQuarterFixed.SetActive(true);
     }
 
     private void AddMovingBasicToQuarters()
     {
-        GameObject firstQuarterBarricade = Instantiate(MovingBarricade, BarricadePoints[1].transform.position, BarricadePoints[1].transform.rotation, BarricadesHolderTransform);
-        GameObject lastQuarterBarricade = Instantiate(MovingBarricade, BarricadePoints[3].transform.position, BarricadePoints[3].transform.rotation, BarricadesHolderTransform);
+        AddBarricadeLevelStats(FirstQuarterMoving);
+        AddBarricadeLevelStats(LastQuarterMoving);
 
-        AddBarricadeLevelStats(firstQuarterBarricade);
-        AddBarricadeLevelStats(lastQuarterBarricade);
+        FirstQuarterMoving.SetActive(true);
+        LastQuarterMoving.SetActive(true);
     }
 
     private void AddBasicSeriesToMiddle()
     {
-        GameObject firstQuarterBarricade = Instantiate(GlassBaricade, BarricadePoints[2].transform.position, BarricadePoints[2].transform.rotation, BarricadesHolderTransform);
-        BarricadePoints[2].transform.Translate(BarricadePoints[2].transform.forward * 3, Space.World);
-        BarricadePoints[2].transform.Translate(BarricadePoints[2].transform.right * 6, Space.World);
-        GameObject secondQuarterBarricade = Instantiate(GlassBaricade, BarricadePoints[2].transform.position, BarricadePoints[2].transform.rotation, BarricadesHolderTransform);
-        BarricadePoints[2].transform.Translate(BarricadePoints[2].transform.right * -12, Space.World);
-        GameObject thirthQuarterBarricade = Instantiate(GlassBaricade, BarricadePoints[2].transform.position, BarricadePoints[2].transform.rotation, BarricadesHolderTransform);
-
-        AddBarricadeLevelStats(firstQuarterBarricade);
-        AddBarricadeLevelStats(secondQuarterBarricade);
-        AddBarricadeLevelStats(thirthQuarterBarricade);
+        for (int i = 0; i < HalfTripleFixed.Length; i++)
+        {
+            AddBarricadeLevelStats(HalfTripleFixed[i]);
+            HalfTripleFixed[i].SetActive(true);
+        }
     }
 
     private void AddDoubleGateToMiddle()
     {
-        GameObject middleBarricade = Instantiate(DoubleGateBarricade, BarricadePoints[2].transform.position, BarricadePoints[2].transform.rotation, BarricadesHolderTransform);
+        HalfDoubleGate.SetActive(true);
 
-        GameObject middleBreackableDoor = middleBarricade.transform.GetChild(0).GetChild(0).GetChild(0).GetChild(0).gameObject;
+        GameObject middleBreackableDoor = HalfDoubleGate.transform.GetChild(0).GetChild(0).GetChild(0).GetChild(0).gameObject;
+
         AddBarricadeLevelStats(middleBreackableDoor);
+        middleBreackableDoor.SetActive(true);
         
     }
 
@@ -234,6 +268,35 @@ public class RoadBarricadeControl : MonoBehaviour
                 barricadeBlockBarricade.BarricadeLevel = _reachedLevel;
                 barricadeBlockBarricade.FullHealth = 80;
                 break;
+        }
+    }
+
+    private void OnDisable()
+    {
+        GameObject[] resetPositionObjects = new GameObject[] { EntryVirus, FirstQuarterFixed, LastQuarterFixed, ExitSupriseUnbreakable };
+        for (var i = 0; i < resetPositionObjects.Length; i++)
+        {
+            Vector3 objPos = resetPositionObjects[i].transform.position;
+            objPos.x = 0;
+            resetPositionObjects[i].transform.position = objPos;
+        }
+
+        EntryVirus.SetActive(false);
+        FirstQuarterFixed.SetActive(false);
+        FirstQuarterMoving.SetActive(false);
+        HalfDoubleGate.SetActive(false);
+        LastQuarterFixed.SetActive(false);
+        LastQuarterMoving.SetActive(false);
+        ExitSupriseUnbreakable.SetActive(false);
+
+        for (int i = 0; i < HalfTripleFixed.Length; i++)
+        {
+            HalfTripleFixed[i].SetActive(false);
+        }
+
+        for (int i = 0; i < Environments.Length; i++)
+        {
+            Environments[i].SetActive(false);
         }
     }
 }

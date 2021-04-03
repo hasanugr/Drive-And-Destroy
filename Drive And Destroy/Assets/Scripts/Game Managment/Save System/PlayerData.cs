@@ -101,7 +101,7 @@ public class PlayerData
     {
         _levels = new int[1];
         _highScore = 0;
-        _gold = 9999;
+        _gold = 0;
         _selectedVehicleId = 1;
         ActivateVehicle(_selectedVehicleId);
 

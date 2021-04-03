@@ -32,10 +32,6 @@ public class PlayerInput : MonoBehaviour
 
     void Update()
 	{
-		//If the player presses the Escape key and this is a build (not the editor), exit the game
-		if (CrossPlatformInputManager.GetButtonDown("Cancel") && !Application.isEditor)
-			Application.Quit();
-
 		if (!_isVehicleControlTypeChecked)
         {
 			CheckPlayerControlType();

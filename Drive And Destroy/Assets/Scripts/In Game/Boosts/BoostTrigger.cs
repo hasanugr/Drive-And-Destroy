@@ -20,6 +20,9 @@ public class BoostTrigger : MonoBehaviour
     public float RotateAroundTime = 3f;
     public float EasePunchSize = 1.2f;
 
+    private Transform _defaultParent;
+    private Vector3 _defaultPos;
+
     private InGameManager _igm;
     private Vector3 _childBodyObjectScale;
     private AudioManager _audioManager;
@@ -36,6 +39,9 @@ public class BoostTrigger : MonoBehaviour
             LeanTween.rotateAround(this.gameObject, transform.up, 360, RotateAroundTime).setLoopClamp();
             LeanTween.scale(ChildBodyObject, _childBodyObjectScale * EasePunchSize, 1).setEasePunch().setLoopPingPong();
         }
+
+        _defaultParent = this.gameObject.transform.parent;
+        _defaultPos = this.gameObject.transform.position;
     }
 
     private void OnTriggerEnter(Collider collider)
@@ -78,8 +84,22 @@ public class BoostTrigger : MonoBehaviour
             if (isDestroy)
             {
                 this.gameObject.transform.parent = collider.gameObject.transform;
-                LeanTween.scale(this.gameObject, new Vector3(0, 0, 0), DisappearDuration).setDestroyOnComplete(true);
+                LeanTween.scale(this.gameObject, new Vector3(0, 0, 0), DisappearDuration);
+
+                StartCoroutine(SetPassiveBoost(DisappearDuration));
             }
         }
+
+    }
+
+    IEnumerator SetPassiveBoost(float time)
+    {
+        // Wait for X second
+        yield return new WaitForSeconds(time);
+
+        gameObject.SetActive(false);
+        this.gameObject.transform.parent = _defaultParent;
+        this.gameObject.transform.position = _defaultPos;
+        this.gameObject.transform.localScale = new Vector3(1, 1, 1);
     }
 }

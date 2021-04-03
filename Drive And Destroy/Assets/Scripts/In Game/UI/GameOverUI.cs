@@ -27,10 +27,13 @@ public class GameOverUI : MonoBehaviour
 
     private InGameManager _igm;
     private GameManager _gm;
+    AdmobManager _admobManager;
+
     private void OnEnable()
     {
         _gm = GameObject.Find(VariableController.GAME_MANAGER).GetComponent<GameManager>();
         _igm = GameObject.Find("In Game Manager").GetComponent<InGameManager>();
+        _admobManager = FindObjectOfType<AdmobManager>();
 
         AddUIValues();
         CalculateGold();
@@ -108,10 +111,21 @@ public class GameOverUI : MonoBehaviour
         text.color = textColor;
     }
 
+    private void WatchInterstitialAdsWithControl()
+    {
+        int playedGameCount = _gm.GetPlayedGameCount();
+        if (playedGameCount % 2 == 0)
+        {
+            _admobManager.ShowInterstitial();
+        }
+    }
+
     IEnumerator DisableTheTouchBlock(float time)
     {
         //yield on a new YieldInstruction that waits for 5 seconds.
         yield return new WaitForSeconds(time);
+
+        WatchInterstitialAdsWithControl();
 
         TouchBlockPanel.SetActive(false);
     }

@@ -47,9 +47,4 @@ public class VehicleShowMain : MonoBehaviour
         }
         showingVehicle.transform.localPosition += new Vector3(0, 0, extraPosition);
     }
-
-    public void StartGame()
-    {
-        SceneManager.LoadScene("Game");
-    }
 }

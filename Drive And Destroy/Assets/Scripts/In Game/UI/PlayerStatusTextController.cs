@@ -7,13 +7,11 @@ using TMPro;
 public class PlayerStatusTextController : MonoBehaviour
 {
     [Header("Health Status")]
-    public GameObject HealthBarDotsHolder;
+    public Image HealthBar;
     public Color LowHealColor;
     public Color HighHealColor;
-    public GameObject GetDamagedEffect;
+    public Image DamagedEffectImage;
 
-    [SerializeField]
-    private GameObject[] _healthBarDots = new GameObject[49];
     private float _fullHealth;
     private float _currentHealth;
     private float _healthBarValue;
@@ -82,11 +80,13 @@ public class PlayerStatusTextController : MonoBehaviour
 
     private float _timerCountdown;
     private float _timerDamageCount;
+    private int _timerLastValue;
 
 
     private GameObject _ship;
     private VehicleMovement _vehicleMovement;
     private InGameManager _igm;
+    private AudioManager _audioManager;
 
     // Start is called before the first frame update
     void Start()
@@ -94,6 +94,7 @@ public class PlayerStatusTextController : MonoBehaviour
         _ship = GameObject.FindWithTag("Player");
         _vehicleMovement = _ship.GetComponent<VehicleMovement>();
         _igm = GameObject.Find("In Game Manager").GetComponent<InGameManager>();
+        _audioManager = FindObjectOfType<AudioManager>();
 
         ResetTheCounter();
         CountdownTimerRotateMoveStart();
@@ -141,17 +142,10 @@ public class PlayerStatusTextController : MonoBehaviour
         LeanTween.scale(VirusHolder, new Vector3(1.5f, 1.5f, 1f), 1f).setEasePunch();
     }
 
+
+
     private void HealthBarProccess()
     {
-        if (_healthBarDots[0] == null)
-        {
-            int dotsCount = HealthBarDotsHolder.transform.childCount;
-            for (int i = 0; i < dotsCount; i++)
-            {
-                _healthBarDots[i] = HealthBarDotsHolder.transform.GetChild(i).gameObject;
-            }
-        }
-
         if (_fullHealth <= 0)
         {
             _fullHealth = _vehicleMovement.FullHealth;
@@ -162,33 +156,22 @@ public class PlayerStatusTextController : MonoBehaviour
         {
             bool isGetDamaged = _currentHealth < _lastCurrentHealth;
             _lastCurrentHealth = _currentHealth;
-            _healthBarValue = Mathf.CeilToInt((_currentHealth / _fullHealth) * _healthBarDots.Length);
+            _healthBarValue = (float)_currentHealth / _fullHealth;
 
-            for (int i = 0; i < _healthBarDots.Length; i++)
-            {
-                if (i < _healthBarValue)
-                {
-                    _healthBarDots[i].SetActive(true);
-                }
-                else
-                {
-                    _healthBarDots[i].SetActive(false);
-                }
-            }
-
-            Color lerpedColor = Color.Lerp(LowHealColor, HighHealColor, (_currentHealth / _fullHealth));
-            _healthBarDots[0].GetComponent<Image>().material.color = lerpedColor;
+            HealthBar.fillAmount = _healthBarValue;
+            Color lerpedColor = Color.Lerp(LowHealColor, HighHealColor, _healthBarValue);
+            HealthBar.color = lerpedColor;
             if (isGetDamaged)
             {
                 // Get Damaged Effect
-                GameObject damagedEffect = GameObject.Instantiate(GetDamagedEffect, this.transform);
-                Image damagedEffectImage = damagedEffect.GetComponent<Image>();
-                LeanTween.value(damagedEffect, 0.3f, 0, 0.5f).setOnUpdate((float val) =>
+                Color tempColor = DamagedEffectImage.color;
+                tempColor.a = 0.3f;
+                DamagedEffectImage.color = tempColor;
+                LeanTween.value(gameObject, 0.3f, 0, 0.5f).setOnUpdate((float val) =>
                 {
-                    Color tempColor = damagedEffectImage.color;
                     tempColor.a = val;
-                    damagedEffectImage.color = tempColor;
-                }).setDestroyOnComplete(true);
+                    DamagedEffectImage.color = tempColor;
+                });
             }
         }
     }
@@ -219,13 +202,17 @@ public class PlayerStatusTextController : MonoBehaviour
         }
 
 
-        _currentTurbo = Mathf.FloorToInt(_vehicleMovement.GetTurbo());
-        _turboBarValue = (float)_currentTurbo / TopTurboLimitOnBar;
+        int newTurboValue = Mathf.FloorToInt(_vehicleMovement.GetTurbo());
+        if (newTurboValue != _currentTurbo)
+        {
+            _currentTurbo = newTurboValue;
+            _turboBarValue = (float)_currentTurbo / TopTurboLimitOnBar;
 
-        _activeTurboBar.fillAmount = _turboBarValue;
+            _activeTurboBar.fillAmount = _turboBarValue;
 
-        Color lerpedColor = Color.Lerp(LowTurboColor, HighTurboColor, _turboBarValue);
-        _activeTurboBar.color = lerpedColor;
+            Color lerpedColor = Color.Lerp(LowTurboColor, HighTurboColor, _turboBarValue);
+            _activeTurboBar.color = lerpedColor;
+        }
     }
 
     private void BossBarProccess()
@@ -249,13 +236,18 @@ public class PlayerStatusTextController : MonoBehaviour
         else if (BossBarHolder.activeSelf)
         {
             BossBarHolder.SetActive(false);
+            _bossFullHealth = 0;
         }
     }
 
     private void PlayerPointProccess()
     {
-        _playerPoint = _igm.GetPlayerPoint();
-        PointUI.text = _playerPoint.ToString();
+        int newPointValue = _igm.GetPlayerPoint();
+        if (newPointValue > _playerPoint)
+        {
+            _playerPoint = newPointValue;
+            PointUI.text = _playerPoint.ToString();
+        }
     }
 
     private void PlayerGoldProccess()
@@ -301,7 +293,17 @@ public class PlayerStatusTextController : MonoBehaviour
             {
                 _timerCountdown -= Time.deltaTime;
                 _timerCountdown = Mathf.Clamp(_timerCountdown, 0, TimerMaxValue);
-                TimerUI.text = Mathf.CeilToInt(_timerCountdown).ToString();
+                int timerInt = Mathf.CeilToInt(_timerCountdown);
+                if (_timerLastValue != timerInt)
+                {
+                    TimerUI.text = timerInt.ToString();
+                    float difTimerValues = _timerLastValue - timerInt;
+                    if (difTimerValues == 1 && _timerCountdown <= 3)
+                    {
+                        _audioManager.PlayOneShot("TimesUpBeep");
+                    }
+                    _timerLastValue = timerInt;
+                }
             }
             else
             {
@@ -309,6 +311,7 @@ public class PlayerStatusTextController : MonoBehaviour
                 if ((_timerDamageCount - _timerCountdown) >= 1)
                 {
                     _timerDamageCount = _timerCountdown;
+                    _audioManager.PlayOneShot("TimesUpDamage");
                     _vehicleMovement.TakeDamage(DamagePerSecond);
                 }
             }

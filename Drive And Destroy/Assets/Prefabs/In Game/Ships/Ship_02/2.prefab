@@ -108,6 +108,7 @@ MeshRenderer:
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
   m_RayTracingMode: 2
+  m_RayTraceProcedural: 0
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -134,6 +135,7 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
+  m_AdditionalVertexStreams: {fileID: 0}
 --- !u!64 &264743993159066753
 MeshCollider:
   m_ObjectHideFlags: 0
@@ -216,10 +218,11 @@ MeshRenderer:
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
   m_RayTracingMode: 2
+  m_RayTraceProcedural: 0
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: f4b28fd058209054d893b5ad31aa9a01, type: 2}
+  - {fileID: 2100000, guid: 76d56a53d181c8e4ab1a1ac1d3126dc6, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -240,6 +243,7 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
+  m_AdditionalVertexStreams: {fileID: 0}
 --- !u!1 &2720354242961110442
 GameObject:
   m_ObjectHideFlags: 0
@@ -298,6 +302,7 @@ MeshRenderer:
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
   m_RayTracingMode: 2
+  m_RayTraceProcedural: 0
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -324,6 +329,7 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
+  m_AdditionalVertexStreams: {fileID: 0}
 --- !u!64 &8654483845759162310
 MeshCollider:
   m_ObjectHideFlags: 0
@@ -368,7 +374,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 4788577476204844316}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 994.605, y: 6.07, z: 17.7}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 3356491879116649202}
@@ -492,6 +498,7 @@ MonoBehaviour:
   bulletPrefab: {fileID: 100008, guid: 6e482f65d3779884c83529f2abc182cc, type: 3}
   bulletShootEffect: {fileID: 1628744458893394, guid: e243632bb3aff9549abdcfcc2ef0c4f0,
     type: 3}
+  bulletTriggerEffect: {fileID: 100008, guid: a62892f06f8a48641a5c36d395567ef5, type: 3}
   bulletShootDelay: 0.2
   bulletSpeed: 100
   bulletRate: 0.3
@@ -506,7 +513,7 @@ AudioSource:
   m_Enabled: 1
   serializedVersion: 4
   OutputAudioMixerGroup: {fileID: 0}
-  m_audioClip: {fileID: 8300000, guid: aa8deba4953afeb4ebb739764064e286, type: 3}
+  m_audioClip: {fileID: 8300000, guid: 331200f79999b4f4085afca886f951bc, type: 3}
   m_PlayOnAwake: 0
   m_Volume: 0
   m_Pitch: 1
@@ -647,10 +654,11 @@ MeshRenderer:
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
   m_RayTracingMode: 2
+  m_RayTraceProcedural: 0
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: f4b28fd058209054d893b5ad31aa9a01, type: 2}
+  - {fileID: 2100000, guid: 76d56a53d181c8e4ab1a1ac1d3126dc6, type: 2}
   - {fileID: 2100000, guid: cc5432601e9ea6143a7347edd28d7a45, type: 2}
   - {fileID: 2100000, guid: 882bf9b95e97d024db558fb29c4b07fc, type: 2}
   - {fileID: 2100000, guid: a714c6a1a6ef26a4c994659b703218cc, type: 2}
@@ -674,6 +682,7 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
+  m_AdditionalVertexStreams: {fileID: 0}
 --- !u!1 &6699115303427817361
 GameObject:
   m_ObjectHideFlags: 0
@@ -729,6 +738,7 @@ MeshRenderer:
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
   m_RayTracingMode: 2
+  m_RayTraceProcedural: 0
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -756,6 +766,7 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
+  m_AdditionalVertexStreams: {fileID: 0}
 --- !u!1 &7650284970124418486
 GameObject:
   m_ObjectHideFlags: 0
@@ -841,10 +852,11 @@ MeshRenderer:
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
   m_RayTracingMode: 2
+  m_RayTraceProcedural: 0
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: f4b28fd058209054d893b5ad31aa9a01, type: 2}
+  - {fileID: 2100000, guid: 76d56a53d181c8e4ab1a1ac1d3126dc6, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -865,6 +877,7 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
+  m_AdditionalVertexStreams: {fileID: 0}
 --- !u!1 &8541647406505171249
 GameObject:
   m_ObjectHideFlags: 0
@@ -1002,6 +1015,10 @@ PrefabInstance:
     - target: {fileID: 1872871036064698, guid: 2e9582fbcc6a1224b902857b1f915a9f, type: 3}
       propertyPath: m_Name
       value: Ship VFX
+      objectReference: {fileID: 0}
+    - target: {fileID: 1872871036064698, guid: 2e9582fbcc6a1224b902857b1f915a9f, type: 3}
+      propertyPath: m_IsActive
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 4685930197612164, guid: 2e9582fbcc6a1224b902857b1f915a9f, type: 3}
       propertyPath: m_RootOrder

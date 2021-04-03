@@ -31,6 +31,12 @@ public class CameraFollow : MonoBehaviour
 	void Start()
 	{
 		GameObject targetObject = GameObject.FindGameObjectWithTag("Player");
+		GameObject targetObjectModel = GameObject.FindGameObjectWithTag("PlayerShip");
+		if (targetObjectModel.name == "2")
+        {
+			distance = 2f;
+        }
+
 		target = targetObject.transform;
 		parentRigidbody = targetObject.GetComponent<Rigidbody>();
 
@@ -49,7 +55,7 @@ public class CameraFollow : MonoBehaviour
 			transform.position = Vector3.SmoothDamp(currentPosition, wantedPosition, ref xyzVelocity, positionSmoothTime);
 
 			//Generate custom percentage of speed of ship with custom speed value to camera verticle rotation value
-			float speedPercent = movement.GetSpeed() / 80.0f;
+			float speedPercent = Mathf.Clamp(movement.GetSpeed() / 80.0f, 0.25f, 1f);
 
 			// Look at height of ship related speed percent.
 			float lookAtHeightRSP = speedPercent >= 1 ? lookAtHeight : lookAtHeight * speedPercent;

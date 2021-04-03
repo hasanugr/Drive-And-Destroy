@@ -4,6 +4,9 @@ using UnityEngine;
 
 public class BossRoadControl : MonoBehaviour
 {
+    public GameObject BackBlock;
+    public GameObject DeleteRoadTrigger;
+
     [Header("Enivronment")]
     public MeshRenderer RoadMeshRenderer;
     public GameObject[] Environments;
@@ -28,6 +31,9 @@ public class BossRoadControl : MonoBehaviour
         {
         BossTriggerObject.SetActive(false);
         }
+
+        BackBlock.SetActive(false);
+        DeleteRoadTrigger.SetActive(true);
     }
 
     public void BossSpawn()
@@ -35,25 +41,7 @@ public class BossRoadControl : MonoBehaviour
         Vector3 pos = BossSpawnPoint.transform.position;
         Quaternion rot = BossSpawnPoint.transform.rotation;
 
-        /*switch (_reachedLevel)
-        {
-            case 1:
-                
-                break;
-            case 2:
-                
-                break;
-            case 3:
-                
-                break;
-            default:
-                
-                break;
-        }*/
-
-        GameObject bossObj = Instantiate(BossBody, pos, rot);
-        InGameManager igm = GameObject.Find("In Game Manager").GetComponent<InGameManager>();
-        igm.IsBossAlive = true;
+        Instantiate(BossBody, pos, rot);
     }
 
     private void EnvironmentAdd()
@@ -94,6 +82,15 @@ public class BossRoadControl : MonoBehaviour
                 break;
         }
         RoadMeshRenderer.materials = _tempMaterials;
+    }
+
+    private void OnDisable()
+    {
+        for (int i = 0; i < Environments.Length; i++)
+        {
+            Environments[i].SetActive(false);
+        }
+        BossTriggerObject.SetActive(true);
     }
 
 }

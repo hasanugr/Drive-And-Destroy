@@ -17,7 +17,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &4563481809034373792
 Transform:
   m_ObjectHideFlags: 0
@@ -62,10 +62,9 @@ MonoBehaviour:
   VirusPartycleSystem: {fileID: 3095654307101345970}
   CameraShakeMagnitude: 6
   CameraShakeRoughness: 12
-  CameraShakeEffectDuration: 10
+  CameraShakeEffectDuration: 7
   HalfBlindDuration: 5
-  HalfBlindVolumeObject: {fileID: 3559111533170229340, guid: 92c5d3f320e52b74a89352db882c9113,
-    type: 3}
+  PostProcessController: {fileID: 0}
   ChangeRotateDuration: 5
 --- !u!1001 &3095654307101314580
 PrefabInstance:

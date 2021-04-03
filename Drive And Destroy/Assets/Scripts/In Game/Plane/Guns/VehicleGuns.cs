@@ -10,6 +10,7 @@ public class VehicleGuns : MonoBehaviour
     public GameObject[] Guns;
     public GameObject bulletPrefab;
     public GameObject bulletShootEffect;
+    public GameObject bulletTriggerEffect;
     public float bulletShootDelay = 0;
     public float bulletSpeed = 100.0f;
     public float bulletRate = 0.5f;
@@ -23,6 +24,8 @@ public class VehicleGuns : MonoBehaviour
     private string _gunFireSoundName;
 
     ObjectPooler _bulletPool;
+    ObjectPooler _shootEffectPool;
+    ObjectPooler _bulletTriggerEffectPool;
     AudioManager _audioManager;
 
     private void Start()
@@ -41,13 +44,16 @@ public class VehicleGuns : MonoBehaviour
         }
 
         _bulletPool = new ObjectPooler(bulletPrefab);
-        _bulletPool.FillThePool(15);
+        _bulletPool.FillThePool(10);
 
-        /*if (bulletShootEffect)
+        _bulletTriggerEffectPool = new ObjectPooler(bulletTriggerEffect);
+        _bulletTriggerEffectPool.FillThePool(10);
+
+        if (bulletShootEffect)
         {
-            ObjectPooler bulletShootEffectPool = new ObjectPooler(bulletShootEffect);
-            bulletShootEffectPool.FillThePool(5);
-        }*/
+            _shootEffectPool = new ObjectPooler(bulletShootEffect);
+            _shootEffectPool.FillThePool(3);
+        }
     }
 
     // Update is called once per frame
@@ -74,14 +80,21 @@ public class VehicleGuns : MonoBehaviour
         }
     }
 
+    public void BulletTriggerEffect(Vector3 pos, Quaternion rot)
+    {
+        GameObject bulletTriggerEffect = _bulletTriggerEffectPool.GetObjectFromPoolAtPosition(pos, rot);
+
+        StartCoroutine(SendToPoolObjectTimout(bulletTriggerEffect, "BulletTriggerEffect", 2f));
+    }
+
     private void FireEffectWeapon (Transform bulletPosition)
     {
-        GameObject shootEffect = Instantiate(bulletShootEffect);
+        GameObject shootEffect = _shootEffectPool.GetObjectFromPool();
 
         shootEffect.transform.parent = bulletPosition;
         shootEffect.transform.localPosition = new Vector3(0, 0, 0);
 
-        Destroy(shootEffect, 1f);
+        StartCoroutine(SendToPoolObjectTimout(shootEffect, "ShootEffect", 1f));
     }
 
     IEnumerator FireSingleWeapon()
@@ -94,15 +107,12 @@ public class VehicleGuns : MonoBehaviour
             yield return new WaitForSeconds(bulletShootDelay);
         }
 
-        /*GameObject bullet = bulletPool.GetObjectFromPool();
-        bullet.transform.position = bulletPosition1.position;
-        bullet.transform.rotation = bulletPosition1.rotation;*/
         GameObject bullet = _bulletPool.GetObjectFromPoolAtPosition(bulletPosition1.position, bulletPosition1.rotation);
 
         bullet.GetComponent<Rigidbody>().velocity = this.GetComponent<Rigidbody>().velocity + (transform.forward * bulletSpeed);
 
         // Destroy(bullet, 2f);
-        StartCoroutine(SendToPoolObjectTimout(bullet, 2f));
+        StartCoroutine(SendToPoolObjectTimout(bullet, "Bullet", 2f));
 
         // Wait for X second
         yield return new WaitForSeconds(bulletRate);
@@ -112,26 +122,15 @@ public class VehicleGuns : MonoBehaviour
         
     IEnumerator FireDoubleWeapon()
     {
-        // Shoot effect
-        /*StartCoroutine(FireEffectWeapon(bulletPosition1));
-        StartCoroutine(FireEffectWeapon(bulletPosition2));*/
-
-        // Then bullet create
         allowFire = false;
-        /*GameObject bullet = bulletPool.GetObjectFromPool();
-        bullet.transform.position = bulletPosition1.position;
-        bullet.transform.rotation = bulletPosition1.rotation;
-        GameObject bullet2 = bulletPool.GetObjectFromPool();
-        bullet2.transform.position = bulletPosition2.position;
-        bullet2.transform.rotation = bulletPosition2.rotation;*/
         GameObject bullet = _bulletPool.GetObjectFromPoolAtPosition(bulletPosition1.position, bulletPosition1.rotation);
         GameObject bullet2 = _bulletPool.GetObjectFromPoolAtPosition(bulletPosition2.position, bulletPosition2.rotation);
 
         bullet.GetComponent<Rigidbody>().velocity = this.GetComponent<Rigidbody>().velocity + (transform.forward * bulletSpeed);
         bullet2.GetComponent<Rigidbody>().velocity = this.GetComponent<Rigidbody>().velocity + (transform.forward * bulletSpeed);
 
-        StartCoroutine(SendToPoolObjectTimout(bullet, 2f));
-        StartCoroutine(SendToPoolObjectTimout(bullet2, 2f));
+        StartCoroutine(SendToPoolObjectTimout(bullet, "Bullet", 2f));
+        StartCoroutine(SendToPoolObjectTimout(bullet2, "Bullet", 2f));
 
         // Wait for X second
         yield return new WaitForSeconds(bulletRate);
@@ -146,31 +145,17 @@ public class VehicleGuns : MonoBehaviour
         GameObject bullet;
         if (useFirstWeapon)
         {
-            // Shoot effect
-            /*StartCoroutine(FireEffectWeapon(bulletPosition1));*/
-
-            // Then bullet create
-            /*bullet = bulletPool.GetObjectFromPool();
-            bullet.transform.position = bulletPosition1.position;
-            bullet.transform.rotation = bulletPosition1.rotation;*/
             bullet = _bulletPool.GetObjectFromPoolAtPosition(bulletPosition1.position, bulletPosition1.rotation);
         }
         else
         {
-            // Shoot effect
-            /*            StartCoroutine(FireEffectWeapon(bulletPosition2));
-            */
-            // Then bullet create
-            /*bullet = bulletPool.GetObjectFromPool();
-            bullet.transform.position = bulletPosition2.position;
-            bullet.transform.rotation = bulletPosition2.rotation;*/
             bullet = _bulletPool.GetObjectFromPoolAtPosition(bulletPosition2.position, bulletPosition2.rotation);
         }
 
         bullet.GetComponent<Rigidbody>().velocity = this.GetComponent<Rigidbody>().velocity + (transform.forward * bulletSpeed);
         useFirstWeapon = !useFirstWeapon;
 
-        StartCoroutine(SendToPoolObjectTimout(bullet, 2f));
+        StartCoroutine(SendToPoolObjectTimout(bullet, "Bullet", 2f));
 
         // Wait for X second
         yield return new WaitForSeconds(bulletRate / 2);
@@ -178,11 +163,20 @@ public class VehicleGuns : MonoBehaviour
         allowFire = true;
     }
 
-    private IEnumerator SendToPoolObjectTimout(GameObject bulletObject, float time)
+    private IEnumerator SendToPoolObjectTimout(GameObject bulletObject, string objectType, float time)
     {
         // Wait for X second
         yield return new WaitForSeconds(time);
 
-        _bulletPool.SendObjectToPool(bulletObject);
+        if (objectType == "Bullet")
+        {
+            _bulletPool.SendObjectToPool(bulletObject);
+        }else if (objectType == "ShootEffect")
+        {
+            _shootEffectPool.SendObjectToPool(bulletObject);
+        }else if (objectType == "BulletTriggerEffect")
+        {
+            _bulletTriggerEffectPool.SendObjectToPool(bulletObject);
+        }
     }
 }

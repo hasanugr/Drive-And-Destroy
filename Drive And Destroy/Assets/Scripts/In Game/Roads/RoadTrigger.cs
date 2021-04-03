@@ -5,6 +5,7 @@ using UnityEngine;
 public class RoadTrigger : MonoBehaviour
 {
     public bool IsBossRoad;
+    public bool IsNextLevelRoad;
     public GameObject BackBlockObstacle;
 
     private bool _isActiveToTrigger = true;
@@ -17,6 +18,11 @@ public class RoadTrigger : MonoBehaviour
         _igm = GameObject.Find("In Game Manager").GetComponent<InGameManager>();
     }
 
+    private void OnEnable()
+    {
+        _isActiveToTrigger = true;
+    }
+
     private void OnTriggerEnter(Collider collider)
     {
         // Trigger the Create New Road and add it to after last added road.
@@ -24,7 +30,7 @@ public class RoadTrigger : MonoBehaviour
         {
             _isActiveToTrigger = false;
             _igm.RoadChangeTrigger();
-            if (!IsBossRoad)
+            if (!IsBossRoad && !IsNextLevelRoad)
             {
                 _igm.AddPlayerPoint(10);
             }
@@ -32,7 +38,12 @@ public class RoadTrigger : MonoBehaviour
             {
                 BackBlockObstacle.SetActive(true);
             }
-            transform.gameObject.SetActive(false);
+            if (IsNextLevelRoad)
+            {
+                // Change Terrain to Next Level
+                _igm.ChangeActiveTerrain();
+            }
+            gameObject.SetActive(false);
         }
     }
 }

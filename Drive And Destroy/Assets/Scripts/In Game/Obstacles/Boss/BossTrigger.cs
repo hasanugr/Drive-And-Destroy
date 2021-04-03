@@ -14,6 +14,11 @@ public class BossTrigger : MonoBehaviour
         _bossRoadControl = BossRoad.GetComponent<BossRoadControl>();
     }
 
+    private void OnEnable()
+    {
+        _isBossSpawned = false;
+    }
+
     private void OnTriggerEnter(Collider collider)
     {
         if (collider.gameObject.CompareTag("PlayerShip") && !_isBossSpawned)

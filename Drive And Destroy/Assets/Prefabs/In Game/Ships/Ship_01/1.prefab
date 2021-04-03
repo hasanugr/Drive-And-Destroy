@@ -117,6 +117,7 @@ MeshRenderer:
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
   m_RayTracingMode: 2
+  m_RayTraceProcedural: 0
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -143,6 +144,7 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
+  m_AdditionalVertexStreams: {fileID: 0}
 --- !u!64 &804501166804818601
 MeshCollider:
   m_ObjectHideFlags: 0
@@ -312,9 +314,11 @@ MonoBehaviour:
   bulletPrefab: {fileID: 5275873893901751349, guid: 64910871d02a31b47a8b15ebd7f35fdf,
     type: 3}
   bulletShootEffect: {fileID: 0}
+  bulletTriggerEffect: {fileID: 1995403933065894, guid: 4961a16ba01e09547be3e1c9d16d5ad0,
+    type: 3}
   bulletShootDelay: 0
-  bulletSpeed: 200
-  bulletRate: 0.6
+  bulletSpeed: 250
+  bulletRate: 0.4
   isShootingSameTime: 0
 --- !u!82 &7739702063399628293
 AudioSource:
@@ -326,7 +330,7 @@ AudioSource:
   m_Enabled: 1
   serializedVersion: 4
   OutputAudioMixerGroup: {fileID: 0}
-  m_audioClip: {fileID: 8300000, guid: aa8deba4953afeb4ebb739764064e286, type: 3}
+  m_audioClip: {fileID: 8300000, guid: 331200f79999b4f4085afca886f951bc, type: 3}
   m_PlayOnAwake: 0
   m_Volume: 0
   m_Pitch: 1
@@ -504,6 +508,7 @@ MeshRenderer:
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
   m_RayTracingMode: 2
+  m_RayTraceProcedural: 0
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -530,6 +535,7 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
+  m_AdditionalVertexStreams: {fileID: 0}
 --- !u!64 &7698504804321582906
 MeshCollider:
   m_ObjectHideFlags: 0
@@ -741,6 +747,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_IsActive
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1457763407757513758, guid: 1c7dbd0966e965746bce699094e2fe10,
+        type: 3}
+      propertyPath: m_Materials.Array.size
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 3203608166028417552, guid: 1c7dbd0966e965746bce699094e2fe10,
         type: 3}

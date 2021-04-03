@@ -109,6 +109,7 @@ Material:
     - _EmissionColor: {r: 2, g: 0, b: 1.3647059, a: 1}
     - _SpecColor: {r: 0.19999996, g: 0.19999996, b: 0.19999996, a: 1}
     - _Specular: {r: 1, g: 0, b: 0, a: 1}
+  m_BuildTextureStacks: []
 --- !u!114 &9167170706099727619
 MonoBehaviour:
   m_ObjectHideFlags: 11
